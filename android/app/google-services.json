@@ -1,0 +1,118 @@
+{
+  "project_info": {
+    "project_number": "917165240645",
+    "project_id": "voice-hub-2a9f4",
+    "storage_bucket": "voice-hub-2a9f4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:917165240645:android:11acf5b56562a3a726ce2c",
+        "android_client_info": {
+          "package_name": "com.example.daily_expense_tracker_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "917165240645-3fphlkft4dcg1b2r9drg8gqqgrlag9dh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9iKpkpQlP-KP6lJiBvCMk5Vtf44I-r2I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "917165240645-3fphlkft4dcg1b2r9drg8gqqgrlag9dh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "917165240645-2jb0ibhi5gm2o4emnrc2605ij400168b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.voiceHub"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:917165240645:android:e94490eabf7fac9f26ce2c",
+        "android_client_info": {
+          "package_name": "com.example.olly_chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "917165240645-3fphlkft4dcg1b2r9drg8gqqgrlag9dh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9iKpkpQlP-KP6lJiBvCMk5Vtf44I-r2I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "917165240645-3fphlkft4dcg1b2r9drg8gqqgrlag9dh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "917165240645-2jb0ibhi5gm2o4emnrc2605ij400168b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.voiceHub"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:917165240645:android:b884a47f6ba16ab726ce2c",
+        "android_client_info": {
+          "package_name": "com.example.voice_hub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "917165240645-3fphlkft4dcg1b2r9drg8gqqgrlag9dh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9iKpkpQlP-KP6lJiBvCMk5Vtf44I-r2I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "917165240645-3fphlkft4dcg1b2r9drg8gqqgrlag9dh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "917165240645-2jb0ibhi5gm2o4emnrc2605ij400168b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.voiceHub"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
