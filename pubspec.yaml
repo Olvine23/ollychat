@@ -15,6 +15,12 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   firebase_core: ^2.27.0
+  flutter_bloc: ^8.1.4
+  equatable:
+  firebase_auth: ^4.17.8
+
+  user_repository:
+    path: packages/user_repository 
 
 dev_dependencies:
   flutter_test:
