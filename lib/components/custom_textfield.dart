@@ -31,47 +31,49 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.greenWhite, // Shadow color
-                          spreadRadius: 5, // Spread radius
-                          blurRadius: 30, // Blur radius
-                          offset: Offset(0, 5), // Offset
-                        ),
-                      ],
-                    ),
-
-      child: TextFormField(
-          validator: validator,
-          controller: controller,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          focusNode: focusNode,
-          onTap: onTap,
-          textInputAction: TextInputAction.next,
-          onChanged: onChanged,
-          decoration: InputDecoration(
-            suffixIcon: suffixIcon,
-            prefixIcon: prefixIcon,
-             
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30),
-              borderSide:
-                  BorderSide(
-                    width: 1.0,
-                    color:  AppColors.primaryColor),
-            ),
-            errorBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.red)),
-            // fillColor: Colors.grey.shade200,
-            filled: true,
-            hintText: hintText,
-            hintStyle: TextStyle(color: Colors.grey[500]),
-            errorText: errorMsg,
-          )),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.greenWhite, // Shadow color
+            spreadRadius: 5, // Spread radius
+            blurRadius: 10, // Blur radius
+            offset: Offset(0, 5), // Offset
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(100),
+        child: Card(
+          borderOnForeground: false,
+          child: TextFormField(
+              validator: validator,
+              controller: controller,
+              obscureText: obscureText,
+              keyboardType: keyboardType,
+              focusNode: focusNode,
+              onTap: onTap,
+              textInputAction: TextInputAction.next,
+              onChanged: onChanged,
+              decoration: InputDecoration(
+                suffixIcon: suffixIcon,
+                prefixIcon: prefixIcon,
+          
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide(width: 1.0, color: AppColors.primaryColor),
+                ),
+                errorBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red)),
+                // fillColor: Colors.grey.shade200,
+                filled: true,
+                hintText: hintText,
+                hintStyle: TextStyle(color: Colors.grey[500]),
+                errorText: errorMsg,
+              )),
+        ),
+      ),
     );
   }
 }

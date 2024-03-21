@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:olly_chat/blocs/sign_up/sign_up_bloc.dart';
+import 'package:olly_chat/components/custom_button.dart';
 import 'package:olly_chat/components/custom_textfield.dart';
 import 'package:user_repository/user_repository.dart';
 
@@ -51,32 +52,56 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: Center(
                   child: Column(
                     children: [
+                       const SizedBox(
+                        height: 20,
+                      ),
+                      const Align(
+                          alignment: Alignment.topLeft,
+                          child: Text("Your Name")),
+                      const SizedBox(
+                        height: 10,
+                      ),
                        CustomTextField(
                         controller: nameController,
                         hintText: 'Name',
                         obscureText: false,
                         keyboardType: TextInputType.name,
                       ),
+                        const SizedBox(
+                        height: 10,
+                      ),
+                      const Align(
+                          alignment: Alignment.topLeft,
+                          child: Text("Your email")),
                       CustomTextField(
                         controller: emailController,
                         hintText: 'Email',
                         obscureText: false,
                         keyboardType: TextInputType.emailAddress,
                       ),
+                        const SizedBox(
+                        height: 10,
+                      ),
+                      const Align(
+                          alignment: Alignment.topLeft,
+                          child: Text("Enter Password")),
                       CustomTextField(
                         controller: passwordController,
                         hintText: 'Password',
                         obscureText: obscurePPassword,
                         keyboardType: TextInputType.visiblePassword,
                       ),
+                        const SizedBox(
+                        height: 20,
+                      ),
                       
                       !signUpRequired
-                          ? SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              child: TextButton(
-                                  onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      MyUser myUser = MyUser.empty;
+                          ? 
+                          CustomButton(
+                              text: "Sign Up",
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  MyUser myUser = MyUser.empty;
                                       myUser = myUser.copyWith(
                                         email: emailController.text,
                                         name: nameController.text,
@@ -87,29 +112,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                             SignUpRequired(myUser,
                                                 passwordController.text));
                                       });
-                                    }
-                                  },
-                                  style: TextButton.styleFrom(
-                                      elevation: 3.0,
-                                      backgroundColor:
-                                          Theme.of(context).colorScheme.primary,
-                                      foregroundColor: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(60))),
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 25, vertical: 5),
-                                    child: Text(
-                                      'Sign Up',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  )),
-                            )
+                                }
+                              })
+                          
                           : const CircularProgressIndicator()
                     ],
                   ),
