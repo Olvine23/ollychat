@@ -16,7 +16,7 @@ class MyAppView extends StatelessWidget {
       title: 'OllyChat',
       theme: ThemeData(
           colorScheme: const ColorScheme.light(
-              background: Colors.white,
+               
               onBackground: Colors.black,
               primary: Color.fromRGBO(206, 147, 216, 1),
               onPrimary: Colors.black,
