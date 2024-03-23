@@ -1,7 +1,11 @@
-import 'dart:math';
+
+
+import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:user_repository/src/entities/entities.dart';
 import 'package:user_repository/src/models/my_user.dart';
 import 'package:user_repository/src/user_repo.dart';
@@ -57,6 +61,7 @@ class FirebaseUserRepo implements UserRepository {
   Future<void> resetPassword(String email) async {
     try {
       await _firebaseAuth.sendPasswordResetEmail(email: email);
+      log("reset sent to email");
     } catch (e) {
       print(e);
     }
@@ -94,5 +99,37 @@ class FirebaseUserRepo implements UserRepository {
       final user = firebaseUser;
       return user;
     });
+  }
+  
+  @override
+  Future<String> uploadPicture(String file, String userId) async {
+    try{
+    //convert file to string
+    File imageFile = File(file);
+
+    //create folder path
+    Reference firebaseStorageRef = FirebaseStorage.instance.ref().child(
+      '$userId/PP/${userId}_lead'
+    );
+
+    //upload to firebase storage
+    await firebaseStorageRef.putFile(imageFile);
+
+    //get image string
+
+    String url = await firebaseStorageRef.getDownloadURL();
+
+    await usersCollection.doc(userId).update({
+      'picture':url
+    });
+
+
+    return url;
+
+    }catch(e){
+      log(e.toString());
+      rethrow;
+
+    }
   }
 }

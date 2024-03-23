@@ -5,14 +5,14 @@ class MyUser extends Equatable {
   final String id;
   final String email;
   final String name;
-  final String? image;
+  String? image;
 
-  const MyUser(
+   MyUser(
       {required this.id, required this.email, required this.name, this.image});
 
   // unauthenticated user i.e with empty values
 
-  static const empty = MyUser(id: '', email: '', name: '', image: '');
+  static final empty = MyUser(id: '', email: '', name: '', image: '');
 
   //for modification of MyUser params
   MyUser copyWith({
@@ -53,6 +53,6 @@ class MyUser extends Equatable {
   }
 
   @override
-  // TODO: implement props
+  // implement props
   List<Object?> get props => [id, email, name, image];
 }

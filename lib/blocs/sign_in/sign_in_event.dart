@@ -19,3 +19,8 @@ class SignOutRequired extends SignInEvent{
    SignOutRequired();
 
 }
+
+class ResetPasswordRequired extends SignInEvent{
+  final String email;
+  ResetPasswordRequired(this.email);
+}

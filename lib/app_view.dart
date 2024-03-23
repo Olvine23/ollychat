@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:olly_chat/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/blocs/sign_in/sign_in_bloc.dart';
 import 'package:olly_chat/screens/welcome_screen.dart';
 
+import 'blocs/updateuserinfo/update_user_info_bloc.dart';
 import 'screens/home_screen.dart';
 
 class MyAppView extends StatelessWidget {
@@ -16,7 +18,6 @@ class MyAppView extends StatelessWidget {
       title: 'OllyChat',
       theme: ThemeData(
           colorScheme: const ColorScheme.light(
-               
               onBackground: Colors.black,
               primary: Color.fromRGBO(206, 147, 216, 1),
               onPrimary: Colors.black,
@@ -27,10 +28,28 @@ class MyAppView extends StatelessWidget {
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
           if (state.status == AuthenticationStatus.authenticated) {
-            return BlocProvider(
-              create: (context) => SignInBloc(
-                userRepository: context.read<AuthenticationBloc>().userRepository
-              ),
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (context) => SignInBloc(
+                      userRepository:
+                          context.read<AuthenticationBloc>().userRepository),
+                ),
+                BlocProvider(
+                    create: (context) => UpdateUserInfoBloc(
+                        userRepository:
+                            context.read<AuthenticationBloc>().userRepository)),
+                BlocProvider(
+                    create: (context) => MyuserBloc(
+                        myUserRepository:
+                            context.read<AuthenticationBloc>().userRepository)
+                      ..add(GetMyUser(
+                          myUserId: context
+                              .read<AuthenticationBloc>()
+                              .state
+                              .user!
+                              .uid)))
+              ],
               child: HomeScreen(),
             );
           } else {

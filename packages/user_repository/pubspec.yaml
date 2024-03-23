@@ -16,6 +16,8 @@ dependencies:
   equatable:
   firebase_auth: ^4.17.8
   cloud_firestore:
+  firebase_storage:
+  firebase_core:
 
 dev_dependencies:
   flutter_test:

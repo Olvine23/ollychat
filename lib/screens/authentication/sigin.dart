@@ -95,7 +95,9 @@ class _SignInScreenState extends State<SignInScreen> {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 8.0),
                           child: TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                context.read<SignInBloc>().add(ResetPasswordRequired(emailController.text));
+                              },
                               child: Text(
                                 'Forgot Password?',
                                 style: TextStyle(

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -15,7 +17,10 @@ class MyuserBloc extends Bloc<MyuserEvent, MyUserState> {
     on<GetMyUser>((event, emit) async {
       try {
         MyUser myUser = await _userRepository.getMyUser(event.myUserId);
+        emit(MyUserState.success(myUser));
       } catch (e) {
+         log(e.toString());
+         emit(const MyUserState.failure());
         print(e.toString());
       }
     });

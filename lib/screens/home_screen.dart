@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/blocs/sign_in/sign_in_bloc.dart';
+import 'package:olly_chat/blocs/updateuserinfo/update_user_info_bloc.dart';
 import 'package:olly_chat/screens/discover/discover_screen.dart';
 import 'package:olly_chat/screens/home/main_home.dart';
 import 'package:olly_chat/screens/poems/add_poem_screen.dart';
@@ -18,13 +20,11 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   final PageController pageController = PageController(initialPage: 0);
 
-  static const List<Widget> _pages =  [
+  static const List<Widget> _pages = [
     MainHome(),
-   DiscoverScreen(),
+    DiscoverScreen(),
     AddPoemScreen(),
-     ProfileScreen()
-
-
+    ProfileScreen()
   ];
 
   void _onItemTapped(int index) {
@@ -35,72 +35,119 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: FloatingActionButton(
-            shape: const CircleBorder(),
-            backgroundColor: AppColors.primaryColor,
-            foregroundColor: AppColors.white,
-            child: const Icon(Icons.add),
-            onPressed: () {
-             
-            }),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.red,
-        onTap: _onItemTapped,
-        currentIndex: _selectedIndex,
-        items:  <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home),
-            label: 'Home',
-            backgroundColor: AppColors.primaryColor
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.explore),
-            label: 'Discover',
-             backgroundColor: AppColors.primaryColor
-          ),
-
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.edit_document),
-            label: 'Chats',
-             backgroundColor: AppColors.primaryColor
-          ),
-          BottomNavigationBarItem(
-             backgroundColor: AppColors.primaryColor,
-            icon: const SizedBox(
-              width: 24, // Adjust width as needed
-              height: 24, // Adjust height as needed
-              child: CircleAvatar(
-                radius: 14, // Adjust radius as needed
-                backgroundImage: NetworkImage(
-                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDtKPoN9mIRT0KIyuzVkku3Jh4udgh_IavU_drNSrCCA&s',
-                ),
-              ),
-            ),
-            label: 'Profile',
-          ),
-        ],
-        // Increase the height of the navigation bar
-        // Adjust as needed based on icon sizes and layout preferences
+    return BlocListener<UpdateUserInfoBloc, UpdateUserInfoState>(
+      listener: (context, state) {
+        // implement listener
+        if (state is UpdatePictureSuccess){
+          setState(() {
+            context.read<MyuserBloc>().state.user!.image = state.userImage;
+          });
+        }
          
-        iconSize: 24, // Adjust as needed
-        selectedFontSize: 14, // Adjust as needed
-        unselectedFontSize: 12, // Adjust as needed
-        unselectedItemColor: Colors.white,
-        selectedItemColor: const Color(0xffB1816D), 
-      ),
-      appBar: AppBar(
-        title: const Text("VoiceHub Pro"),
-        actions: [
-          IconButton(
+
+      },
+      child: Scaffold(
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: FloatingActionButton(
+              shape: const CircleBorder(),
+              backgroundColor: AppColors.primaryColor,
+              foregroundColor: AppColors.white,
+              child: const Icon(Icons.add),
               onPressed: () {
                 context.read<SignInBloc>().add(SignOutRequired());
-              },
-              icon: const Icon(Icons.logout_outlined))
-        ],
-      ),
-      body:  _pages.elementAt(_selectedIndex)
+              }),
+              bottomNavigationBar: BottomNavigationBar(
+                  backgroundColor: Colors.red,
+                  onTap: _onItemTapped,
+                  currentIndex: _selectedIndex,
+                  items: <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                        icon: const Icon(Icons.home),
+                        label: 'Home',
+                        backgroundColor: AppColors.primaryColor),
+                    BottomNavigationBarItem(
+                        icon: const Icon(Icons.explore),
+                        label: 'Discover',
+                        backgroundColor: AppColors.primaryColor),
+                    BottomNavigationBarItem(
+                        icon: const Icon(Icons.edit_document),
+                        label: 'Chats',
+                        backgroundColor: AppColors.primaryColor),
+                    BottomNavigationBarItem(
+                      backgroundColor: AppColors.primaryColor,
+                      icon: const SizedBox(
+                        width: 24, // Adjust width as needed
+                        height: 24, // Adjust height as needed
+                        child: CircleAvatar(
+                          radius: 14, // Adjust radius as needed
+                          backgroundImage: NetworkImage(
+                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDtKPoN9mIRT0KIyuzVkku3Jh4udgh_IavU_drNSrCCA&s',
+                          ),
+                        ),
+                      ),
+                      label: 'Profile',
+                    ),
+                  ],
+                  // Increase the height of the navigation bar
+                  // Adjust as needed based on icon sizes and layout preferences
+
+                  iconSize: 24, // Adjust as needed
+                  selectedFontSize: 14, // Adjust as needed
+                  unselectedFontSize: 12, // Adjust as needed
+                  unselectedItemColor: Colors.white,
+                  selectedItemColor: const Color(0xffB1816D),
+                ),
+          // bottomNavigationBar: BlocBuilder<MyuserBloc, MyUserState>(
+          //   builder: (context, state) {
+          //     if (state.status == MyUserStatus.success) {
+          //       return BottomNavigationBar(
+          //         backgroundColor: Colors.red,
+          //         onTap: _onItemTapped,
+          //         currentIndex: _selectedIndex,
+          //         items: <BottomNavigationBarItem>[
+          //           BottomNavigationBarItem(
+          //               icon: const Icon(Icons.home),
+          //               label: 'Home',
+          //               backgroundColor: AppColors.primaryColor),
+          //           BottomNavigationBarItem(
+          //               icon: const Icon(Icons.explore),
+          //               label: 'Discover',
+          //               backgroundColor: AppColors.primaryColor),
+          //           BottomNavigationBarItem(
+          //               icon: const Icon(Icons.edit_document),
+          //               label: 'Chats',
+          //               backgroundColor: AppColors.primaryColor),
+          //           BottomNavigationBarItem(
+          //             backgroundColor: AppColors.primaryColor,
+          //             icon: const SizedBox(
+          //               width: 24, // Adjust width as needed
+          //               height: 24, // Adjust height as needed
+          //               child: CircleAvatar(
+          //                 radius: 14, // Adjust radius as needed
+          //                 backgroundImage: NetworkImage(
+          //                   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDtKPoN9mIRT0KIyuzVkku3Jh4udgh_IavU_drNSrCCA&s',
+          //                 ),
+          //               ),
+          //             ),
+          //             label: 'Profile',
+          //           ),
+          //         ],
+          //         // Increase the height of the navigation bar
+          //         // Adjust as needed based on icon sizes and layout preferences
+
+          //         iconSize: 24, // Adjust as needed
+          //         selectedFontSize: 14, // Adjust as needed
+          //         unselectedFontSize: 12, // Adjust as needed
+          //         unselectedItemColor: Colors.white,
+          //         selectedItemColor: const Color(0xffB1816D),
+          //       );
+          //     } else {
+          //       return  Container();
+          //     }
+          //   },
+          // ),
+          body: _pages.elementAt(_selectedIndex)),
     );
   }
 }
