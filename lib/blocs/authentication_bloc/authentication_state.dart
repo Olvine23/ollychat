@@ -18,7 +18,7 @@ part of 'authentication_bloc.dart';
 
   //user is authenticated
 
-  const AuthenticationState.authenticated(User user) : this._(status: AuthenticationStatus.authenticated);
+  const AuthenticationState.authenticated(User user) : this._(status: AuthenticationStatus.authenticated, user: user);
 
 
 //user is unauthenticated

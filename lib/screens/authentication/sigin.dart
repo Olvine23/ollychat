@@ -96,7 +96,15 @@ class _SignInScreenState extends State<SignInScreen> {
                           padding: const EdgeInsets.only(right: 8.0),
                           child: TextButton(
                               onPressed: () {
-                                context.read<SignInBloc>().add(ResetPasswordRequired(emailController.text));
+                                context.read<SignInBloc>().add(
+                                    ResetPasswordRequired(
+                                        emailController.text));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content:
+                                        Text('Password resert link has been sent  to your email'),
+                                  ),
+                                );
                               },
                               child: Text(
                                 'Forgot Password?',
@@ -117,37 +125,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                       passwordController.text));
                                 }
                               })
-                          //  SizedBox(
-                          //     width: MediaQuery.of(context).size.width * 0.5,
-                          //     child: TextButton(
-                          //         onPressed: () {
-                          //           if (_formKey.currentState!.validate()) {
-                          //             context.read<SignInBloc>().add(
-                          //                 SignInRequired(emailController.text,
-                          //                     passwordController.text));
-                          //           }
-                          //         },
-                          //         style: TextButton.styleFrom(
-                          //             elevation: 3.0,
-                          //             backgroundColor:
-                          //                 Theme.of(context).colorScheme.primary,
-                          //             foregroundColor: Colors.white,
-                          //             shape: RoundedRectangleBorder(
-                          //                 borderRadius:
-                          //                     BorderRadius.circular(60))),
-                          //         child: const Padding(
-                          //           padding: EdgeInsets.symmetric(
-                          //               horizontal: 25, vertical: 5),
-                          //           child: Text(
-                          //             'Sign In',
-                          //             textAlign: TextAlign.center,
-                          //             style: TextStyle(
-                          //                 color: Colors.white,
-                          //                 fontSize: 16,
-                          //                 fontWeight: FontWeight.w600),
-                          //           ),
-                          //         )),
-                          //   )
+                         
                           : const CircularProgressIndicator()
                     ],
                   ),

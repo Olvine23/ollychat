@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // implement listener
         if (state is UpdatePictureSuccess){
           setState(() {
-            context.read<MyuserBloc>().state.user!.image = state.userImage;
+            context.read<MyUserBloc>().state.user!.image = state.userImage;
           });
         }
          

@@ -16,8 +16,8 @@ class UpdateUserInfoBloc
     on<UploadPicture>((event, emit) async {
       emit(UpdateUserLoading());
       try {
-        String userImage = await  _userRepository.uploadPicture(event.file, event.uid) ;
-        emit(UpdatePictureSuccess(userImage: userImage));
+        String userImage = await  _userRepository.uploadPicture(event.file, event.userId) ;
+        emit(UpdatePictureSuccess(userImage));
       } catch (e) {
         emit(UpdateUserInfoFailure());
         log(e.toString());

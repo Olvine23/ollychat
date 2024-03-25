@@ -8,15 +8,15 @@ abstract class UpdateUserInfoEvent extends Equatable {
 }
 
 class UploadPicture extends UpdateUserInfoEvent{
-  final String uid;
+  final String userId;
   final String file;
 
   const UploadPicture(
      this.file, 
-     this.uid,
+     this.userId,
   );
 
   @override
 
-  List<Object> get props => [file, uid];
+  List<Object> get props => [file, userId];
 }

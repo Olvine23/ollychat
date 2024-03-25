@@ -40,10 +40,9 @@ class MyAppView extends StatelessWidget {
                         userRepository:
                             context.read<AuthenticationBloc>().userRepository)),
                 BlocProvider(
-                    create: (context) => MyuserBloc(
+                    create: (context) => MyUserBloc(
                         myUserRepository:
-                            context.read<AuthenticationBloc>().userRepository)
-                      ..add(GetMyUser(
+                            context.read<AuthenticationBloc>().userRepository)..add(GetMyUser(
                           myUserId: context
                               .read<AuthenticationBloc>()
                               .state

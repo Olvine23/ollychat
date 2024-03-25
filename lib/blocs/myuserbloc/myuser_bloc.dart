@@ -8,9 +8,9 @@ import 'package:user_repository/user_repository.dart';
 part 'myuser_event.dart';
 part 'myuser_state.dart';
 
-class MyuserBloc extends Bloc<MyuserEvent, MyUserState> {
+class MyUserBloc extends Bloc<MyUserEvent, MyUserState> {
   final UserRepository _userRepository;
-  MyuserBloc({
+  MyUserBloc({
     required UserRepository myUserRepository,
   })  : _userRepository = myUserRepository,
         super(const MyUserState.loading()) {

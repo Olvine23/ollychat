@@ -1,17 +1,18 @@
 part of 'myuser_bloc.dart';
 
  
-abstract class MyuserEvent extends Equatable {
+abstract class MyUserEvent extends Equatable {
+  const MyUserEvent();
 
   @override
 
   List<Object> get props => [];
 }
 
-class GetMyUser extends MyuserEvent{
+class GetMyUser extends MyUserEvent{
   final String myUserId;
 
-  GetMyUser({
+  const GetMyUser({
     required this.myUserId
   });
 

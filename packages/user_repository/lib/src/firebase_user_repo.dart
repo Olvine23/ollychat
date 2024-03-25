@@ -71,7 +71,7 @@ class FirebaseUserRepo implements UserRepository {
   @override
   Future<void> setUserData(MyUser user) async {
     try {
-      await usersCollection.doc(user.id).set(user.toEntity().toJson());
+      await usersCollection.doc(user.id).set(user.toEntity().toDocument());
     } catch (e) {
       print(e);
     }
@@ -82,18 +82,18 @@ class FirebaseUserRepo implements UserRepository {
   @override
   Future<MyUser> getMyUser(String myUserId) async {
     try {
-      await usersCollection.doc(myUserId).get().then(
-          (value) => MyUser.fromEntity(MyUserEntity.fromJson(value.data()!)));
+    return usersCollection.doc(myUserId).get().then(
+          (value) => MyUser.fromEntity(MyUserEntity.fromDocument(value.data()!)));
     } catch (e) {
+      log(e.toString());
       print(e);
       rethrow;
     }
 
-    throw UnimplementedError();
+  
   }
 
   @override
-  // TODO: implement user
   Stream<User?> get user {
     return _firebaseAuth.authStateChanges().map((firebaseUser) {
       final user = firebaseUser;
@@ -120,7 +120,7 @@ class FirebaseUserRepo implements UserRepository {
     String url = await firebaseStorageRef.getDownloadURL();
 
     await usersCollection.doc(userId).update({
-      'picture':url
+      'image':url
     });
 
 
