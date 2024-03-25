@@ -38,13 +38,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocListener<UpdateUserInfoBloc, UpdateUserInfoState>(
       listener: (context, state) {
         // implement listener
-        if (state is UpdatePictureSuccess){
+        if (state is UpdatePictureSuccess) {
           setState(() {
             context.read<MyUserBloc>().state.user!.image = state.userImage;
           });
         }
-         
-
       },
       child: Scaffold(
           floatingActionButtonLocation:
@@ -57,47 +55,61 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 context.read<SignInBloc>().add(SignOutRequired());
               }),
-              bottomNavigationBar: BottomNavigationBar(
-                  backgroundColor: Colors.red,
-                  onTap: _onItemTapped,
-                  currentIndex: _selectedIndex,
-                  items: <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                        icon: const Icon(Icons.home),
-                        label: 'Home',
-                        backgroundColor: AppColors.primaryColor),
-                    BottomNavigationBarItem(
-                        icon: const Icon(Icons.explore),
-                        label: 'Discover',
-                        backgroundColor: AppColors.primaryColor),
-                    BottomNavigationBarItem(
-                        icon: const Icon(Icons.edit_document),
-                        label: 'Chats',
-                        backgroundColor: AppColors.primaryColor),
-                    BottomNavigationBarItem(
-                      backgroundColor: AppColors.primaryColor,
-                      icon: const SizedBox(
-                        width: 24, // Adjust width as needed
-                        height: 24, // Adjust height as needed
-                        child: CircleAvatar(
-                          radius: 14, // Adjust radius as needed
-                          backgroundImage: NetworkImage(
-                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDtKPoN9mIRT0KIyuzVkku3Jh4udgh_IavU_drNSrCCA&s',
-                          ),
+          bottomNavigationBar: BlocBuilder<MyUserBloc, MyUserState>(
+            builder: (context, state) {
+              if(state.status ==  MyUserStatus.success){
+              return BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: AppColors.primaryColor,
+                onTap: _onItemTapped,
+                currentIndex: _selectedIndex,
+                items: <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                      icon: const Icon(Icons.home),
+                      label: 'Home',
+                      backgroundColor: AppColors.primaryColor),
+                  BottomNavigationBarItem(
+                      icon: const Icon(Icons.explore),
+                      label: 'Discover',
+                      backgroundColor: AppColors.primaryColor),
+                  BottomNavigationBarItem(
+                      icon: const Icon(Icons.edit_document),
+                      label: 'My Creations',
+                      backgroundColor: AppColors.primaryColor),
+                  BottomNavigationBarItem(
+                    backgroundColor: AppColors.primaryColor,
+                    icon: SizedBox(
+                      width: 30, // Adjust width as needed
+                      height: 30, // Adjust height as needed
+                      child: state.user!.image == '' ? const CircleAvatar(
+                        radius: 14, // Adjust radius as needed
+                        backgroundImage:  NetworkImage(
+                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDtKPoN9mIRT0KIyuzVkku3Jh4udgh_IavU_drNSrCCA&s',
                         ),
-                      ),
-                      label: 'Profile',
-                    ),
-                  ],
-                  // Increase the height of the navigation bar
-                  // Adjust as needed based on icon sizes and layout preferences
+                      ) : CircleAvatar(
+                         radius: 14, // Adjust radius as needed
+                        backgroundImage: NetworkImage(
+                          state.user!.image!
+                        ),
 
-                  iconSize: 24, // Adjust as needed
-                  selectedFontSize: 14, // Adjust as needed
-                  unselectedFontSize: 12, // Adjust as needed
-                  unselectedItemColor: Colors.white,
-                  selectedItemColor: const Color(0xffB1816D),
-                ),
+                      ),
+                    ),
+                    label: 'Profile',
+                  ),
+                ],
+                // Increase the height of the navigation bar
+                // Adjust as needed based on icon sizes and layout preferences
+
+                iconSize: 24, // Adjust as needed
+                selectedFontSize: 14, // Adjust as needed
+                unselectedFontSize: 12, // Adjust as needed
+                unselectedItemColor: Colors.white,
+                selectedItemColor: const Color(0xffB1816D),
+              ); } else{
+                return Container();
+              }
+            },
+          ),
           // bottomNavigationBar: BlocBuilder<MyuserBloc, MyUserState>(
           //   builder: (context, state) {
           //     if (state.status == MyUserStatus.success) {
