@@ -13,49 +13,47 @@ class MainHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(
-                  right: 20.0,
-                ),
-                child: TopSection(),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(
+                right: 20.0, top: 10
               ),
-             BlocBuilder<MyUserBloc, MyUserState>(
-                builder: (context, state) {
-                  if(state.status == MyUserStatus.success){
-                  return Greetings(name: state.user!.name);
-                  }
-                  else{
-                    return Text("data");
-                  }
-                },
+              child: TopSection(),
+            ),
+           BlocBuilder<MyUserBloc, MyUserState>(
+              builder: (context, state) {
+                if(state.status == MyUserStatus.success){
+                return Greetings(name: state.user!.name);
+                }
+                else{
+                  return Text("data");
+                }
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0, vertical: 12.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const RowTitle(
+                    text: 'Recent Articles',
+                  ),
+                  InkWell(
+                      onTap: () {},
+                      child: Icon(
+                        Icons.arrow_forward,
+                        color: AppColors.secondaryColor,
+                        size: 30,
+                      )),
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 12.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const RowTitle(
-                      text: 'Recent Articles',
-                    ),
-                    InkWell(
-                        onTap: () {},
-                        child: Icon(
-                          Icons.arrow_forward,
-                          color: AppColors.secondaryColor,
-                          size: 30,
-                        )),
-                  ],
-                ),
-              ),
-              Articles()
-            ],
-          ),
+            ),
+            Articles()
+          ],
         ),
       ),
     );

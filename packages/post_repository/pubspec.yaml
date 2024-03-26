@@ -11,9 +11,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  uuid: ^4.0.0
+  
   
 
   cupertino_icons: ^1.0.2
+ 
+  cloud_firestore:
+  user_repository:
+    path: ../user_repository 
    
 
 dev_dependencies:

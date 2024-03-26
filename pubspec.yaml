@@ -20,9 +20,15 @@ dependencies:
   firebase_auth: ^4.17.8
 
   user_repository:
-    path: packages/user_repository 
+    path: packages/user_repository
+
+  post_repository:
+    path: packages/post_repository 
+  
   image_picker: ^1.0.7
   image_cropper: ^5.0.1
+  connectivity: ^3.0.6
+  markdown_editable_textinput: ^2.1.0
 
 dev_dependencies:
   flutter_test:

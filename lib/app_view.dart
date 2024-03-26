@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:olly_chat/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:olly_chat/blocs/connectivity_bloc/connectivity_bloc_bloc.dart';
 import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/blocs/sign_in/sign_in_bloc.dart';
 import 'package:olly_chat/screens/welcome_screen.dart';
+import 'package:olly_chat/theme/colors.dart';
 
 import 'blocs/updateuserinfo/update_user_info_bloc.dart';
 import 'screens/home_screen.dart';
@@ -17,11 +19,11 @@ class MyAppView extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'OllyChat',
       theme: ThemeData(
-          colorScheme: const ColorScheme.light(
+          colorScheme: ColorScheme.light(
               onBackground: Colors.black,
-              primary: Color.fromRGBO(206, 147, 216, 1),
+              primary:  AppColors.primaryColor,
               onPrimary: Colors.black,
-              secondary: Color.fromRGBO(244, 143, 177, 1),
+              secondary:  AppColors.secondaryColor,
               tertiary: Color.fromRGBO(255, 204, 128, 1),
               error: Colors.red,
               outline: Color(0xFF424242))),
@@ -30,6 +32,9 @@ class MyAppView extends StatelessWidget {
           if (state.status == AuthenticationStatus.authenticated) {
             return MultiBlocProvider(
               providers: [
+                BlocProvider<ConnectivityBloc>(
+                  create: (BuildContext context) => ConnectivityBloc(),
+                ),
                 BlocProvider(
                   create: (context) => SignInBloc(
                       userRepository:
@@ -42,7 +47,8 @@ class MyAppView extends StatelessWidget {
                 BlocProvider(
                     create: (context) => MyUserBloc(
                         myUserRepository:
-                            context.read<AuthenticationBloc>().userRepository)..add(GetMyUser(
+                            context.read<AuthenticationBloc>().userRepository)
+                      ..add(GetMyUser(
                           myUserId: context
                               .read<AuthenticationBloc>()
                               .state

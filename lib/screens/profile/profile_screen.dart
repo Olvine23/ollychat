@@ -111,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 													),
 											const SizedBox(width: 10),
 											Text(
-												"Welcome ${state.user!.name}"
+												state.user!.name
 											)
 										],
 									);
@@ -126,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 									context.read<SignInBloc>().add( SignOutRequired());
 								}, 
 								icon: Icon(
-									Icons.arrow_upward_outlined,
+									Icons.logout,
 									color: Theme.of(context).colorScheme.onBackground,
 								)
 							)
