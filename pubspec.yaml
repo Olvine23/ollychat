@@ -12,12 +12,15 @@ dependencies:
   flutter:
     sdk: flutter
   
+  flutter_sizer: ^1.0.5
 
   cupertino_icons: ^1.0.2
+  firebase_storage:
   firebase_core: ^2.27.0
   flutter_bloc: ^8.1.4
   equatable:
   firebase_auth: ^4.17.8
+  cached_network_image: ^3.3.1
 
   user_repository:
     path: packages/user_repository
@@ -29,6 +32,8 @@ dependencies:
   image_cropper: ^5.0.1
   connectivity: ^3.0.6
   markdown_editable_textinput: ^2.1.0
+  google_fonts: 6.1.0
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -42,5 +47,17 @@ flutter:
   assets:
     - assets/images/
     - assets/lotti/
+
+fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Inter-Light.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-SemiBold.ttf
+
+  
 
 

@@ -10,6 +10,7 @@ sealed class CreatePostEvent extends Equatable {
 
 class CreatePost extends CreatePostEvent{
   final Post post;
+  final String file;
 
-  const CreatePost(this.post);
+  const CreatePost(this.post, this.file);
 }

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:olly_chat/screens/bookmarks/bookmark.dart';
+import 'package:olly_chat/screens/notifications/notification_screen.dart';
+import 'package:olly_chat/screens/settings/settings.dart';
+import 'package:olly_chat/theme/colors.dart';
  
 class TopSection extends StatelessWidget {
   const TopSection({
@@ -20,10 +24,15 @@ class TopSection extends StatelessWidget {
             Row(
               children: [
                 IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context){
+                        return BookMarkScreen();
+                      }));
+                    },
                     icon: Icon(
                       Icons.bookmark_added_outlined,
                       size: 30,
+                      color: AppColors.secondaryColor,
                       
                     )),
                 // user!.photoURL != null
@@ -36,13 +45,15 @@ class TopSection extends StatelessWidget {
                 SizedBox(
                   width: 10,
                 ),
-                Icon(Icons.notifications_outlined, size: 30),
+                IconButton(
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context){
+                      return NotificationScreen();
+                    }));
+                  },
+                  icon: Icon(Icons.notifications_outlined, size: 30, color: AppColors.secondaryColor,)),
 
-                  SizedBox(
-                  width: 10,
-                ),
-
-                Icon(Icons.settings_outlined, size: 30),
+                 
 
 
               ],

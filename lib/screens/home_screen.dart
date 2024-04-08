@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:olly_chat/blocs/create_post/create_post_bloc.dart';
+import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/blocs/sign_in/sign_in_bloc.dart';
 import 'package:olly_chat/blocs/updateuserinfo/update_user_info_bloc.dart';
@@ -58,8 +59,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   backgroundColor: AppColors.primaryColor,
                   foregroundColor: AppColors.white,
                   child: const Icon(Icons.add),
-                  onPressed: () {
-                    Navigator.push(context,
+                  onPressed: () async {
+                  var newPost =  await  Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
                       return BlocProvider<CreatePostBloc>(
                         create: (context) => CreatePostBloc(
@@ -67,6 +68,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         child:  AddPoemScreen(state.user!),
                       );
                     }));
+
+                    if(newPost != null){
+                      setState(() {
+                        context.read<GetPostBloc>().state.posts!.insert(0, newPost);
+                      });
+
+
+                    }
                   });}else {
 								return const FloatingActionButton(
 									onPressed: null,
@@ -128,9 +137,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   unselectedItemColor: Colors.white,
                   selectedItemColor: const Color(0xffB1816D),
                 );
-              } else {
-                return Container();
+              } else if (state.status == MyUserStatus.loading) {
+                return Container(child: Center(child: Text("loading ..."),),);
               }
+              return Container();
             },
           ),
          

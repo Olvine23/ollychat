@@ -13,7 +13,9 @@ class RowTitle extends StatelessWidget {
       style: Theme.of(context)
           .textTheme
           .bodyLarge!
-          .copyWith(fontWeight: FontWeight.bold, color: Colors.black54),
+          .copyWith(
+            fontSize: 20,
+            fontWeight: FontWeight.bold, ),
     );
   }
 }

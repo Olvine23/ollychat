@@ -21,7 +21,7 @@ class CreatePostBloc extends Bloc<CreatePostEvent, CreatePostState> {
 
       emit(CreatePostLoading());
       try{
-        Post post = await _postRepository.createPost(event.post);
+        Post post = await _postRepository.createPost(event.post,event.file);
         emit(CreatePostSuccess(post));
 
       }catch(e){

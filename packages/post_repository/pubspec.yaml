@@ -12,6 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
   uuid: ^4.0.0
+  firebase_core:
+  firebase_storage:
   
   
 

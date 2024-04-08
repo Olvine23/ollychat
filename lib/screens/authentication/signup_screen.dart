@@ -46,79 +46,81 @@ class _SignUpScreenState extends State<SignUpScreen> {
       },
       child: Scaffold(
         body: SafeArea(
-          child: Center(
-            child: Form(
-                key: _formKey,
-                child: Center(
-                  child: Column(
-                    children: [
-                       const SizedBox(
-                        height: 20,
-                      ),
-                      const Align(
-                          alignment: Alignment.topLeft,
-                          child: Text("Your Name")),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                       CustomTextField(
-                        controller: nameController,
-                        hintText: 'Name',
-                        obscureText: false,
-                        keyboardType: TextInputType.name,
-                      ),
+          child: SingleChildScrollView(
+            child: Center(
+              child: Form(
+                  key: _formKey,
+                  child: Center(
+                    child: Column(
+                      children: [
+                         const SizedBox(
+                          height: 20,
+                        ),
+                        const Align(
+                            alignment: Alignment.topLeft,
+                            child: Text("Your Name")),
                         const SizedBox(
-                        height: 10,
-                      ),
-                      const Align(
-                          alignment: Alignment.topLeft,
-                          child: Text("Your email")),
-                      CustomTextField(
-                        controller: emailController,
-                        hintText: 'Email',
-                        obscureText: false,
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                        const SizedBox(
-                        height: 10,
-                      ),
-                      const Align(
-                          alignment: Alignment.topLeft,
-                          child: Text("Enter Password")),
-                      CustomTextField(
-                        controller: passwordController,
-                        hintText: 'Password',
-                        obscureText: obscurePPassword,
-                        keyboardType: TextInputType.visiblePassword,
-                      ),
-                        const SizedBox(
-                        height: 20,
-                      ),
-                      
-                      !signUpRequired
-                          ? 
-                          CustomButton(
-                              text: "Sign Up",
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  MyUser myUser = MyUser.empty;
-                                      myUser = myUser.copyWith(
-                                        email: emailController.text,
-                                        name: nameController.text,
-                                      );
-
-                                      setState(() {
-                                        context.read<SignUpBloc>().add(
-                                            SignUpRequired(myUser,
-                                                passwordController.text));
-                                      });
-                                }
-                              })
-                          
-                          : const CircularProgressIndicator()
-                    ],
-                  ),
-                )),
+                          height: 10,
+                        ),
+                         CustomTextField(
+                          controller: nameController,
+                          hintText: 'Name',
+                          obscureText: false,
+                          keyboardType: TextInputType.name,
+                        ),
+                          const SizedBox(
+                          height: 10,
+                        ),
+                        const Align(
+                            alignment: Alignment.topLeft,
+                            child: Text("Your email")),
+                        CustomTextField(
+                          controller: emailController,
+                          hintText: 'Email',
+                          obscureText: false,
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                          const SizedBox(
+                          height: 10,
+                        ),
+                        const Align(
+                            alignment: Alignment.topLeft,
+                            child: Text("Enter Password")),
+                        CustomTextField(
+                          controller: passwordController,
+                          hintText: 'Password',
+                          obscureText: obscurePPassword,
+                          keyboardType: TextInputType.visiblePassword,
+                        ),
+                          const SizedBox(
+                          height: 20,
+                        ),
+                        
+                        !signUpRequired
+                            ? 
+                            CustomButton(
+                                text: "Sign Up",
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    MyUser myUser = MyUser.empty;
+                                        myUser = myUser.copyWith(
+                                          email: emailController.text,
+                                          name: nameController.text,
+                                        );
+            
+                                        setState(() {
+                                          context.read<SignUpBloc>().add(
+                                              SignUpRequired(myUser,
+                                                  passwordController.text));
+                                        });
+                                  }
+                                })
+                            
+                            : const CircularProgressIndicator()
+                      ],
+                    ),
+                  )),
+            ),
           ),
         ),
       ),

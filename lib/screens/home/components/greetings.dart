@@ -10,7 +10,9 @@ class Greetings extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Text("Hello $name 👋", style: Theme.of(context).textTheme.headlineMedium!.copyWith(fontWeight: FontWeight.bold)),
+      child: Text("Hello $name 👋", style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+       
+        fontWeight: FontWeight.bold)),
     );
   }
 }

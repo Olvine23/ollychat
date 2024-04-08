@@ -12,4 +12,13 @@ class AppColors{
   static Color greenWhite = const Color(0xffe9e9e9);
   static Color charcoalGrey = const Color(0xff414141);
 
+   //
+  static const backgroundlight = Color(0xFFF5F5F5);
+  static const onBackgroundlight = Color(0xFF000000);
+
+  //
+  static const backgroundDark = Color(0xFF212121);
+  static const onBackgroundDark = Color(0xFFFFFFFF);
+
+
 }

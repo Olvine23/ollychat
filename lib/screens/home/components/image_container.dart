@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:olly_chat/theme/colors.dart';
 
@@ -10,7 +11,7 @@ class ImageContainer extends StatelessWidget {
   const ImageContainer({
     Key? key,
     required this.imageUrl,
-    this.height = 150,
+    this.height = 180,
     this.width = 180,
     this.textOverlay = 'Hello Writer',
   }) : super(key: key);
@@ -38,6 +39,13 @@ class ImageContainer extends StatelessWidget {
                   Colors.black.withOpacity(0),
                   BlendMode.srcOver,
                 ),
+                // child: CachedNetworkImage(
+                //   imageUrl:  imageUrl,
+                //    key: UniqueKey(),
+                //    maxHeightDiskCache: 100,
+                //    fit: BoxFit.cover,
+                //   errorWidget: (context, url, error) => Icon(Icons.error),
+                // ),
                 child: Image.network(
                   imageUrl,
                   fit: BoxFit.cover,
@@ -51,11 +59,9 @@ class ImageContainer extends StatelessWidget {
             right: 10,
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.secondaryColor,
-                shape: BoxShape.circle),
+                  color: AppColors.secondaryColor, shape: BoxShape.circle),
               child: IconButton(
-                icon:
-                    Icon(Icons.bookmark_outline, color: Colors.white),
+                icon: Icon(Icons.bookmark_outline, color: Colors.white),
                 onPressed: () {
                   // Handle bookmark action
                 },
