@@ -227,7 +227,7 @@ class DiscoverScreen extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0.dp),
+          padding: EdgeInsets.symmetric(horizontal: 16.0, ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

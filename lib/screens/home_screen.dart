@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 import 'package:olly_chat/blocs/create_post/create_post_bloc.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
@@ -24,11 +25,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final PageController pageController = PageController(initialPage: 0);
 
-  static const List<Widget> _pages = [
+  static List<Widget> pages = [
     MainHome(),
-    DiscoverScreen(),
-   DiscoverScreen(),
-    ProfileScreen()
+    const DiscoverScreen(),
+   const DiscoverScreen(),
+    const ProfileScreen()
   ];
 
   void _onItemTapped(int index) {
@@ -77,12 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     }
                   });}else {
-								return const FloatingActionButton(
-									onPressed: null,
-									child: Icon(
-										Icons.clear
-									),
-								); 
+								return  Container();
             }
             }
           ),
@@ -138,13 +134,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   selectedItemColor: const Color(0xffB1816D),
                 );
               } else if (state.status == MyUserStatus.loading) {
-                return Container(child: Center(child: Text("loading ..."),),);
+                return  Center(child:  Lottie.asset('assets/lotti/classyload.json'),);
               }
               return Container();
             },
           ),
          
-          body: _pages.elementAt(_selectedIndex)),
+          body: pages.elementAt(_selectedIndex)),
     );
   }
 }

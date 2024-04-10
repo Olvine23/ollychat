@@ -17,7 +17,9 @@ import 'package:olly_chat/theme/colors.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MainHome extends StatelessWidget {
-  const MainHome({super.key});
+  MainHome({super.key});
+
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +132,51 @@ class MainHome extends StatelessWidget {
                 ],
               ),
             ),
-            Articles(),
+            SizedBox(
+              height: MediaQuery.of(context).size.height / 2 - 90,
+              child: BlocBuilder<GetPostBloc, GetPostState>(
+                builder: (context, state) {
+                  if (state.status ==  GetPostStatus.success) {
+                    log(state.posts!.length.toString());
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.posts!.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return PoemDetailScreen(
+                                  post: state.posts![index],
+                                );
+                              }));
+                            },
+                            child: ArticleCard(
+                              articleimg:  state.posts![index].thumbnail!,
+                              author: state.posts![index].myUser.name,
+                              authorImg: state.posts![index].myUser.image!,
+                              daysago: '3 days ago',
+                              title: state.posts![index].title,
+                            ),
+                          );
+
+                          // return Text(
+                          //     '${state.posts[index].title} uploaded by ${state.posts[index].myUser.name}');
+                        },
+                      ),
+                    );
+                  }
+
+                  else if (state.status == GetPostStatus.unknown){
+                    return Container(child: Text("Loading"),);
+                  }
+
+                  return Text("No data available"); // Handle other states
+                },
+              ),
+            ),
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -172,7 +218,7 @@ class MainHome extends StatelessWidget {
                               }));
                             },
                             child: ArticleCard(
-                              articleimg: state.posts![index].thumbnail!,
+                              articleimg:  state.posts![index].thumbnail!,
                               author: state.posts![index].myUser.name,
                               authorImg: state.posts![index].myUser.image!,
                               daysago: '3 days ago',
@@ -185,6 +231,10 @@ class MainHome extends StatelessWidget {
                         },
                       ),
                     );
+                  }
+
+                  else if (state.status == GetPostStatus.unknown){
+                    return Container(child: Text("Loading"),);
                   }
 
                   return Text("No data available"); // Handle other states

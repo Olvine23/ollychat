@@ -20,6 +20,7 @@ dependencies:
   flutter_bloc: ^8.1.4
   equatable:
   firebase_auth: ^4.17.8
+  lottie:
   cached_network_image: ^3.3.1
 
   user_repository:

@@ -1,4 +1,5 @@
-  import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:olly_chat/theme/colors.dart';
 
@@ -12,7 +13,12 @@ class ArticleCard extends StatelessWidget {
   final String title;
 
   const ArticleCard({
-    super.key, required this.articleimg, required this.author, required this.authorImg, required this.daysago, required this.title,
+    super.key,
+    required this.articleimg,
+    required this.author,
+    required this.authorImg,
+    required this.daysago,
+    required this.title,
   });
 
   @override
@@ -28,16 +34,32 @@ class ArticleCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ImageContainer(
-                    imageUrl:
-                        articleimg),
+                Container(
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(20)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                        8.0), // Adjust the value as needed
+                    child: CachedNetworkImage(
+                      imageUrl: articleimg,
+                      placeholder: (context, url) =>
+                          CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                // ImageContainer(
+                //     imageUrl:
+                //         articleimg
+
+                //         ),
                 SizedBox(
                   height: 1.5.h,
                 ),
                 Text(
                   title,
-                  maxLines: 1,
-                
+                  maxLines: 2,
                   style: Theme.of(context)
                       .textTheme
                       .bodyLarge!
@@ -54,8 +76,7 @@ class ArticleCard extends StatelessWidget {
                 CircleAvatar(
                   radius: 20,
                   backgroundColor: AppColors.primaryColor,
-                  backgroundImage: NetworkImage(
-                      authorImg),
+                  backgroundImage: NetworkImage(authorImg),
                 ),
                 SizedBox(
                   width: 6,
@@ -65,13 +86,11 @@ class ArticleCard extends StatelessWidget {
                     padding: EdgeInsets.only(top: 0.8.h),
                     child: Text(
                       author,
-                      
                       textAlign: TextAlign.justify,
                       style: Theme.of(context)
                           .textTheme
                           .bodySmall!
-                          .copyWith(
-                            fontWeight: FontWeight.bold),
+                          .copyWith(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -86,9 +105,7 @@ class ArticleCard extends StatelessWidget {
                     style: Theme.of(context)
                         .textTheme
                         .bodySmall!
-                        .copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 10.dp),
+                        .copyWith(fontWeight: FontWeight.bold, fontSize: 10.dp),
                   ),
                 ))
               ],
