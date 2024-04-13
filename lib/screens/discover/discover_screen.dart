@@ -7,6 +7,7 @@ import 'package:olly_chat/blocs/create_post/create_post_bloc.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/components/article_list_card.dart';
 import 'package:olly_chat/components/row_tile.dart';
+import 'package:olly_chat/screens/bookmarks/bookmark.dart';
 import 'package:olly_chat/screens/discover/components/container_image.dart';
 import 'package:olly_chat/screens/discover/components/discover_top_section.dart';
 import 'package:olly_chat/screens/discover/components/image_text_stack.dart';
@@ -25,16 +26,45 @@ class DiscoverScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title:  Row(
+              children: [
+                Image.asset('assets/images/nobg.png',height: 100,),
+                Text("Discover", style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize:20
+                ),)
+              ],
+            ),
+            actions: [
+                Padding(
+                  padding:  EdgeInsets.symmetric(horizontal: 8.dp),
+                  child: IconButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context){
+                      return BookMarkScreen();
+                    }));
+                  },
+                  icon: Icon(
+                    Icons.bookmark_added_outlined,
+                    size: 30.dp,
+                    color: AppColors.secondaryColor,
+                    
+                  )),
+                ),
+
+            ],
+      ),
         body: SingleChildScrollView(
             child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(right: 10.0, top: 10),
-          child: DiscoverTopSection(),
-        ),
+        // const Padding(
+        //   padding: EdgeInsets.only(right: 10.0, top: 10),
+        //   child: DiscoverTopSection(),
+        // ),
         Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding:  EdgeInsets.symmetric(horizontal: 16, vertical: 20.dp),
             child: const TextField(
               decoration: InputDecoration(
                 labelText: 'Search for article or writer',

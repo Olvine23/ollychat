@@ -17,7 +17,9 @@ class MyArticles extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(onPressed: (){}, icon: Icon(Icons.search,size: 30.dp,))

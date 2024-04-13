@@ -41,7 +41,7 @@ class ArticleCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(
                         8.0), // Adjust the value as needed
                     child: CachedNetworkImage(
-                      imageUrl: articleimg,
+                      imageUrl: articleimg ,
                       placeholder: (context, url) =>
                           CircularProgressIndicator(),
                       errorWidget: (context, url, error) => Icon(Icons.error),
@@ -76,7 +76,7 @@ class ArticleCard extends StatelessWidget {
                 CircleAvatar(
                   radius: 20,
                   backgroundColor: AppColors.primaryColor,
-                  backgroundImage: NetworkImage(authorImg),
+                  backgroundImage: NetworkImage(authorImg == '' ? 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png':authorImg),
                 ),
                 SizedBox(
                   width: 6,
