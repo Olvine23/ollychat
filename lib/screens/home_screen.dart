@@ -9,6 +9,7 @@ import 'package:olly_chat/blocs/updateuserinfo/update_user_info_bloc.dart';
 import 'package:olly_chat/screens/discover/discover_screen.dart';
 import 'package:olly_chat/screens/home/main_home.dart';
 import 'package:olly_chat/screens/poems/add_poem_screen.dart';
+import 'package:olly_chat/screens/poems/my_articles/my_articles.dart';
 import 'package:olly_chat/screens/profile/profile_screen.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:post_repository/post_repository.dart';
@@ -28,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static List<Widget> pages = [
     MainHome(),
     const DiscoverScreen(),
-   const DiscoverScreen(),
+  const  MyArticles(),
     const ProfileScreen()
   ];
 

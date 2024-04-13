@@ -226,56 +226,52 @@ class DiscoverScreen extends StatelessWidget {
             },
           ),
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0, ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const RowTitle(
-                text: 'New Articles',
-              ),
-              InkWell(
-                  onTap: () {},
-                  child: Icon(
-                    Icons.arrow_forward,
-                    color: AppColors.secondaryColor,
-                    size: 30,
-                  )),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height / 2 - 90,
-          child: BlocBuilder<GetPostBloc, GetPostState>(
-            builder: (context, state) {
-              if (state.status == GetPostStatus.success) {
-                log(state.posts!.length.toString());
-                return ListView.builder(
-                   
-                  itemCount: state.posts?.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                      
-                      },
-                      child: RowTile()
-                    );
-                
-                    // return Text(
-                    //     '${state.posts[index].title} uploaded by ${state.posts[index].myUser.name}');
-                  },
-                );
-              } else if (state.status == GetPostStatus.unknown) {
-                return Shimmer.fromColors(
-                    highlightColor: Colors.white54,
-                    baseColor: const Color(0xffdedad7),
-                    child: project_screen_shimmer(context));
-              }
-
-              return const Text("No data available"); // Handle other states
+     Padding(
+  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      const RowTitle(
+        text: 'New Articles',
+      ),
+      InkWell(
+          onTap: () {},
+          child: Icon(
+            Icons.arrow_forward,
+            color: AppColors.secondaryColor,
+            size: 30,
+          )),
+    ],
+  ),
+),
+BlocBuilder<GetPostBloc, GetPostState>(
+  builder: (context, state) {
+    if (state.status == GetPostStatus.success) {
+      log(state.posts!.length.toString());
+      return ListView.builder(
+        shrinkWrap: true, // Add this line
+        physics: const NeverScrollableScrollPhysics(), // Add this line
+        itemCount: state.posts?.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              // Handle onTap
             },
-          ),
-        ),
+            child: const RowTile(),
+          );
+        },
+      );
+    } else if (state.status == GetPostStatus.unknown) {
+      return Shimmer.fromColors(
+        highlightColor: Colors.white54,
+        baseColor: const Color(0xffdedad7),
+        child: project_screen_shimmer(context),
+      );
+    }
+    return const Text("No data available"); // Handle other states
+  },
+),
+
        
       ],
     )));
