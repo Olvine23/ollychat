@@ -36,10 +36,15 @@ class MyArticles extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("48 Articles"),
+                  Text("48 Articles", style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w900),),
                   Row(
                     children: [
+                      IconButton(onPressed: (){}, 
                       
+                      icon: Icon(Icons.view_module_outlined)),
+                      IconButton(onPressed: (){}, 
+                      
+                      icon: Icon(Icons.view_list))
               
                     ],
                   )
