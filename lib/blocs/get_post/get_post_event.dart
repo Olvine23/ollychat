@@ -11,3 +11,7 @@ sealed class GetPostEvent extends Equatable {
 class GetPosts extends GetPostEvent{
   
 }
+
+class FetchRecentArticles extends GetPostEvent {}
+
+class FetchMyArticles extends GetPostEvent {}

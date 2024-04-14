@@ -95,7 +95,7 @@ class DiscoverScreen extends StatelessWidget {
           child: BlocBuilder<GetPostBloc, GetPostState>(
             builder: (context, state) {
               if (state.status == GetPostStatus.success) {
-                log(state.posts!.length.toString());
+                 
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ListView.builder(
@@ -215,7 +215,7 @@ class DiscoverScreen extends StatelessWidget {
           child: BlocBuilder<GetPostBloc, GetPostState>(
             builder: (context, state) {
               if (state.status == GetPostStatus.success) {
-                log(state.posts!.length.toString());
+               
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ListView.builder(
@@ -277,7 +277,7 @@ class DiscoverScreen extends StatelessWidget {
 BlocBuilder<GetPostBloc, GetPostState>(
   builder: (context, state) {
     if (state.status == GetPostStatus.success) {
-      log(state.posts!.length.toString());
+      
       return ListView.builder(
         shrinkWrap: true, // Add this line
         physics: const NeverScrollableScrollPhysics(), // Add this line

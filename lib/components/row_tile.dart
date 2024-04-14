@@ -26,10 +26,7 @@ class RowTile extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      gradient: LinearGradient(
-                          colors: [Colors.transparent, Colors.black],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter)),
+                      ),
                 )),
     
                 SizedBox(width: 16.dp,),

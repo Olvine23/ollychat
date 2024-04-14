@@ -35,6 +35,7 @@ class ArticleCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
+                  height: 25.h,
                   decoration:
                       BoxDecoration(borderRadius: BorderRadius.circular(20)),
                   child: ClipRRect(
@@ -43,7 +44,7 @@ class ArticleCard extends StatelessWidget {
                     child: CachedNetworkImage(
                       imageUrl: articleimg ,
                       placeholder: (context, url) =>
-                          CircularProgressIndicator(),
+                          Center(child: CircularProgressIndicator()),
                       errorWidget: (context, url, error) => Icon(Icons.error),
                       fit: BoxFit.cover,
                     ),

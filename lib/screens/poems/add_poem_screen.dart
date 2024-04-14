@@ -107,13 +107,12 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                         source: ImageSource.gallery,
                         maxHeight: 500,
                         maxWidth: 500,
-                        imageQuality: 40);
+                        imageQuality: 100);
 
                     if (image != null) {
                       CroppedFile? croppedFile = await ImageCropper().cropImage(
                           sourcePath: image.path,
-                          aspectRatio:
-                              const CropAspectRatio(ratioX: 1, ratioY: 1),
+                          
                           aspectRatioPresets: [
                             CropAspectRatioPreset.square
                           ],
