@@ -26,22 +26,29 @@ class DiscoverScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title:  Row(
-              children: [
-                Image.asset('assets/images/nobg.png',height: 100,),
-                Text("Discover", style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize:20
-                ),)
-              ],
-            ),
-            actions: [
-                Padding(
-                  padding:  EdgeInsets.symmetric(horizontal: 8.dp),
-                  child: IconButton(
+        appBar: AppBar(
+          title: Row(
+            children: [
+              Image.asset(
+                'assets/images/nobg.png',
+                height: 100,
+              ),
+              Text(
+                "Discover",
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineMedium!
+                    .copyWith(fontWeight: FontWeight.bold, fontSize: 20),
+              )
+            ],
+          ),
+          actions: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.dp),
+              child: IconButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context){
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
                       return BookMarkScreen();
                     }));
                   },
@@ -49,262 +56,266 @@ class DiscoverScreen extends StatelessWidget {
                     Icons.bookmark_added_outlined,
                     size: 30.dp,
                     color: AppColors.secondaryColor,
-                    
                   )),
-                ),
-
-            ],
-      ),
+            ),
+          ],
+        ),
         body: SingleChildScrollView(
             child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // const Padding(
-        //   padding: EdgeInsets.only(right: 10.0, top: 10),
-        //   child: DiscoverTopSection(),
-        // ),
-        Container(
-            padding:  EdgeInsets.symmetric(horizontal: 16, vertical: 20.dp),
-            child: const TextField(
-              decoration: InputDecoration(
-                labelText: 'Search for article or writer',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.search),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // const Padding(
+            //   padding: EdgeInsets.only(right: 10.0, top: 10),
+            //   child: DiscoverTopSection(),
+            // ),
+            Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20.dp),
+                child: const TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Search for article or writer',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.search),
+                  ),
+                )),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const RowTitle(
+                    text: 'Most Popular',
+                  ),
+                  InkWell(
+                      onTap: () {},
+                      child: Icon(
+                        Icons.arrow_forward,
+                        color: AppColors.secondaryColor,
+                        size: 30,
+                      )),
+                ],
               ),
-            )),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const RowTitle(
-                text: 'Most Popular',
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height / 2 - 90,
+              child: BlocBuilder<GetPostBloc, GetPostState>(
+                builder: (context, state) {
+                  if (state.status == GetPostStatus.success) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.posts?.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return PoemDetailScreen(
+                                  post: state.posts![index],
+                                );
+                              }));
+                            },
+                            child: ArticleCard(
+                              articleimg: state.posts![index].thumbnail!,
+                              author: state.posts![index].myUser.name,
+                              authorImg: state.posts![index].myUser.image!,
+                              daysago: '3 days ago',
+                              title: state.posts![index].title,
+                            ),
+                          );
+
+                          // return Text(
+                          //     '${state.posts[index].title} uploaded by ${state.posts[index].myUser.name}');
+                        },
+                      ),
+                    );
+                  } else if (state.status == GetPostStatus.unknown) {
+                    return Shimmer.fromColors(
+                        highlightColor: Colors.white54,
+                        baseColor: const Color(0xffdedad7),
+                        child: project_screen_shimmer(context));
+                  }
+
+                  return const Text("No data available"); // Handle other states
+                },
               ),
-              InkWell(
-                  onTap: () {},
-                  child: Icon(
-                    Icons.arrow_forward,
-                    color: AppColors.secondaryColor,
-                    size: 30,
-                  )),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height / 2 - 90,
-          child: BlocBuilder<GetPostBloc, GetPostState>(
-            builder: (context, state) {
-              if (state.status == GetPostStatus.success) {
-                 
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: ListView.builder(
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const RowTitle(
+                    text: 'Explore by topics',
+                  ),
+                  InkWell(
+                      onTap: () {},
+                      child: Icon(
+                        Icons.arrow_forward,
+                        color: AppColors.secondaryColor,
+                        size: 30,
+                      )),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height / 2 - 240,
+              child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 8,
+                  itemBuilder: (context, index) {
+                    return const Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: ContainerImage(),
+                    );
+                  }),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const RowTitle(
+                    text: 'Top Writers',
+                  ),
+                  InkWell(
+                      onTap: () {},
+                      child: Icon(
+                        Icons.arrow_forward,
+                        color: AppColors.secondaryColor,
+                        size: 30,
+                      )),
+                ],
+              ),
+            ),
+            SizedBox(
+                height: MediaQuery.of(context).size.height / 2 - 260,
+                child: ListView.builder(
                     scrollDirection: Axis.horizontal,
+                    itemCount: 8,
+                    itemBuilder: (context, index) {
+                      return const WritersContainer();
+                    })),
+            Padding(
+              padding:
+                  EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0.dp),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const RowTitle(
+                    text: 'Our Recommendations',
+                  ),
+                  InkWell(
+                      onTap: () {},
+                      child: Icon(
+                        Icons.arrow_forward,
+                        color: AppColors.secondaryColor,
+                        size: 30,
+                      )),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height / 2 - 90,
+              child: BlocBuilder<GetPostBloc, GetPostState>(
+                builder: (context, state) {
+                  if (state.status == GetPostStatus.success) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.posts?.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return PoemDetailScreen(
+                                  post: state.posts![index],
+                                );
+                              }));
+                            },
+                            child: ArticleCard(
+                              articleimg: state.posts![index].thumbnail!,
+                              author: state.posts![index].myUser.name,
+                              authorImg: state.posts![index].myUser.image!,
+                              daysago: '3 days ago',
+                              title: state.posts![index].title,
+                            ),
+                          );
+
+                          // return Text(
+                          //     '${state.posts[index].title} uploaded by ${state.posts[index].myUser.name}');
+                        },
+                      ),
+                    );
+                  } else if (state.status == GetPostStatus.unknown) {
+                    return Shimmer.fromColors(
+                        highlightColor: Colors.white54,
+                        baseColor: const Color(0xffdedad7),
+                        child: project_screen_shimmer(context));
+                  }
+
+                  return const Text("No data available"); // Handle other states
+                },
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const RowTitle(
+                    text: 'New Articles',
+                  ),
+                  InkWell(
+                      onTap: () {},
+                      child: Icon(
+                        Icons.arrow_forward,
+                        color: AppColors.secondaryColor,
+                        size: 30,
+                      )),
+                ],
+              ),
+            ),
+            BlocBuilder<GetPostBloc, GetPostState>(
+              builder: (context, state) {
+                if (state.status == GetPostStatus.success) {
+                  return ListView.builder(
+                    shrinkWrap: true, // Add this line
+                    physics:
+                        const NeverScrollableScrollPhysics(), // Add this line
                     itemCount: state.posts?.length,
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return PoemDetailScreen(
-                              post: state.posts![index],
-                            );
-                          }));
+                          // Handle onTap
                         },
-                        child: ArticleCard(
-                          articleimg: state.posts![index].thumbnail!,
-                          author: state.posts![index].myUser.name,
-                          authorImg: state.posts![index].myUser.image!,
-                          daysago: '3 days ago',
+                        child: RowTile(
+                          imageUrl: state.posts![index].thumbnail!,
                           title: state.posts![index].title,
+                          userAvatar: state.posts![index].myUser.image!,
+                          authorName: state.posts![index].myUser.name,
                         ),
                       );
-
-                      // return Text(
-                      //     '${state.posts[index].title} uploaded by ${state.posts[index].myUser.name}');
                     },
-                  ),
-                );
-              } else if (state.status == GetPostStatus.unknown) {
-                return Shimmer.fromColors(
+                  );
+                } else if (state.status == GetPostStatus.unknown) {
+                  return Shimmer.fromColors(
                     highlightColor: Colors.white54,
                     baseColor: const Color(0xffdedad7),
-                    child: project_screen_shimmer(context));
-              }
-
-              return const Text("No data available"); // Handle other states
-            },
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const RowTitle(
-                text: 'Explore by topics',
-              ),
-              InkWell(
-                  onTap: () {},
-                  child: Icon(
-                    Icons.arrow_forward,
-                    color: AppColors.secondaryColor,
-                    size: 30,
-                  )),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height / 2 - 240,
-          child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: 8,
-              itemBuilder: (context, index) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ContainerImage(),
-                );
-              }),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const RowTitle(
-                text: 'Top Writers',
-              ),
-              InkWell(
-                  onTap: () {},
-                  child: Icon(
-                    Icons.arrow_forward,
-                    color: AppColors.secondaryColor,
-                    size: 30,
-                  )),
-            ],
-          ),
-        ),
-        SizedBox(
-            height: MediaQuery.of(context).size.height / 2 - 260,
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 8,
-                itemBuilder: (context, index) {
-                  return const WritersContainer();
-                })),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0.dp),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const RowTitle(
-                text: 'Our Recommendations',
-              ),
-              InkWell(
-                  onTap: () {},
-                  child: Icon(
-                    Icons.arrow_forward,
-                    color: AppColors.secondaryColor,
-                    size: 30,
-                  )),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height / 2 - 90,
-          child: BlocBuilder<GetPostBloc, GetPostState>(
-            builder: (context, state) {
-              if (state.status == GetPostStatus.success) {
-               
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: state.posts?.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return PoemDetailScreen(
-                              post: state.posts![index],
-                            );
-                          }));
-                        },
-                        child: ArticleCard(
-                          articleimg: state.posts![index].thumbnail!,
-                          author: state.posts![index].myUser.name,
-                          authorImg: state.posts![index].myUser.image!,
-                          daysago: '3 days ago',
-                          title: state.posts![index].title,
-                        ),
-                      );
-
-                      // return Text(
-                      //     '${state.posts[index].title} uploaded by ${state.posts[index].myUser.name}');
-                    },
-                  ),
-                );
-              } else if (state.status == GetPostStatus.unknown) {
-                return Shimmer.fromColors(
-                    highlightColor: Colors.white54,
-                    baseColor: const Color(0xffdedad7),
-                    child: project_screen_shimmer(context));
-              }
-
-              return const Text("No data available"); // Handle other states
-            },
-          ),
-        ),
-     Padding(
-  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
-  child: Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      const RowTitle(
-        text: 'New Articles',
-      ),
-      InkWell(
-          onTap: () {},
-          child: Icon(
-            Icons.arrow_forward,
-            color: AppColors.secondaryColor,
-            size: 30,
-          )),
-    ],
-  ),
-),
-BlocBuilder<GetPostBloc, GetPostState>(
-  builder: (context, state) {
-    if (state.status == GetPostStatus.success) {
-      
-      return ListView.builder(
-        shrinkWrap: true, // Add this line
-        physics: const NeverScrollableScrollPhysics(), // Add this line
-        itemCount: state.posts?.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              // Handle onTap
-            },
-            child: const RowTile(imageUrl: '', title: '', userAvatar: '', authorName: '',),
-          );
-        },
-      );
-    } else if (state.status == GetPostStatus.unknown) {
-      return Shimmer.fromColors(
-        highlightColor: Colors.white54,
-        baseColor: const Color(0xffdedad7),
-        child: project_screen_shimmer(context),
-      );
-    }
-    return const Text("No data available"); // Handle other states
-  },
-),
-
-       
-      ],
-    )));
+                    child: project_screen_shimmer(context),
+                  );
+                }
+                return const Text("No data available"); // Handle other states
+              },
+            ),
+          ],
+        )));
   }
 }
-
