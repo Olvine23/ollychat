@@ -68,7 +68,7 @@ class MyArticles extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: posts.length,
               itemBuilder: (context, index) {
-                return GestureDetector(onTap: () {}, child: const RowTile());
+                return GestureDetector(onTap: () {}, child:  RowTile(imageUrl: posts[index].thumbnail!,));
 
                 // return Text(
                 //     '${state.posts[index].title} uploaded by ${state.posts[index].myUser.name}');
