@@ -287,7 +287,7 @@ BlocBuilder<GetPostBloc, GetPostState>(
             onTap: () {
               // Handle onTap
             },
-            child: const RowTile(imageUrl: '',),
+            child: const RowTile(imageUrl: '', title: '', userAvatar: '', authorName: '',),
           );
         },
       );

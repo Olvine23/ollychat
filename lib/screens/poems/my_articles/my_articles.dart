@@ -1,16 +1,9 @@
-import 'dart:developer';
-
-import 'package:flutter/foundation.dart';
+ 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:olly_chat/components/row_tile.dart';
 import 'package:post_repository/post_repository.dart';
-import 'package:shimmer/shimmer.dart';
-
-import '../../../blocs/get_post/get_post_bloc.dart';
-import '../../home/widgets/shimmer_widget.dart';
+ 
 
 class MyArticles extends StatelessWidget {
   final List<Post> posts;
@@ -68,7 +61,7 @@ class MyArticles extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: posts.length,
               itemBuilder: (context, index) {
-                return GestureDetector(onTap: () {}, child:  RowTile(imageUrl: posts[index].thumbnail!,));
+                return GestureDetector(onTap: () {}, child:  RowTile(imageUrl: posts[index].thumbnail!, title: posts[index].title, userAvatar: posts[index].myUser.image!, authorName: posts[index].myUser.name,));
 
                 // return Text(
                 //     '${state.posts[index].title} uploaded by ${state.posts[index].myUser.name}');

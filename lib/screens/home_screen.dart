@@ -4,7 +4,6 @@ import 'package:lottie/lottie.dart';
 import 'package:olly_chat/blocs/create_post/create_post_bloc.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
-import 'package:olly_chat/blocs/sign_in/sign_in_bloc.dart';
 import 'package:olly_chat/blocs/updateuserinfo/update_user_info_bloc.dart';
 import 'package:olly_chat/screens/discover/discover_screen.dart';
 import 'package:olly_chat/screens/home/main_home.dart';

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:post_repository/post_repository.dart';
 
@@ -11,31 +12,15 @@ class PoemDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              // 40% of our total height
-              height: size.height * 0.4,
-              child: Stack(
-                children: <Widget>[
-                  Container(
-                    height: size.height * 0.4 - 10,
-                    decoration: BoxDecoration(
-                      
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                         post.thumbnail!),
-                      ),
-                    ),
-                  ),
+      extendBodyBehindAppBar: true,
 
-                   Positioned(
-                top: 10,
-                right: 10,
-                child: Row(
+      appBar: AppBar(
+        iconTheme: IconThemeData(
+          size: 30.dp,
+          color: Colors.white),
+        backgroundColor: Colors.transparent,
+        actions: [
+          Row(
                   children: [
                     IconButton(
                       onPressed: () {
@@ -63,7 +48,30 @@ class PoemDetailScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
+
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              // 40% of our total height
+              height: size.height * 0.4,
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    height: size.height * 0.4 - 10,
+                    decoration: BoxDecoration(
+                      
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(
+                         post.thumbnail!),
+                      ),
+                    ),
+                  ),
+ 
                   // Rating Box
                   // Positioned(
                   //   bottom: 0,
@@ -160,10 +168,7 @@ class PoemDetailScreen extends StatelessWidget {
                   //   ),
                   // ),
                   // Back Button
-                  const SafeArea(
-                      child: BackButton(
-                    color: Colors.white,
-                  )),
+                 
                 ],
               ),
             ),

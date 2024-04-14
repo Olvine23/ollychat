@@ -4,9 +4,12 @@ import 'package:olly_chat/theme/colors.dart';
 
 class RowTile extends StatelessWidget {
   final String imageUrl;
+  final String title;
+  final String userAvatar;
+  final String authorName;
   const RowTile({
 
-    super.key, required this.imageUrl,
+    super.key, required this.imageUrl, required this.title, required this.userAvatar, required this.authorName,
   });
 
   @override
@@ -35,7 +38,7 @@ class RowTile extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Title", style: Theme.of(context)
+                    Text(title, style: Theme.of(context)
                   .textTheme
                   .bodyLarge!
                   .copyWith(fontWeight: FontWeight.bold, fontSize: 18),),
@@ -43,13 +46,14 @@ class RowTile extends StatelessWidget {
                     Row(
                       children: [
                         CircleAvatar(
+                          backgroundImage: NetworkImage(userAvatar),
               radius: 20,
               backgroundColor: AppColors.primaryColor,
              
             ),
             SizedBox(width: 4.dp,),
             Text(
-                  'Writers',
+                  authorName,
                   
                   textAlign: TextAlign.justify,
                   style: Theme.of(context)
@@ -66,13 +70,14 @@ class RowTile extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text("2 days ago"),
-                        SizedBox(width: 16.dp,),
+                        SizedBox(width: 12.dp,),
                         Container(
                           child: 
                           Row(
                            
                             children: [
-                            Icon(Icons.bookmark)
+                            Icon(Icons.bookmark),
+                            IconButton(onPressed:() {}, icon:Icon(Icons.more_horiz))
                           ]),
                         )
                       ],
