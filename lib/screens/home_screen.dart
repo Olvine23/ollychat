@@ -134,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   selectedItemColor: const Color(0xffB1816D),
                 );
               } else if (state.status == MyUserStatus.loading) {
-                return  Center(child:  Lottie.asset('assets/lotti/classyload.json'),);
+                return  Center(child:  Lottie.asset('assets/lotti/writeload.json'),);
               }
               return Container();
             },

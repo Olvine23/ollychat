@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
+import 'package:lottie/lottie.dart';
 import 'package:olly_chat/theme/colors.dart';
 
 import '../components/image_container.dart';
@@ -44,7 +45,7 @@ class ArticleCard extends StatelessWidget {
                     child: CachedNetworkImage(
                       imageUrl: articleimg ,
                       placeholder: (context, url) =>
-                          Center(child: CircularProgressIndicator()),
+                          Center(child: Lottie.asset('assets/lotti/imageload.json')),
                       errorWidget: (context, url, error) => Icon(Icons.error),
                       fit: BoxFit.cover,
                     ),
