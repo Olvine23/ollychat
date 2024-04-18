@@ -262,50 +262,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               text: "About",
                             )
                           ]),
-                          SizedBox(
-                            height: constraints.maxHeight -
-                                kToolbarHeight -
-                                32.dp, // Adjust as needed
-                            child: TabBarView(children: [
-                              BlocBuilder<GetPostBloc, GetPostState>(
-                                builder: (context, state) {
-                                  if (state.status == GetPostStatus.success) {
-                                    return ListView.builder(
-                                      shrinkWrap: true, // Add this line
-                                      physics:
-                                          const AlwaysScrollableScrollPhysics(), // Add this line
-                                      itemCount: state.posts?.length,
-                                      itemBuilder: (context, index) {
-                                        return GestureDetector(
-                                          onTap: () {
-                                            // Handle onTap
-                                          },
-                                          child: RowTile(
-                                            imageUrl:
-                                                state.posts![index].thumbnail!,
-                                            title: state.posts![index].title,
-                                            userAvatar: state
-                                                .posts![index].myUser.image!,
-                                            authorName:
-                                                state.posts![index].myUser.name,
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  } else if (state.status ==
-                                      GetPostStatus.unknown) {
-                                    return Shimmer.fromColors(
-                                      highlightColor: Colors.white54,
-                                      baseColor: const Color(0xffdedad7),
-                                      child: project_screen_shimmer(context),
-                                    );
-                                  }
-                                  return const Text(
-                                      "No data available"); // Handle other states
-                                },
-                              ),
-                              const Text("About")
-                            ]),
+                          Padding(
+                            padding:  EdgeInsets.only(top: 12.0.dp),
+                            child: SizedBox(
+                              
+                              height: constraints.maxHeight -
+                                  kToolbarHeight -
+                                  32.dp, // Adjust as needed
+                              child: TabBarView(children: [
+                                BlocBuilder<GetPostBloc, GetPostState>(
+                                  builder: (context, state) {
+                                    if (state.status == GetPostStatus.success) {
+                                      return ListView.builder(
+                                        shrinkWrap: true, // Add this line
+                                        physics:
+                                            const AlwaysScrollableScrollPhysics(), // Add this line
+                                        itemCount: state.posts?.length,
+                                        itemBuilder: (context, index) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              // Handle onTap
+                                            },
+                                            child: RowTile(
+                                              imageUrl:
+                                                  state.posts![index].thumbnail!,
+                                              title: state.posts![index].title,
+                                              userAvatar: state
+                                                  .posts![index].myUser.image!,
+                                              authorName:
+                                                  state.posts![index].myUser.name,
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    } else if (state.status ==
+                                        GetPostStatus.unknown) {
+                                      return Shimmer.fromColors(
+                                        highlightColor: Colors.white54,
+                                        baseColor: const Color(0xffdedad7),
+                                        child: project_screen_shimmer(context),
+                                      );
+                                    }
+                                    return const Text(
+                                        "No data available"); // Handle other states
+                                  },
+                                ),
+                                Padding(
+                                 padding: EdgeInsets.symmetric(horizontal: 16.0.dp),
+                                 child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                       Text("Description",style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold, fontSize: 18.dp),),
+                                       SizedBox(height: 8.dp,),
+                                       Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat")
+
+                                    ],
+                                  ),
+                               )
+                              ]),
+                            ),
                           )
                         ],
                       ),
