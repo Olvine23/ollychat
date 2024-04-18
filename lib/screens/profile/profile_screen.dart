@@ -32,7 +32,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
       },
       child: DefaultTabController(
-        
         length: 2,
         child: Scaffold(
           appBar: AppBar(
@@ -69,211 +68,253 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ))
             ],
           ),
-          body: SingleChildScrollView(
-            
-            child: Column(
-              children: [
-                SizedBox(height: 8.dp,),
-        
-                BlocBuilder<MyUserBloc, MyUserState>(
-                  builder: (context, state) {
-                    if (state.status == MyUserStatus.success) {
-                      return Column(
-                        children: [
-                          ListTile(
-                            leading: state.user!.image == ""
-                                ? GestureDetector(
-                                    onTap: () async {
-                                      final ImagePicker picker = ImagePicker();
-                                      final XFile? image = await picker.pickImage(
-                                          source: ImageSource.gallery,
-                                          maxHeight: 500,
-                                          maxWidth: 500,
-                                          imageQuality: 40);
-                                      if (image != null) {
-                                        CroppedFile? croppedFile =
-                                            await ImageCropper().cropImage(
-                                          sourcePath: image.path,
-                                          aspectRatio: const CropAspectRatio(
-                                              ratioX: 1, ratioY: 1),
-                                          aspectRatioPresets: [
-                                            CropAspectRatioPreset.square
-                                          ],
-                                          uiSettings: [
-                                            AndroidUiSettings(
-                                                toolbarTitle: 'Cropper',
-                                                toolbarColor: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
-                                                toolbarWidgetColor: Colors.white,
-                                                initAspectRatio:
-                                                    CropAspectRatioPreset.original,
-                                                lockAspectRatio: false),
-                                            IOSUiSettings(
-                                              title: 'Cropper',
-                                            ),
-                                          ],
-                                        );
-                                        if (croppedFile != null) {
-                                          setState(() {
-                                            context.read<UpdateUserInfoBloc>().add(
-                                                UploadPicture(
-                                                    croppedFile.path,
-                                                    context
-                                                        .read<MyUserBloc>()
-                                                        .state
-                                                        .user!
-                                                        .id));
-                                          });
-                                        }
-                                      }
-                                    },
-                                    child: Container(
-                                      width: 50,
-                                      height: 50,
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey.shade300,
-                                          shape: BoxShape.circle),
-                                      child: Icon(Icons.person,
-                                          color: Colors.grey.shade400),
-                                    ),
-                                  )
-                                : Container(
-                                    width: 50.dp,
-                                    height: 50.dp,
-                                    decoration: BoxDecoration(
-                                        color: Colors.red,
-                                        shape: BoxShape.circle,
-                                        image: DecorationImage(
-                                            image: NetworkImage(
-                                              state.user!.image!,
-                                            ),
-                                            fit: BoxFit.cover)),
-                                  ),
-                            title: Text(
-                              state.user!.name,
-                              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                  fontSize: 18.dp, fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Text("@olly_doe"),
-                            trailing: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: AppColors.primaryColor),
-                                onPressed: () {},
-                                child: Text("Edit")),
-                          ),
-                        ],
-                      );
-                    } else if (state.status == MyUserStatus.failure) {
-                      return Center(
-                        child: Text(state.status.toString()),
-                      );
-                    }
-                    return const Center(child: CircularProgressIndicator());
-                  },
-                ),
-                SizedBox(height: 8.dp,),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 0.dp),
-                  child: Column(
-                    children: [
-                      const Divider(
-                        thickness: 0.2,
-                        
-                      ),
-                      SizedBox(height: 8.dp,),
-        
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-        
-                          Column(
+          body: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 8.dp,
+                    ),
+                    BlocBuilder<MyUserBloc, MyUserState>(
+                      builder: (context, state) {
+                        if (state.status == MyUserStatus.success) {
+                          return Column(
                             children: [
-                              Text("125",style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),),
-                              SizedBox(height: 4.dp,),
-                              Text("Articles")
-        
+                              ListTile(
+                                leading: state.user!.image == ""
+                                    ? GestureDetector(
+                                        onTap: () async {
+                                          final ImagePicker picker =
+                                              ImagePicker();
+                                          final XFile? image =
+                                              await picker.pickImage(
+                                                  source: ImageSource.gallery,
+                                                  maxHeight: 500,
+                                                  maxWidth: 500,
+                                                  imageQuality: 40);
+                                          if (image != null) {
+                                            CroppedFile? croppedFile =
+                                                await ImageCropper().cropImage(
+                                              sourcePath: image.path,
+                                              aspectRatio:
+                                                  const CropAspectRatio(
+                                                      ratioX: 1, ratioY: 1),
+                                              aspectRatioPresets: [
+                                                CropAspectRatioPreset.square
+                                              ],
+                                              uiSettings: [
+                                                AndroidUiSettings(
+                                                    toolbarTitle: 'Cropper',
+                                                    toolbarColor:
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .primary,
+                                                    toolbarWidgetColor:
+                                                        Colors.white,
+                                                    initAspectRatio:
+                                                        CropAspectRatioPreset
+                                                            .original,
+                                                    lockAspectRatio: false),
+                                                IOSUiSettings(
+                                                  title: 'Cropper',
+                                                ),
+                                              ],
+                                            );
+                                            if (croppedFile != null) {
+                                              setState(() {
+                                                context
+                                                    .read<UpdateUserInfoBloc>()
+                                                    .add(UploadPicture(
+                                                        croppedFile.path,
+                                                        context
+                                                            .read<MyUserBloc>()
+                                                            .state
+                                                            .user!
+                                                            .id));
+                                              });
+                                            }
+                                          }
+                                        },
+                                        child: Container(
+                                          width: 50,
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                              color: Colors.grey.shade300,
+                                              shape: BoxShape.circle),
+                                          child: Icon(Icons.person,
+                                              color: Colors.grey.shade400),
+                                        ),
+                                      )
+                                    : Container(
+                                        width: 50.dp,
+                                        height: 50.dp,
+                                        decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            shape: BoxShape.circle,
+                                            image: DecorationImage(
+                                                image: NetworkImage(
+                                                  state.user!.image!,
+                                                ),
+                                                fit: BoxFit.cover)),
+                                      ),
+                                title: Text(
+                                  state.user!.name,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .copyWith(
+                                          fontSize: 18.dp,
+                                          fontWeight: FontWeight.bold),
+                                ),
+                                subtitle: const Text("@olly_doe"),
+                                trailing: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        foregroundColor: Colors.white,
+                                        backgroundColor:
+                                            AppColors.primaryColor),
+                                    onPressed: () {},
+                                    child: const Text("Edit")),
+                              ),
+                            ],
+                          );
+                        } else if (state.status == MyUserStatus.failure) {
+                          return Center(
+                            child: Text(state.status.toString()),
+                          );
+                        }
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                    ),
+                    SizedBox(
+                      height: 8.dp,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 0.dp),
+                      child: Column(
+                        children: [
+                          const Divider(
+                            thickness: 0.2,
+                          ),
+                          SizedBox(
+                            height: 8.dp,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
+                                children: [
+                                  Text(
+                                    "125",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge!
+                                        .copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(
+                                    height: 4.dp,
+                                  ),
+                                  const Text("Articles")
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  Text(
+                                    "105",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge!
+                                        .copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(
+                                    height: 4.dp,
+                                  ),
+                                  const Text("Following")
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  Text(
+                                    "23334",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge!
+                                        .copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(
+                                    height: 4.dp,
+                                  ),
+                                  const Text("Followers")
+                                ],
+                              ),
                             ],
                           ),
-                          Column(children: [
-                            Text("105",style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),),
-                            SizedBox(height: 4.dp,),
-                            Text("Following")
-        
-                          ],),
-                          Column(children: [
-                            Text("23334",style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),),
-                            SizedBox(height: 4.dp,),
-                            Text("Followers")
-        
-                          ],),
-        
-        
+                          const Divider(
+                            thickness: 0.2,
+                          ),
+                          const TabBar(tabs: [
+                            Tab(
+                              text: "Articles",
+                            ),
+                            Tab(
+                              text: "About",
+                            )
+                          ]),
+                          SizedBox(
+                            height: constraints.maxHeight -
+                                kToolbarHeight -
+                                32.dp, // Adjust as needed
+                            child: TabBarView(children: [
+                              BlocBuilder<GetPostBloc, GetPostState>(
+                                builder: (context, state) {
+                                  if (state.status == GetPostStatus.success) {
+                                    return ListView.builder(
+                                      shrinkWrap: true, // Add this line
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(), // Add this line
+                                      itemCount: state.posts?.length,
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            // Handle onTap
+                                          },
+                                          child: RowTile(
+                                            imageUrl:
+                                                state.posts![index].thumbnail!,
+                                            title: state.posts![index].title,
+                                            userAvatar: state
+                                                .posts![index].myUser.image!,
+                                            authorName:
+                                                state.posts![index].myUser.name,
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  } else if (state.status ==
+                                      GetPostStatus.unknown) {
+                                    return Shimmer.fromColors(
+                                      highlightColor: Colors.white54,
+                                      baseColor: const Color(0xffdedad7),
+                                      child: project_screen_shimmer(context),
+                                    );
+                                  }
+                                  return const Text(
+                                      "No data available"); // Handle other states
+                                },
+                              ),
+                              const Text("About")
+                            ]),
+                          )
                         ],
                       ),
-                         const Divider(
-                        thickness: 0.2,
-                        
-                      ),
-
-                      TabBar(tabs: [
-
-                        Tab(text: "Articles",),
-                        Tab(text: "About",)
-
-                      ]),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height + 600,
-                        child: TabBarView(children: [
-                           BlocBuilder<GetPostBloc, GetPostState>(
-              builder: (context, state) {
-                if (state.status == GetPostStatus.success) {
-                  return ListView.builder(
-                    shrinkWrap: true, // Add this line
-                    physics:
-                        const NeverScrollableScrollPhysics(), // Add this line
-                    itemCount: state.posts?.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          // Handle onTap
-                        },
-                        child: RowTile(
-                          imageUrl: state.posts![index].thumbnail!,
-                          title: state.posts![index].title,
-                          userAvatar: state.posts![index].myUser.image!,
-                          authorName: state.posts![index].myUser.name,
-                        ),
-                      );
-                    },
-                  );
-                } else if (state.status == GetPostStatus.unknown) {
-                  return Shimmer.fromColors(
-                    highlightColor: Colors.white54,
-                    baseColor: const Color(0xffdedad7),
-                    child: project_screen_shimmer(context),
-                  );
-                }
-                return const Text("No data available"); // Handle other states
-              },
-            ),
-                          Text("About")
-                          
-                        ]),
-                      )
-
-
-        
-                    ],
-                  ),
-                  
-                )
-              ],
-            ),
-          ),
-        
-          
+                    )
+                  ],
+                ),
+              ),
+            );
+          }),
         ),
       ),
     );
