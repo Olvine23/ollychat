@@ -60,6 +60,12 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
+        },
+        {
+            "name": "Flutter (lib\\blocs\\sign_up\\sign_up_state.dart)",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib\\blocs\\sign_up\\sign_up_state.dart"
         }
     ]
 }

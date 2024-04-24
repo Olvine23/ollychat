@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
+
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
@@ -9,6 +11,8 @@ import 'package:olly_chat/blocs/sign_in/sign_in_bloc.dart';
 import 'package:olly_chat/blocs/updateuserinfo/update_user_info_bloc.dart';
 import 'package:olly_chat/components/row_tile.dart';
 import 'package:olly_chat/screens/home/widgets/shimmer_widget.dart';
+import 'package:olly_chat/screens/profile/components/divider.dart';
+import 'package:olly_chat/screens/profile/components/social_handles.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -195,9 +199,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 0.dp),
                       child: Column(
                         children: [
-                          const Divider(
-                            thickness: 0.2,
-                          ),
+                          const DividerWidget(),
                           SizedBox(
                             height: 8.dp,
                           ),
@@ -251,10 +253,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ],
                           ),
-                          const Divider(
-                            thickness: 0.2,
-                          ),
-                          const TabBar(tabs: [
+                          const DividerWidget(),
+                          const TabBar(dividerHeight: 0, tabs: [
                             Tab(
                               text: "Articles",
                             ),
@@ -263,37 +263,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             )
                           ]),
                           Padding(
-                            padding:  EdgeInsets.only(top: 12.0.dp),
+                            padding: EdgeInsets.only(top: 12.0.dp),
                             child: SizedBox(
-                              
                               height: constraints.maxHeight -
                                   kToolbarHeight -
-                                  32.dp, // Adjust as needed
+                                  128.dp, // Adjust as needed
                               child: TabBarView(children: [
                                 BlocBuilder<GetPostBloc, GetPostState>(
                                   builder: (context, state) {
                                     if (state.status == GetPostStatus.success) {
-                                      return ListView.builder(
-                                        shrinkWrap: true, // Add this line
-                                        physics:
-                                            const AlwaysScrollableScrollPhysics(), // Add this line
-                                        itemCount: state.posts?.length,
-                                        itemBuilder: (context, index) {
-                                          return GestureDetector(
-                                            onTap: () {
-                                              // Handle onTap
-                                            },
-                                            child: RowTile(
-                                              imageUrl:
-                                                  state.posts![index].thumbnail!,
-                                              title: state.posts![index].title,
-                                              userAvatar: state
-                                                  .posts![index].myUser.image!,
-                                              authorName:
-                                                  state.posts![index].myUser.name,
-                                            ),
-                                          );
-                                        },
+                                      return SizedBox(
+                                        height: MediaQuery.of(context).size.height,
+                                        child: ListView.builder(
+                                          shrinkWrap: true, // Add this line
+                                          physics:
+                                              const AlwaysScrollableScrollPhysics(), // Add this line
+                                          itemCount: state.posts?.length,
+                                          itemBuilder: (context, index) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                // Handle onTap
+                                              },
+                                              child: RowTile(
+                                                imageUrl: state
+                                                    .posts![index].thumbnail!,
+                                                title: state.posts![index].title,
+                                                userAvatar: state
+                                                    .posts![index].myUser.image!,
+                                                authorName: state
+                                                    .posts![index].myUser.name,
+                                              ),
+                                            );
+                                          },
+                                        ),
                                       );
                                     } else if (state.status ==
                                         GetPostStatus.unknown) {
@@ -308,17 +310,89 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   },
                                 ),
                                 Padding(
-                                 padding: EdgeInsets.symmetric(horizontal: 16.0.dp),
-                                 child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16.0.dp),
+                                  child: ListView(
+                                    shrinkWrap: true,
+                                   physics: AlwaysScrollableScrollPhysics(),
                                     children: [
-                                       Text("Description",style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold, fontSize: 18.dp),),
-                                       SizedBox(height: 8.dp,),
-                                       Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat")
-
+                                      Text(
+                                        "Description",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium!
+                                            .copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18.dp),
+                                      ),
+                                      SizedBox(
+                                        height: 8.dp,
+                                      ),
+                                      Text(
+                                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge,
+                                      ),
+                                      SizedBox(
+                                        height: 8.dp,
+                                      ),
+                                      const DividerWidget(),
+                                      SizedBox(
+                                        height: 8.dp,
+                                      ),
+                                      Text(
+                                        "Social Handles",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium!
+                                            .copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18.dp),
+                                      ),
+                                      SizedBox(
+                                        height: 8.dp,
+                                      ),
+                                      const SocialHandles(
+                                        icon: FontAwesomeIcons.instagram,
+                                        platform: 'instagram',
+                                      ),
+                                      SizedBox(
+                                        height: 8.dp,
+                                      ),
+                                      const SocialHandles(
+                                        icon: FontAwesomeIcons.whatsapp,
+                                        platform: 'whatsapp',
+                                      ),
+                                      SizedBox(
+                                        height: 8.dp,
+                                      ),
+                                      const SocialHandles(
+                                        icon: FontAwesomeIcons.x,
+                                        platform: 'twitter',
+                                      ),
+                                      SizedBox(
+                                        height: 8.dp,
+                                      ),
+                                      const DividerWidget(),
+                                      Text(
+                                        "More Information",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium!
+                                            .copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18.dp),
+                                      ),
+                                      SizedBox(
+                                        height: 4.dp,
+                                      ),
+                                      const SocialHandles(
+                                          icon: FontAwesomeIcons.globe,
+                                          platform: 'www.mysite.com')
                                     ],
                                   ),
-                               )
+                                )
                               ]),
                             ),
                           )
