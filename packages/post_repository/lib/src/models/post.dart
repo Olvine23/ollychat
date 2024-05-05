@@ -6,12 +6,14 @@ class Post {
   String id;
   String title;
   String? thumbnail;
+  String? body;
   DateTime createdAt;
   MyUser myUser;
 
   Post(
       {required this.id,
       required this.title,
+      this.body,
       this.thumbnail,
       required this.createdAt,
       required this.myUser});
@@ -19,18 +21,20 @@ class Post {
   //for modification of empty posts
 
   static final empty =
-      Post(id: '', title: '', createdAt: DateTime.now(), myUser: MyUser.empty, thumbnail: '');
+      Post(id: '', title: '', createdAt: DateTime.now(), myUser: MyUser.empty, thumbnail: '' , body: '');
 
   //for modificartion of  post params
   Post copyWith(
       {String? id,
       String? title,
       String? thumbnail,
+      String? body,
       DateTime? createdAt,
       MyUser? myUser}) {
     return Post(
         createdAt: createdAt ?? this.createdAt,
         id: id ?? this.id,
+        body: body ?? this.body,
         title: title ?? this.title,
         myUser: myUser ?? this.myUser,
         thumbnail: thumbnail ?? this.thumbnail);
@@ -49,6 +53,7 @@ class Post {
       thumbnail:thumbnail,
       createdAt:createdAt,
       myUser:myUser,
+      body: body
     );
 
   }
@@ -60,6 +65,7 @@ class Post {
       thumbnail:entity.thumbnail,
       createdAt:entity.createdAt,
       myUser:entity.myUser,
+      body: entity.body
     );
 
   }
@@ -72,6 +78,7 @@ class Post {
       createdAt:$createdAt
       thumbnail:$thumbnail
       myUser:$myUser
+      body:$body
     }
 
 

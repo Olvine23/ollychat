@@ -3,8 +3,9 @@ import 'package:user_repository/user_repository.dart';
 
 class PostEntity{
 
-   String id;
+  String id;
   String title;
+  String? body;
   String? thumbnail;
   DateTime createdAt;
   MyUser myUser;
@@ -17,6 +18,7 @@ class PostEntity{
         required this.myUser,
         required this.createdAt,
         this.thumbnail, 
+        this.body
         }
         );
 
@@ -27,7 +29,8 @@ class PostEntity{
       'title': title,
       'createdAt': createdAt,
       'thumbnail': thumbnail,
-      'myUser': myUser.toEntity().toDocument()
+      'myUser': myUser.toEntity().toDocument(),
+      'body':body
     };
   }
 
@@ -38,6 +41,7 @@ class PostEntity{
        id: doc['id'] as String,
        title: doc['title'] as String,
        thumbnail: doc['thumbnail'] as String?,
+       body: doc['body'] as String?,
        createdAt:   (doc['createdAt'] as Timestamp).toDate(),
        myUser:  MyUser.fromEntity(MyUserEntity.fromDocument(doc['myUser']))
 
@@ -56,6 +60,7 @@ class PostEntity{
       createdAt:$createdAt
       thumbnail:$thumbnail
       myUser:$myUser
+      body:$body
     }
 
 

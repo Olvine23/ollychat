@@ -84,6 +84,7 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                   imageFile = File(imageString);
                   
                   post.title = titleController.text;
+                  post.body = bodyController.text;
                   // post.thumbnail = imageString;
                   
                 });
