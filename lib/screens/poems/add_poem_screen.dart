@@ -2,14 +2,18 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_gemini/google_gemini.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:markdown_editable_textinput/markdown_text_input.dart';
 import 'package:olly_chat/blocs/create_post/create_post_bloc.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/components/custom_textfield.dart';
+import 'package:olly_chat/main.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:post_repository/post_repository.dart';
 import 'package:user_repository/user_repository.dart';
@@ -25,6 +29,7 @@ class AddPoemScreen extends StatefulWidget {
 class _AddPoemScreenState extends State<AddPoemScreen> {
   File? imageFile;
   String? imageUrl;
+  bool loading = false;
   late Post post;
   late String imageString = '';
   @override
@@ -33,25 +38,33 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
     post.myUser = widget.myUser;
     super.initState();
   }
- 
+
   final titleController = TextEditingController();
   final bodyController = TextEditingController();
   String description = 'Article goes here ';
   List<String> topics = ["Love", "Art", "Sadness"];
   String selectedItem = "Love";
+  final gemmy = GoogleGemini(apiKey: apiKey!);
   @override
   Widget build(BuildContext context) {
     log(post.toString());
 
-    
-
-    
-
     return BlocListener<CreatePostBloc, CreatePostState>(
       listener: (context, state) {
         if (state is CreatePostSuccess) {
+          setState(() {
+            loading = false;
+          });
           context.read<GetPostBloc>().add(GetPosts());
           Navigator.pop(context, state.post);
+        } else if (state is CreatePostLoading) {
+          setState(() {
+            loading = true;
+          });
+        } else if (state is CreatePostFailure) {
+          setState(() {
+            loading = false;
+          });
         }
       },
       child: Scaffold(
@@ -79,18 +92,44 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                     width: 1.0,
                     color: AppColors.primaryColor,
                   )),
-              onPressed: () {
+              onPressed: () async {
                 setState(() {
-                  imageFile = File(imageString);
-                  
-                  post.title = titleController.text;
-                  post.body = bodyController.text;
-                  // post.thumbnail = imageString;
-                  
+                  loading = true;
                 });
-                context.read<CreatePostBloc>().add(CreatePost(post,imageString));
+                await gemmy
+                    .generateFromTextAndImages(
+                        image: imageFile!,
+                        query:
+                            "Write an interesting poem from the image ")
+                    .then((value) {
+                      setState(() {
+                        loading  = true;
+                      });
+                  post.body = value.text;
+                }).onError((error, stackTrace) {
+                  setState(() {
+                    loading = false;
+                  });
+
+                  showBottomSheet(context: context, builder: (context){
+                    return Text(error.toString());
+
+                  });
+                });
+                setState(() {
+                  loading = true;
+                  imageFile = File(imageString);
+
+                  post.title = titleController.text;
+                  // post.thumbnail = imageString;
+                });
+                context
+                    .read<CreatePostBloc>()
+                    .add(CreatePost(post, imageString));
               },
-              child: const Text("Publish"),
+              child: loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : const Text("Publish"),
             ),
             IconButton(onPressed: () {}, icon: const Icon(Icons.delete))
           ],
@@ -100,7 +139,6 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14.0),
             child: Column(
               children: [
-                 
                 GestureDetector(
                   onTap: () async {
                     final ImagePicker picker = ImagePicker();
@@ -113,7 +151,6 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                     if (image != null) {
                       CroppedFile? croppedFile = await ImageCropper().cropImage(
                           sourcePath: image.path,
-                          
                           aspectRatioPresets: [
                             CropAspectRatioPreset.square
                           ],
@@ -132,11 +169,9 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
 
                       if (croppedFile != null) {
                         print(imageString);
-              //            final ref = FirebaseStorage.instance.ref().child('thumbnail').child('${post.id}.jpg');
-              //  await ref.putFile(imageFile!);
-              //  imageUrl = await ref.getDownloadURL();
-
-
+                        //            final ref = FirebaseStorage.instance.ref().child('thumbnail').child('${post.id}.jpg');
+                        //  await ref.putFile(imageFile!);
+                        //  imageUrl = await ref.getDownloadURL();
 
                         setState(() {
                           imageString = croppedFile.path;
@@ -152,19 +187,24 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                     decoration: BoxDecoration(
                         // color: AppColors.greenWhite,
                         borderRadius: BorderRadius.circular(20)),
-                    child: imageFile == null ?  const Center(
-                        child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.image_rounded,
-                          size: 80,
-                        ),
-                        Text("Add article cover image"),
-                      ],
-                    )) : Image.file(imageFile!, fit: BoxFit.cover,),
+                    child: imageFile == null
+                        ? const Center(
+                            child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.image_rounded,
+                                size: 80,
+                              ),
+                              Text("Add article cover image"),
+                            ],
+                          ))
+                        : Image.file(
+                            imageFile!,
+                            fit: BoxFit.cover,
+                          ),
                   ),
-                )  ,
+                ),
                 const SizedBox(
                   height: 20,
                 ),
@@ -251,11 +291,8 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
   }
 }
 
-
-extension Pop on BuildContext{
-
-  void pop(){
+extension Pop on BuildContext {
+  void pop() {
     Navigator.of(this).pop();
   }
-
 }

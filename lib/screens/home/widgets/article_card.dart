@@ -59,17 +59,22 @@ class ArticleCard extends StatelessWidget {
                 SizedBox(
                   height: 1.5.h,
                 ),
-                Text(
-                  title,
-                  maxLines: 2,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .copyWith(fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 2,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge!
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ],
             ),
           ),
+           SizedBox(
+                  height: 4.0.h,
+                ),
           GestureDetector(
             onTap: () {},
             child: Row(

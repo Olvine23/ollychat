@@ -229,21 +229,10 @@ class PoemDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const Text('''
-        In love's fading echo, I'm ensnared,
-        A heart adrift, in shadows, I've fared.
-        Our paths diverged as my soul laid bare,
-        Yet agony endures, a weight to bear.
-        Yet within this sadness, there's a glimmer of hope,
-        A chance to heal, to learn how to cope.
-    
-        To love again, to trust once more,
-        Though the scars remain, my heart's core.
-        In time, the pain will slowly subside,
-        As I take this journey, side by side.
-        With a new love, or a love renewed,
-        I'll find my way, my heart pursued   
-        ''')
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(post.body!, style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w500),),
+            )
           ],
         ),
       ),

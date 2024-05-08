@@ -97,7 +97,7 @@ class DiscoverScreen extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height / 2 - 90,
+              height: MediaQuery.of(context).size.height / 2 - 70,
               child: BlocBuilder<GetPostBloc, GetPostState>(
                 builder: (context, state) {
                   if (state.status == GetPostStatus.success) {
@@ -220,7 +220,7 @@ class DiscoverScreen extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height / 2 - 90,
+              height: MediaQuery.of(context).size.height / 2 - 70,
               child: BlocBuilder<GetPostBloc, GetPostState>(
                 builder: (context, state) {
                   if (state.status == GetPostStatus.success) {
