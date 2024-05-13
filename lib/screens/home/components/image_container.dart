@@ -69,6 +69,10 @@ class ImageContainer extends StatelessWidget {
             ),
           ),
           // Text Overlay (Left Center)
+          Positioned(
+            bottom: 4,
+            left: 20,
+            child: Text("Hello", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),))
         ],
       ),
     );

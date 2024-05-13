@@ -1,182 +1,159 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:post_repository/post_repository.dart';
 
-class PoemDetailScreen extends StatelessWidget {
-
+class PoemDetailScreen extends StatefulWidget {
   final Post post;
-  const PoemDetailScreen({super.key, required this.post});
+
+  const PoemDetailScreen({Key? key, required this.post}) : super(key: key);
+
+  @override
+  _PoemDetailScreenState createState() => _PoemDetailScreenState();
+}
+
+class _PoemDetailScreenState extends State<PoemDetailScreen> {
+  final ScrollController _scrollController = ScrollController();
+  bool _showScrollButton = false;
+  IconData _scrollIcon = Icons.arrow_upward;
+
+  String formatTimeAgo(DateTime timestamp) {
+  Duration difference = DateTime.now().difference(timestamp);
+
+  if (difference.inDays > 0) {
+    return '${difference.inDays} days ago';
+  } else if (difference.inHours > 0) {
+    return '${difference.inHours} hours ago';
+  } else if (difference.inMinutes > 0) {
+    return '${difference.inMinutes} minutes ago';
+  } else {
+    return 'just now';
+  }
+}
+
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      setState(() {
+        _showScrollButton = true;
+        _scrollIcon = Icons.arrow_upward;
+      });
+    } else if (_scrollController.offset <= _scrollController.position.minScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      setState(() {
+        _showScrollButton = true;
+        _scrollIcon = Icons.arrow_downward;
+      });
+    } else {
+      setState(() {
+        _showScrollButton = false;
+      });
+    }
+  }
+
+  void _handleScrollButtonPressed() {
+    if (_scrollIcon == Icons.arrow_upward) {
+      // Scroll to the top
+      _scrollController.animateTo(
+        0,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    } else if (_scrollIcon == Icons.arrow_downward) {
+      // Scroll to the bottom
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      extendBodyBehindAppBar: true,
-
       appBar: AppBar(
+        title: Text("Genre"),
         iconTheme: IconThemeData(
-          size: 30.dp,
-          color: Colors.white),
+          size: 30,
+        ),
         backgroundColor: Colors.transparent,
         actions: [
           Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        // Handle share icon tap
-                      },
-                      icon: Icon(Icons.share),
-                      color: Colors.white,
-                      iconSize: 30,
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        // Handle favorite icon tap
-                      },
-                      icon: Icon(Icons.favorite),
-                      color: Colors.white,
-                      iconSize: 30,
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        // Handle settings icon tap
-                      },
-                      icon: Icon(Icons.settings),
-                      color: Colors.white,
-                      iconSize: 30,
-                    ),
-                  ],
-                ),
-
+            children: [
+              IconButton(
+                onPressed: () {
+                  // Handle share icon tap
+                },
+                color: AppColors.secondaryColor,
+                icon: Icon(Icons.share),
+                iconSize: 30,
+              ),
+              IconButton(
+                onPressed: () {
+                  // Handle favorite icon tap
+                },
+                color: AppColors.secondaryColor,
+                icon: Icon(Icons.favorite),
+                iconSize: 30,
+              ),
+              IconButton(
+                 color: AppColors.secondaryColor,
+                onPressed: () {
+                  // Handle settings icon tap
+                },
+                icon: Icon(Icons.settings),
+                iconSize: 30,
+              ),
+            ],
+          ),
         ],
       ),
       body: SingleChildScrollView(
+        controller: _scrollController,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              // 40% of our total height
-              height: size.height * 0.4,
               child: Stack(
                 children: <Widget>[
-                  Container(
-                    height: size.height * 0.4 - 10,
-                    decoration: BoxDecoration(
-                      
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                         post.thumbnail!),
-                      ),
+                  SizedBox(
+                    width: double.infinity,
+                    height: size.height * 0.5 - 5,
+                    child: CachedNetworkImage(
+                      imageUrl: widget.post.thumbnail!,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) =>
+                          Center(child: Lottie.asset('assets/lotti/imageload.json')),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
                   ),
- 
-                  // Rating Box
-                  // Positioned(
-                  //   bottom: 0,
-                  //   right: 0,
-                  //   child: Container(
-                  //     // it will cover 90% of our total width
-                  //     width: size.width * 0.9,
-                  //     height: 100,
-                  //     decoration: BoxDecoration(
-                  //       color: Colors.white,
-                  //       borderRadius: const BorderRadius.only(
-                  //         bottomLeft: Radius.circular(50),
-                  //         topLeft: Radius.circular(50),
-                  //       ),
-                  //       boxShadow: [
-                  //         BoxShadow(
-                  //           offset: const Offset(0, 5),
-                  //           blurRadius: 50,
-                  //           color: const Color(0xFF12153D).withOpacity(0.2),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //     child: Padding(
-                  //       padding:
-                  //           const EdgeInsets.symmetric(horizontal: 16),
-                  //       child: Row(
-                  //         mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  //         children: <Widget>[
-                  //           Column(
-                  //             mainAxisAlignment: MainAxisAlignment.center,
-                  //             children: <Widget>[
-                  //               const Icon(Icons.star ,color: Colors.yellow,),
-                  //               const SizedBox(height: 16 / 4),
-                  //               RichText(
-                  //                 text: const TextSpan(
-                  //                   style: TextStyle(color: Colors.black),
-                  //                   children: [
-                  //                     TextSpan(
-                  //                       text: "5",
-                  //                       style: TextStyle(
-                  //                           fontSize: 16, fontWeight: FontWeight.w600),
-                  //                     ),
-                  //                     TextSpan(text: "10\n"),
-
-                  //                   ],
-                  //                 ),
-                  //               ),
-                  //             ],
-                  //           ),
-                  //           // Rate this
-                  //           Column(
-                  //             mainAxisAlignment: MainAxisAlignment.center,
-                  //             children: <Widget>[
-                  //               const Icon(Icons.star,),
-                  //               const SizedBox(height: 16 / 4),
-                  //               Text("Rate This",
-                  //                   style: Theme.of(context).textTheme.bodyText2),
-                  //             ],
-                  //           ),
-                  //           // Metascore
-                  //           Column(
-                  //             mainAxisAlignment: MainAxisAlignment.center,
-                  //             children: <Widget>[
-                  //               Container(
-                  //                 padding: const EdgeInsets.all(6),
-                  //                 decoration: BoxDecoration(
-                  //                   color: const Color(0xFF51CF66),
-                  //                   borderRadius: BorderRadius.circular(2),
-                  //                 ),
-                  //                 child: const Text(
-                  //                   "5",
-                  //                   style: TextStyle(
-                  //                     fontSize: 16,
-                  //                     color: Colors.white,
-                  //                     fontWeight: FontWeight.w500,
-                  //                   ),
-                  //                 ),
-                  //               ),
-                  //               const SizedBox(height: 16 / 4),
-                  //               const Text(
-                  //                 "Metascore",
-                  //                 style: TextStyle(
-                  //                     fontSize: 16, fontWeight: FontWeight.w500),
-                  //               ),
-                  //               const Text(
-                  //                 "62 critic reviews",
-                  //                 style: TextStyle(color: Colors.white),
-                  //               )
-                  //             ],
-                  //           )
-                  //         ],
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                  // Back Button
-                 
                 ],
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-               
-               post.title,
+                widget.post.title,
                 style: Theme.of(context)
                     .textTheme
                     .headlineMedium!
@@ -187,12 +164,11 @@ class PoemDetailScreen extends StatelessWidget {
             ListTile(
               leading: CircleAvatar(
                 radius: 30,
-                backgroundImage: NetworkImage(
-                     post.myUser.image!),
+                backgroundImage: NetworkImage(widget.post.myUser.image!),
                 backgroundColor: AppColors.primaryColor,
               ),
               title: Text(
-                post.myUser.name,
+                widget.post.myUser.name,
                 style: Theme.of(context)
                     .textTheme
                     .bodyLarge!
@@ -200,11 +176,13 @@ class PoemDetailScreen extends StatelessWidget {
               ),
               subtitle: const Text("@olly_poet"),
               trailing: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: AppColors.primaryColor),
-                  onPressed: () {},
-                  child: const Text("Follow")),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.primaryColor,
+                ),
+                onPressed: () {},
+                child: const Text("Follow"),
+              ),
             ),
             const Divider(),
             Padding(
@@ -225,17 +203,35 @@ class PoemDetailScreen extends StatelessWidget {
                   const SizedBox(
                     width: 12,
                   ),
-                  const Text("8 hours ago"),
+                  Text(formatTimeAgo(widget.post.createdAt,), style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600, color: AppColors.secondaryColor),),
                 ],
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(post.body!, style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w500),),
-            )
+              child: MarkdownBody(
+                styleSheet: MarkdownStyleSheet(
+                  
+                  h1: const TextStyle(fontSize: 24, color: Colors.blue),
+                  p: GoogleFonts.ebGaramond(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14.dp
+                  ),
+                  code: const TextStyle(fontSize: 14, color: Colors.green),
+                ),
+                shrinkWrap: true,
+                data: widget.post.body!,
+              ),
+            ),
           ],
         ),
       ),
+      floatingActionButton: Visibility(
+        visible: _showScrollButton,
+        child: FloatingActionButton(
+          onPressed: _handleScrollButtonPressed,
+          child: Icon(_scrollIcon),
+        ),
+      ),
     );
-  }
-}
+  }}

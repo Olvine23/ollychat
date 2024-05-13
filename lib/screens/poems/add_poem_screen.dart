@@ -9,11 +9,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_gemini/google_gemini.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 import 'package:markdown_editable_textinput/markdown_text_input.dart';
 import 'package:olly_chat/blocs/create_post/create_post_bloc.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/components/custom_textfield.dart';
 import 'package:olly_chat/main.dart';
+import 'package:olly_chat/screens/poems/snippies/screenshotsnip.dart';
+import 'package:olly_chat/screens/poems/snippies/snippy.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:post_repository/post_repository.dart';
 import 'package:user_repository/user_repository.dart';
@@ -100,7 +103,7 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                     .generateFromTextAndImages(
                         image: imageFile!,
                         query:
-                            "Write an interesting poem from the image ")
+                            "Write an interesting poem from the image which has the name ${titleController.text}")
                     .then((value) {
                       setState(() {
                         loading  = true;
@@ -126,6 +129,8 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                 context
                     .read<CreatePostBloc>()
                     .add(CreatePost(post, imageString));
+
+                     
               },
               child: loading
                   ? const Center(child: CircularProgressIndicator())
@@ -134,7 +139,7 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
             IconButton(onPressed: () {}, icon: const Icon(Icons.delete))
           ],
         ),
-        body: SingleChildScrollView(
+        body:  loading ? Center(child: Lottie.asset('assets/lotti/creating.json')): SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14.0),
             child: Column(
