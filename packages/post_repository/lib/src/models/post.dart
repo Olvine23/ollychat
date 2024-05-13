@@ -8,6 +8,7 @@ class Post {
   String? thumbnail;
   String? body;
   DateTime createdAt;
+  String? genre;
   MyUser myUser;
 
   Post(
@@ -15,13 +16,14 @@ class Post {
       required this.title,
       this.body,
       this.thumbnail,
+      this.genre,
       required this.createdAt,
       required this.myUser});
 
   //for modification of empty posts
 
   static final empty =
-      Post(id: '', title: '', createdAt: DateTime.now(), myUser: MyUser.empty, thumbnail: '' , body: '');
+      Post(id: '', title: '', createdAt: DateTime.now(), myUser: MyUser.empty, thumbnail: '' , body: '', genre: '');
 
   //for modificartion of  post params
   Post copyWith(
@@ -29,6 +31,7 @@ class Post {
       String? title,
       String? thumbnail,
       String? body,
+      String? genre,
       DateTime? createdAt,
       MyUser? myUser}) {
     return Post(
@@ -37,7 +40,10 @@ class Post {
         body: body ?? this.body,
         title: title ?? this.title,
         myUser: myUser ?? this.myUser,
-        thumbnail: thumbnail ?? this.thumbnail);
+        thumbnail: thumbnail ?? this.thumbnail,
+        genre: genre ?? this.genre
+        
+        );
   }
   //getter checks for empty posts
 
@@ -53,7 +59,8 @@ class Post {
       thumbnail:thumbnail,
       createdAt:createdAt,
       myUser:myUser,
-      body: body
+      body: body,
+      genre:genre
     );
 
   }
@@ -65,7 +72,8 @@ class Post {
       thumbnail:entity.thumbnail,
       createdAt:entity.createdAt,
       myUser:entity.myUser,
-      body: entity.body
+      body: entity.body,
+      genre: entity.genre,
     );
 
   }
@@ -79,6 +87,7 @@ class Post {
       thumbnail:$thumbnail
       myUser:$myUser
       body:$body
+      genre:$genre
     }
 
 

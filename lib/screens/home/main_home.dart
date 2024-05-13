@@ -153,6 +153,7 @@ class MainHome extends StatelessWidget {
                         );
                       },
                       child: ArticleCard(
+                        genre: articles[index].genre == null ? "Genre" :articles[index].genre! ,
                         articleimg: articles[index].thumbnail!,
                         author: articles[index].myUser.name,
                         authorImg: articles[index].myUser.image!,

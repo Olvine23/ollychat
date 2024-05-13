@@ -2,15 +2,22 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:olly_chat/screens/home/components/image_container.dart';
+import 'package:olly_chat/screens/poems/widgets/image_widget.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ScreenShotSnip extends StatefulWidget {
-  const ScreenShotSnip({super.key});
+
+  final String image;
+  final String articlesnip;
+
+
+  const ScreenShotSnip({super.key, required this.image, required this.articlesnip});
 
   @override
   State<ScreenShotSnip> createState() => _ScreenShotSnipState();
@@ -48,40 +55,71 @@ class _ScreenShotSnipState extends State<ScreenShotSnip> {
     return Screenshot(
       controller: screenshotController,
       child: Scaffold(
-        appBar: AppBar(),
-        body: Column(
-          children: [
-            const cool(),
-            two(),
-            ElevatedButton(
-                onPressed: () async {
-                  final image = await screenshotController.capture();
+        appBar: AppBar(
+          title: Text("Article Snippy"),
+          actions: [
+            IconButton(onPressed: () async{
+              final imageTwo = await screenshotController.captureFromWidget(snap(widget: widget));
 
-                  if (image == null) {
-                    return;
-                  }
-                  await saveImage(image);
-                  await saveAndShare(image);
-                },
-                child: const Text("Take screenshot")),
-            ElevatedButton(
-                onPressed: () async {
-                  final image =
-                      await screenshotController.captureFromWidget(const two());
+              saveAndShare(imageTwo);
 
-                  saveAndShare(image);
-                },
-                child: const Text("Capture Widget")),
-                 ElevatedButton(
-                onPressed: () async {
-                  final image =
-                      await screenshotController.captureFromWidget(const cool());
+              saveImage(imageTwo);
 
-                  saveAndShare(image);
-                },
-                child: const Text("Capture Widget One "))
+            
+
+
+            }, icon:Icon(Icons.camera))
           ],
         ),
+        body:   snap(widget: widget)
+      ),
+    );
+  }
+}
+
+class snap extends StatelessWidget {
+  const snap({
+    super.key,
+    required this.widget,
+  });
+
+  final ScreenShotSnip widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(image: NetworkImage(widget.image, ), fit: BoxFit.cover)
+        
+      ),
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+               gradient: const LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.topCenter,
+              colors: [
+                Colors.transparent,
+                Colors.black,
+              ],
+            ),
+            ),
+            ),
+            Positioned(
+              top: 16,
+              
+              right: 5,
+              child: Text(widget.articlesnip,
+               style: GoogleFonts.caveat(
+                color: Colors.white,
+                fontSize: 20
+               ))),
+               Positioned(
+               right: -40
+               ,
+                child: Image.asset('assets/images/nobg.png'))
+        ],
       ),
     );
   }

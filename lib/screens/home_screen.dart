@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static List<Widget> pages = [
     MainHome(),
     const DiscoverScreen(),
- ScreenShotSnip(),
+ ScreenShotSnip(image: '', articlesnip: '',),
     const ProfileScreen()
   ];
 

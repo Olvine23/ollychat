@@ -8,6 +8,7 @@ class PostEntity{
   String? body;
   String? thumbnail;
   DateTime createdAt;
+  String? genre;
   MyUser myUser;
 
 
@@ -17,6 +18,7 @@ class PostEntity{
         required this.title,
         required this.myUser,
         required this.createdAt,
+        this.genre,
         this.thumbnail, 
         this.body
         }
@@ -30,7 +32,8 @@ class PostEntity{
       'createdAt': createdAt,
       'thumbnail': thumbnail,
       'myUser': myUser.toEntity().toDocument(),
-      'body':body
+      'body':body,
+      'genre':genre
     };
   }
 
@@ -43,14 +46,15 @@ class PostEntity{
        thumbnail: doc['thumbnail'] as String?,
        body: doc['body'] as String?,
        createdAt:   (doc['createdAt'] as Timestamp).toDate(),
-       myUser:  MyUser.fromEntity(MyUserEntity.fromDocument(doc['myUser']))
+       myUser:  MyUser.fromEntity(MyUserEntity.fromDocument(doc['myUser'])),
+       genre: doc['genre'] as String?
 
        
        );
   }
 
   @override
-  List<Object?> get props => [id, thumbnail,title, createdAt,myUser];
+  List<Object?> get props => [id, thumbnail,title, createdAt,myUser, genre];
 
   @override
   String toString() {
@@ -61,6 +65,7 @@ class PostEntity{
       thumbnail:$thumbnail
       myUser:$myUser
       body:$body
+      genre:$genre
     }
 
 

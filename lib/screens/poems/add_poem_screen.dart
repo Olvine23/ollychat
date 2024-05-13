@@ -124,6 +124,7 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                   imageFile = File(imageString);
 
                   post.title = titleController.text;
+                  post.genre = selectedItem;
                   // post.thumbnail = imageString;
                 });
                 context

@@ -8,6 +8,8 @@ import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:lottie/lottie.dart';
+import 'package:olly_chat/screens/poems/snippies/screenshotsnip.dart';
+import 'package:olly_chat/screens/poems/widgets/image_widget.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -139,7 +141,7 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
       controller: screenshotController,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Genre" , style: TextStyle(fontWeight: FontWeight.bold),),
+          title: Text( widget.post.genre == null ?  'Genre': widget.post.genre! , style: TextStyle(fontWeight: FontWeight.bold),),
           iconTheme: IconThemeData(
             size: 30,
           ),
@@ -176,8 +178,35 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                    color: AppColors.secondaryColor,
                   onPressed: () {
                     // Handle settings icon tap
+                    showModalBottomSheet(context: context, builder: (BuildContext context){
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 12,left: 12, right: 12),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 100,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                            const  Text("Proceed to creating a snippy?", style: TextStyle(fontWeight: FontWeight.bold),),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primaryColor
+                                ),
+                                onPressed: (){
+
+                                  Navigator.push(context, MaterialPageRoute(builder: (context){
+                                    return ScreenShotSnip(image: widget.post.thumbnail!, articlesnip: widget.post.body!,);
+                                  }));
+
+                                  
+                                }, child: const Text("Proceed", style: TextStyle(color: Colors.white),))
+                            ],
+                          ),
+                        ),
+                      );
+                    });
                   },
-                  icon: Icon(Icons.settings),
+                  icon: Icon(Icons.image),
                   iconSize: 30,
                 ),
               ],
@@ -236,14 +265,20 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                 child: Row(
                   children: [
                     Container(
+                      
                       padding: const EdgeInsets.all(4.0),
                       decoration: BoxDecoration(
                         border: Border.all(color: AppColors.primaryColor),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      child: Text(
-                        'Sorrowful',
-                        style: TextStyle(color: AppColors.primaryColor),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 12),
+                        child: Text(
+                          
+                         widget.post.genre == null ?  'Genre': widget.post.genre!,
+                         textAlign: TextAlign.center,
+                          style: TextStyle(color: AppColors.primaryColor),
+                        ),
                       ),
                     ),
                     const SizedBox(
@@ -283,28 +318,3 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
     );
   }}
 
-class imageWidget extends StatelessWidget {
-  const imageWidget({
-    super.key,
-    required this.size,
-    required this.widget,
-  });
-
-  final Size size;
-  final PoemDetailScreen widget;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: size.height * 0.5 - 5,
-      child: CachedNetworkImage(
-        imageUrl: widget.post.thumbnail!,
-        fit: BoxFit.cover,
-        placeholder: (context, url) =>
-            Center(child: Lottie.asset('assets/lotti/imageload.json')),
-        errorWidget: (context, url, error) => Icon(Icons.error),
-      ),
-    );
-  }
-}

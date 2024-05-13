@@ -12,6 +12,8 @@ class ArticleCard extends StatelessWidget {
   final String authorImg;
   final DateTime daysago;
   final String title;
+  final String genre;
+
 
   const ArticleCard({
     super.key,
@@ -19,7 +21,7 @@ class ArticleCard extends StatelessWidget {
     required this.author,
     required this.authorImg,
     required this.daysago,
-    required this.title,
+    required this.title, required this.genre,
   });
 
     String formatTimeAgo(DateTime timestamp) {
@@ -50,28 +52,64 @@ class ArticleCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  height: 25.h,
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(20)),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(
-                        8.0), // Adjust the value as needed
-                    child: CachedNetworkImage(
-                      imageUrl: articleimg ,
-                      placeholder: (context, url) =>
-                          Center(child: Lottie.asset('assets/lotti/imageload.json')),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                // ImageContainer(
-                //     imageUrl:
-                //         articleimg
 
-                //         ),
-                SizedBox(
+                Container(
+  height: 25.h,
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(20),
+  ),
+  child: Stack(
+    children: [
+      ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: CachedNetworkImage(
+          imageUrl: articleimg,
+          placeholder: (context, url) => Center(child: Lottie.asset('assets/lotti/imageload.json')),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+        ),
+      ),
+      Positioned.fill(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.transparent,
+                Colors.black,
+              ],
+            ),
+          ),
+        ),
+      ),
+
+      Positioned(
+        bottom: 10,
+        left: 16,
+
+        child: Container(
+           
+         
+          decoration: BoxDecoration(
+             color: AppColors.primaryColor,
+            borderRadius: BorderRadius.circular(4)
+          ),
+          
+          child: Padding(
+            padding:  EdgeInsets.symmetric(vertical: 2.0,horizontal: 12.0),
+            child: Text(genre, style: TextStyle(color: Colors.white),),
+          ))
+          
+          )
+    ]
+  ),
+),
+
+            SizedBox(
                   height: 1.5.h,
                 ),
                 Expanded(
@@ -100,7 +138,7 @@ class ArticleCard extends StatelessWidget {
                   backgroundColor: AppColors.primaryColor,
                   backgroundImage: NetworkImage(authorImg == '' ? 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png':authorImg),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 6,
                 ),
                 Expanded(
@@ -116,7 +154,7 @@ class ArticleCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 6,
                 ),
                 Expanded(

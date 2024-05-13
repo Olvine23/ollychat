@@ -117,11 +117,13 @@ class DiscoverScreen extends StatelessWidget {
                               }));
                             },
                             child: ArticleCard(
+                              
                               articleimg: state.posts![index].thumbnail!,
                               author: state.posts![index].myUser.name,
                               authorImg: state.posts![index].myUser.image!,
                               daysago: state.posts![index].createdAt,
-                              title: state.posts![index].title,
+                              title: state.posts![index].title,  
+                               genre: state.posts![index].genre == null ? "Genre" : state.posts![index].genre!,
                             ),
                           );
 
@@ -240,6 +242,7 @@ class DiscoverScreen extends StatelessWidget {
                               }));
                             },
                             child: ArticleCard(
+                              genre: state.posts![index].genre == null ? "Genre" : state.posts![index].genre!,
                               articleimg: state.posts![index].thumbnail!,
                               author: state.posts![index].myUser.name,
                               authorImg: state.posts![index].myUser.image!,
