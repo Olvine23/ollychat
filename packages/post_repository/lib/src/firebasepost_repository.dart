@@ -61,7 +61,7 @@ class FirebasePostRepository implements PostRepository{
  @override
   Future<List<Post>> getPost() {
     try {
-      return postCollection
+      return postCollection.orderBy('createdAt', descending:true)
 				.get()
 				.then((value) => value.docs.map((e) => 
 					Post.fromEntity(PostEntity.fromDocument(e.data()))

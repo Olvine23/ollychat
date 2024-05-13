@@ -156,7 +156,7 @@ class MainHome extends StatelessWidget {
                         articleimg: articles[index].thumbnail!,
                         author: articles[index].myUser.name,
                         authorImg: articles[index].myUser.image!,
-                        daysago: '3 days ago',
+                        daysago: articles[index].createdAt,
                         title: articles[index].title,
                       ),
                     );

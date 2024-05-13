@@ -120,7 +120,7 @@ class DiscoverScreen extends StatelessWidget {
                               articleimg: state.posts![index].thumbnail!,
                               author: state.posts![index].myUser.name,
                               authorImg: state.posts![index].myUser.image!,
-                              daysago: '3 days ago',
+                              daysago: state.posts![index].createdAt,
                               title: state.posts![index].title,
                             ),
                           );
@@ -243,7 +243,7 @@ class DiscoverScreen extends StatelessWidget {
                               articleimg: state.posts![index].thumbnail!,
                               author: state.posts![index].myUser.name,
                               authorImg: state.posts![index].myUser.image!,
-                              daysago: '3 days ago',
+                              daysago: state.posts![index].createdAt,
                               title: state.posts![index].title,
                             ),
                           );
