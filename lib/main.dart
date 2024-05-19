@@ -10,6 +10,8 @@ import 'package:post_repository/post_repository.dart';
 import 'package:user_repository/user_repository.dart';
 
 var apiKey = dotenv.env['GEMINI-API-KEY'];
+
+var eleApiKey = dotenv.env['EL_API_KEY'] as String;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");

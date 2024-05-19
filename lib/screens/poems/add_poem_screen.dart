@@ -150,8 +150,8 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                     final ImagePicker picker = ImagePicker();
                     final XFile? image = await picker.pickImage(
                         source: ImageSource.gallery,
-                        maxHeight: 500,
-                        maxWidth: 500,
+                        
+                       
                         imageQuality: 100);
 
                     if (image != null) {
