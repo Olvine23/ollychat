@@ -331,21 +331,24 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16),
+                padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8)
+                ,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      widget.post.title,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge!
-                          .copyWith(fontWeight: FontWeight.bold),
+                    Expanded(
+                      child: Text(
+                        widget.post.title,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(fontWeight: FontWeight.bold),
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text("Play Audio", style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                        Text("Listen", style: Theme.of(context).textTheme.labelMedium!.copyWith(
                           fontWeight: FontWeight.bold
                         ),),
                         SizedBox(width: 10,),
