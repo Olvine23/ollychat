@@ -4,6 +4,8 @@ class MyUserEntity extends Equatable {
   final String id;
   final String email;
   final String name;
+  final String? bio;
+  final String? handle;
   final String? image;
 
 
@@ -13,6 +15,8 @@ class MyUserEntity extends Equatable {
         required this.email,
         required this.name,
         this.image, 
+        this.bio,
+        this.handle
         }
         );
 
@@ -23,6 +27,8 @@ class MyUserEntity extends Equatable {
       'email': email,
       'name': name,
       'image': image,
+      'bio':bio,
+      'handle':handle
     };
   }
 
@@ -33,11 +39,15 @@ class MyUserEntity extends Equatable {
        id: doc['id'] as String,
        email: doc['email'] as String,
        name: doc['name'] as String,
-       image: doc['image'] as String?);
+       image: doc['image'] as String?,
+       bio: doc['bio'] as String?,
+       handle: doc['handle'] as String?
+       
+       );
   }
 
   @override
-  List<Object?> get props => [id, email,name, image];
+  List<Object?> get props => [id, email,name, image, bio, handle];
 
   @override
   String toString() {
@@ -46,6 +56,8 @@ class MyUserEntity extends Equatable {
       name:$name
       email:$email
       image:$image
+      bio:$bio
+      handle:$handle
     }
 
 

@@ -24,5 +24,45 @@ class MyUserBloc extends Bloc<MyUserEvent, MyUserState> {
         print(e.toString());
       }
     });
+
+      on<FollowUser>((event, emit) async {
+      emit(const MyUserState.loading());
+      try {
+        await _userRepository.followUser(event.currentUserId, event.targetUserId);
+        MyUser myUser = await _userRepository.getMyUser(event.currentUserId);
+        emit(MyUserState.success(myUser));
+      } catch (e) {
+        log(e.toString());
+        emit(const MyUserState.failure());
+        print(e.toString());
+      }
+    });
+
+     on<UnfollowUser>((event, emit) async {
+      emit(const MyUserState.loading());
+      try {
+        await _userRepository.unfollowUser(event.currentUserId, event.targetUserId);
+        MyUser myUser = await _userRepository.getMyUser(event.currentUserId);
+        emit(MyUserState.success(myUser));
+      } catch (e) {
+        log(e.toString());
+        emit(const MyUserState.failure());
+        print(e.toString());
+      }
+    });
+
+    // on<UpdateMyUser>((event, emit) async {
+    //   try {
+    //     await _userRepository.updateUserData(event.userId, event.updates);
+    //     MyUser updatedUser = await _userRepository.getMyUser(event.userId);
+    //     emit(MyUserState.success(updatedUser));
+    //   } catch (e) {
+    //     log(e.toString());
+    //     emit(const MyUserState.failure());
+    //     print(e.toString());
+    //   }
+    // });
+
+
   }
 }

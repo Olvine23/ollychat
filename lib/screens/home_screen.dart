@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
@@ -11,6 +12,7 @@ import 'package:olly_chat/screens/poems/add_poem_screen.dart';
 import 'package:olly_chat/screens/poems/my_articles/my_articles.dart';
 import 'package:olly_chat/screens/poems/snippies/screenshotsnip.dart';
 import 'package:olly_chat/screens/profile/profile_screen.dart';
+import 'package:olly_chat/screens/profile/update_profile/update_profile.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:post_repository/post_repository.dart';
 
@@ -30,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
     MainHome(),
     const DiscoverScreen(),
  ScreenShotSnip(image: '', articlesnip: '',),
+//  UpdateUserScreen(userId: FirebaseAuth.instance.currentUser!.uid)
     const ProfileScreen()
   ];
 

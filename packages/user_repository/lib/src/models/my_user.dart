@@ -6,13 +6,15 @@ class MyUser extends Equatable {
   final String email;
   final String name;
   String? image;
+  String? bio;
+  String? handle;
 
    MyUser(
-      {required this.id, required this.email, required this.name, this.image});
+      {required this.id, required this.email, required this.name, this.image, this.bio, this.handle});
 
   // unauthenticated user i.e with empty values
 
-  static final empty = MyUser(id: '', email: '', name: '', image: '');
+  static final empty = MyUser(id: '', email: '', name: '', image: '', bio: '', handle: '');
 
   //for modification of MyUser params
   MyUser copyWith({
@@ -20,12 +22,19 @@ class MyUser extends Equatable {
     String? email,
     String? name,
     String? image,
+    String? bio,
+    String? handle
   }) {
     return MyUser(
         id: id ?? this.id,
         email: email ?? this.email,
         name: name ?? this.name,
-        image: image ?? this.image);
+        image: image ?? this.image,
+        handle: handle ?? this.handle,
+        bio: bio ?? this.bio
+      
+
+        );
   }
 
   //getter that checks whether a user is empty
@@ -40,7 +49,11 @@ class MyUser extends Equatable {
       id:id,
       email:email,
       name:name,
-      image:image
+      image:image,
+      bio: bio,
+      handle: handle
+
+
     );
   }
 
@@ -49,10 +62,14 @@ class MyUser extends Equatable {
       id: entity.id,
       name: entity.name,
       image: entity.image,
-      email: entity.email);
+      email: entity.email,
+      handle: entity.handle,
+      bio: entity.bio
+      
+      );
   }
 
   @override
   // implement props
-  List<Object?> get props => [id, email, name, image];
+  List<Object?> get props => [id, email, name, image, bio, handle];
 }

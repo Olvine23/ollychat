@@ -103,6 +103,8 @@ class FirebaseUserRepo implements UserRepository {
   
   @override
   Future<String> uploadPicture(String file, String userId) async {
+
+
     try{
     //convert file to string
     File imageFile = File(file);
@@ -132,4 +134,111 @@ class FirebaseUserRepo implements UserRepository {
 
     }
   }
+
+  
+  // update user data
+  Future<void> updateUserData(String userId, Map<String, dynamic> updates) async {
+    try {
+      await usersCollection.doc(userId).update(updates);
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+   // Follow a user
+  Future<void> followUser(String currentUserId, String targetUserId) async {
+    try {
+      DocumentReference currentUserRef = usersCollection.doc(currentUserId);
+      DocumentReference targetUserRef =
+
+
+
+      usersCollection.doc(targetUserId);
+
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        DocumentSnapshot currentUserSnapshot = await transaction.get(currentUserRef);
+        DocumentSnapshot targetUserSnapshot = await transaction.get(targetUserRef);
+
+        if (!currentUserSnapshot.exists || !targetUserSnapshot.exists) {
+          throw Exception("User does not exist!");
+        }
+
+        List following = currentUserSnapshot['following'] ?? [];
+        List followers = targetUserSnapshot['followers'] ?? [];
+
+        if (!following.contains(targetUserId)) {
+          transaction.update(currentUserRef, {
+            'following': FieldValue.arrayUnion([targetUserId])
+          });
+          transaction.update(targetUserRef, {
+            'followers': FieldValue.arrayUnion([currentUserId])
+          });
+        }
+      });
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+
+ // Unfollow a user
+  Future<void> unfollowUser(String currentUserId, String targetUserId) async {
+    try {
+      DocumentReference currentUserRef = usersCollection.doc(currentUserId);
+      DocumentReference targetUserRef = usersCollection.doc(targetUserId);
+
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        DocumentSnapshot currentUserSnapshot = await transaction.get(currentUserRef);
+        DocumentSnapshot targetUserSnapshot = await transaction.get(targetUserRef);
+
+        if (!currentUserSnapshot.exists || !targetUserSnapshot.exists) {
+          throw Exception("User does not exist!");
+        }
+
+        List following = currentUserSnapshot['following'] ?? [];
+        List followers = targetUserSnapshot['followers'] ?? [];
+
+        if (following.contains(targetUserId)) {
+          transaction.update(currentUserRef, {
+            'following': FieldValue.arrayRemove([targetUserId])
+          });
+          transaction.update(targetUserRef, {
+            'followers': FieldValue.arrayRemove([currentUserId])
+          });
+        }
+      });
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+ // Get followers count
+  Future<int> getFollowersCount(String userId) async {
+    try {
+      DocumentSnapshot userSnapshot = await usersCollection.doc(userId).get();
+      List followers = userSnapshot['followers'] ?? [];
+      return followers.length;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+ // Get following count
+  Future<int> getFollowingCount(String userId) async {
+    try {
+      DocumentSnapshot userSnapshot = await usersCollection.doc(userId).get();
+      List following = userSnapshot['following'] ?? [];
+      return following.length;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
 }
+
+
+
+

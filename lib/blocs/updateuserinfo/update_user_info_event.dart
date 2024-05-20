@@ -20,3 +20,13 @@ class UploadPicture extends UpdateUserInfoEvent{
 
   List<Object> get props => [file, userId];
 }
+
+class UpdateMyUser extends UpdateUserInfoEvent {
+  final String userId;
+  final Map<String, dynamic> updates;
+
+  const UpdateMyUser(this.userId, this.updates);
+
+  @override
+  List<Object> get props => [userId, updates];
+}

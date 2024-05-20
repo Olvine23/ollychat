@@ -23,3 +23,27 @@ class GetMyUser extends MyUserEvent{
 
 
 }
+
+class FollowUser extends MyUserEvent {
+  final String currentUserId;
+  final String targetUserId;
+
+  const FollowUser(this.currentUserId, this.targetUserId);
+
+  @override
+  List<Object> get props => [currentUserId, targetUserId];
+}
+
+class UnfollowUser extends MyUserEvent {
+  final String currentUserId;
+  final String targetUserId;
+
+  const UnfollowUser(this.currentUserId, this.targetUserId);
+
+  @override
+  List<Object> get props => [currentUserId, targetUserId];
+}
+
+
+
+ 
