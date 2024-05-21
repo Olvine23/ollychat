@@ -21,7 +21,10 @@ import 'package:shimmer/shimmer.dart';
 import 'package:user_repository/user_repository.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+
+  final String currentUserId;
+  final String profileUserId;
+  const ProfileScreen({super.key, required this.currentUserId, required this.profileUserId});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -357,7 +360,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           height: 8.dp,
                                         ),
                                         Text(
-                                          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat",
+                                          "Lorem ipsum dolor sit amet,  t",
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodyLarge,
