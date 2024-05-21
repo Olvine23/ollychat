@@ -45,5 +45,4 @@ app.*.map.json
 
 
 #environment variables
-
 .env
