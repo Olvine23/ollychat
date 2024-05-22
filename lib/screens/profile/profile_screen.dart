@@ -6,6 +6,7 @@ import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/blocs/sign_in/sign_in_bloc.dart';
@@ -240,7 +241,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               physics: const AlwaysScrollableScrollPhysics(),
                                               itemCount: myArticles.length,
                                               itemBuilder: (context, index) {
-                                                return GestureDetector(
+                                                
+                                                return  myArticles.isEmpty ?  Center(
+                  child: Column(
+                  children: [
+                    Lottie.asset(
+                      'assets/lotti/nothing.json',
+                      repeat: false,
+                    ),
+                    Text(
+                      "Nothing yet",
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16
+                      ),
+                    ),
+                  ],
+                )) :  GestureDetector(
                                                   onTap: () {
                                                     Navigator.push(context, MaterialPageRoute(builder: (context) {
                                                       return PoemDetailScreen(post: myArticles[index]);
@@ -252,7 +269,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                     userAvatar: myArticles[index].myUser.image!,
                                                     authorName: myArticles[index].myUser.name,
                                                   ),
-                                                );
+                                                ) ;
                                               },
                                             ),
                                           ),

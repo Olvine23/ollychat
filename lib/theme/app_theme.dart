@@ -5,8 +5,8 @@ import 'package:olly_chat/theme/colors.dart';
 
 
 ThemeData appTheme = ThemeData(
-  textTheme: GoogleFonts.interTextTheme(),
-  fontFamily: 'Inter',
+  textTheme: GoogleFonts.josefinSansTextTheme(),
+  fontFamily: 'Nunito',
   useMaterial3: true,
   colorScheme: ColorScheme.light(
     primary: AppColors.primaryColor,
