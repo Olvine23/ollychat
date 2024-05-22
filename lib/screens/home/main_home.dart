@@ -63,8 +63,8 @@ class MainHome extends StatelessWidget {
   Widget _buildPostList(BuildContext context, GetPostState state) {
     if (state.status == GetPostStatus.success) {
       final List<Post> myArticles =
-          state.posts!.where((post) => post.myUser.id == user!.uid).toList();
-
+          
+state.posts!.where((post) => post.myUser.id == user!.uid).toList();
       final List<Post> recentArticles =
           state.posts!.where((post) => post.myUser.id != user!.uid).toList();
 

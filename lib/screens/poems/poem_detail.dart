@@ -141,18 +141,17 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
 
   //For the Text To Speech
   Future<void> playTextToSpeech(String text) async {
-
-     // Check network connectivity
-  var connectivityResult = await Connectivity().checkConnectivity();
-  if (connectivityResult == ConnectivityResult.none) {
-    // Device is offline, handle accordingly (e.g., show a message)
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('No internet connection'),
-      ),
-    );
-    return;
-  }
+    // Check network connectivity
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      // Device is offline, handle accordingly (e.g., show a message)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No internet connection'),
+        ),
+      );
+      return;
+    }
     //display the loading icon while we wait for request
     setState(() {
       _isLoadingVoice = true; //progress indicator turn on now
@@ -172,7 +171,11 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
       body: json.encode({
         "text": text,
         "model_id": "eleven_monolingual_v1",
-        "voice_settings": {"stability": .15, "similarity_boost": .75, "use_speaker_boost":true, }
+        "voice_settings": {
+          "stability": .15,
+          "similarity_boost": .75,
+          "use_speaker_boost": true,
+        }
       }),
     );
 
@@ -183,34 +186,33 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
     if (response.statusCode == 200) {
       final bytes = response.bodyBytes; //get the bytes ElevenLabs sent back
 
+      // Get the temporary directory on the device
+      final cacheDir = await getTemporaryDirectory();
 
+      // Save the audio bytes to a file in the cache directory
+      File audioFile = File(
+          '${cacheDir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.mp3');
+      await audioFile.writeAsBytes(bytes);
 
-       // Get the temporary directory on the device
-    final cacheDir = await getTemporaryDirectory();
-    
-    // Save the audio bytes to a file in the cache directory
-    File audioFile = File('${cacheDir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.mp3');
-    await audioFile.writeAsBytes(bytes);
+      // Cache the audio file
+      cachedAudios[text] = audioFile;
 
-    // Cache the audio file
-    cachedAudios[text] = audioFile;
+      await playAudioFromBytes(audioFile);
 
-    await playAudioFromBytes(audioFile);
+      // Save the audio bytes to a file
+      // File audioFile = File('$tempPath/audio.mp3');
+      // await audioFile.writeAsBytes(bytes);
 
-    // Save the audio bytes to a file
-    // File audioFile = File('$tempPath/audio.mp3');
-    // await audioFile.writeAsBytes(bytes);
-    
-    // Print out the path where the file is saved
-    print('Audio saved to: ${audioFile.path}');
+      // Print out the path where the file is saved
+      print('Audio saved to: ${audioFile.path}');
 
-    // Show a message indicating that the audio has been downloaded
-    // ignore: use_build_context_synchronously
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Audio downloaded successfully'),
-      ),
-    );
+      // Show a message indicating that the audio has been downloaded
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Audio downloaded successfully'),
+        ),
+      );
       // await player.setAudioSource(MyCustomSource(
       //     bytes)); //send the bytes to be read from the JustAudio library
       // player.play(); //play the audio
@@ -221,10 +223,10 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
   } //getResponse from Eleven Labs
 
   Future<void> playAudioFromBytes(File audioFile) async {
-  final audioSource = MyCustomSource(await audioFile.readAsBytes());
-  await player.setAudioSource(audioSource);
-  player.play();
-}
+    final audioSource = MyCustomSource(await audioFile.readAsBytes());
+    await player.setAudioSource(audioSource);
+    player.play();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -331,8 +333,8 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8)
-                ,
+                padding: const EdgeInsets.only(
+                    left: 16, right: 16, top: 8, bottom: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -348,19 +350,26 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text("Listen", style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                          fontWeight: FontWeight.bold
-                        ),),
-                        SizedBox(width: 10,),
+                        Text(
+                          "Listen",
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelMedium!
+                              .copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
                         ElevatedButton(
-
                           onPressed: () {
-                            
                             playTextToSpeech(widget.post.body!);
                           },
                           child: _isLoadingVoice
                               ? const Center(child: CircularProgressIndicator())
-                              :  Icon(Icons.play_circle, color: AppColors.secondaryColor,),
+                              : Icon(
+                                  Icons.play_circle,
+                                  color: AppColors.secondaryColor,
+                                ),
                         ),
                       ],
                     )

@@ -18,6 +18,8 @@ dependencies:
   cloud_firestore:
   firebase_storage:
   firebase_core:
+  post_repository:
+    path: ../post_repository 
 
 dev_dependencies:
   flutter_test:

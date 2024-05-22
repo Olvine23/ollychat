@@ -42,7 +42,7 @@ class MyAppView extends StatelessWidget {
                       create: (context) => UpdateUserInfoBloc(
                           userRepository: context
                               .read<AuthenticationBloc>()
-                              .userRepository)),
+                              .userRepository, postRepository: FirebasePostRepository())),
                   BlocProvider(
                       create: (context) => MyUserBloc(
                           myUserRepository:

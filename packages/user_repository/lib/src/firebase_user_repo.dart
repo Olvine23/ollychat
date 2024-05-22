@@ -6,15 +6,20 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:post_repository/post_repository.dart';
 import 'package:user_repository/src/entities/entities.dart';
 import 'package:user_repository/src/models/my_user.dart';
 import 'package:user_repository/src/user_repo.dart';
 
 class FirebaseUserRepo implements UserRepository {
+
+  final postRepository = FirebasePostRepository();
+  
   FirebaseUserRepo({FirebaseAuth? firebaseAuth})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   final FirebaseAuth _firebaseAuth;
+  
   final usersCollection = FirebaseFirestore.instance.collection('users');
 
 //sign up user
@@ -137,9 +142,16 @@ class FirebaseUserRepo implements UserRepository {
 
   
   // update user data
-  Future<void> updateUserData(String userId, Map<String, dynamic> updates) async {
+  @override
+   Future<void> updateUserData(String userId, Map<String, dynamic> updates) async {
     try {
       await usersCollection.doc(userId).update(updates);
+
+      // Fetch updated user details
+      MyUser updatedUser = await getMyUser(userId);
+
+      // Update user details in posts
+      await postRepository.updateUserInPosts(updatedUser);
     } catch (e) {
       print(e);
       rethrow;

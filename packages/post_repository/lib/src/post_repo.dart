@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:user_repository/user_repository.dart';
+
 import 'models/models.dart';
 
 abstract class PostRepository{
@@ -9,5 +11,7 @@ abstract class PostRepository{
 	Future<List<Post>> getPost();
 
   Stream<List<Post>> getStreamPost();
+
+  Future<void> updateAllPostsForUser(MyUser updatedUser);
   
 }
