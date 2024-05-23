@@ -26,6 +26,7 @@ class MainHome extends StatelessWidget {
   Widget build(BuildContext context) {
     print(user!.uid);
     return Scaffold(
+      
       body: BlocBuilder<GetPostBloc, GetPostState>(
         builder: (context, state) {
           return RefreshIndicator(

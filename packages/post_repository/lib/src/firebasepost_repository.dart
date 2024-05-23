@@ -14,6 +14,7 @@ import 'package:uuid/uuid.dart';
  class FirebasePostRepository implements PostRepository {
   final postCollection = FirebaseFirestore.instance.collection('artcollection');
   final storage = FirebaseStorage.instance;
+   final int postsPerPage = 13; // Define the number of posts per page
 
   @override
   Future<Post> createPost(Post post, String image) async {
@@ -76,13 +77,14 @@ import 'package:uuid/uuid.dart';
   }
 
   @override
-  Future<List<Post>> getPost() {
+   Future<List<Post>> getPost(int page) {
     try {
       return postCollection.orderBy('createdAt', descending: true)
+          .limit(postsPerPage) // Limit the number of posts per page
           .get()
           .then((value) => value.docs.map((e) =>
-          Post.fromEntity(PostEntity.fromDocument(e.data()))
-      ).toList());
+              Post.fromEntity(PostEntity.fromDocument(e.data()))
+          ).toList());
     } catch (e) {
       print(e.toString());
       rethrow;

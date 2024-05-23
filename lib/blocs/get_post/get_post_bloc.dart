@@ -16,7 +16,7 @@ part 'get_post_state.dart';
       // Handle the GetPosts event here
      
       try {
-         List<Post> posts = await _postRepository.getPost();
+         List<Post> posts = await _postRepository.getPost(event.pageKey);
          emit(GetPostState.success(posts));
       } catch (_) {
         emit(GetPostState.failure());

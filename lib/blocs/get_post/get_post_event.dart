@@ -9,6 +9,9 @@ sealed class GetPostEvent extends Equatable {
 
 
 class GetPosts extends GetPostEvent{
+ final int pageKey; // Add this field
+
+  const GetPosts({this.pageKey = 1}); // Update constructor to accept an optional page key
   
 }
 

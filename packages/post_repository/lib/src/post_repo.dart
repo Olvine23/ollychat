@@ -8,7 +8,7 @@ abstract class PostRepository{
 
   Future<Post> createPost(Post post,String file);
 
-	Future<List<Post>> getPost();
+	Future<List<Post>> getPost(int page);
 
   Stream<List<Post>> getStreamPost();
 

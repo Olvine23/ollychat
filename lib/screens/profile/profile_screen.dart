@@ -156,7 +156,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         return BlocProvider<UpdateUserInfoBloc>(
                                           create: (context) => UpdateUserInfoBloc(userRepository: FirebaseUserRepo(), postRepository: 
                                           FirebasePostRepository()),
-                                          child: UpdateUserScreen(userId: state.user!.id),
+                                          child: UpdateUserScreen(userId: state.user!.id, dp: state.user!.image!,),
                                         );
                                       }));
                                     },

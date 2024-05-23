@@ -105,7 +105,8 @@ class DiscoverScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: state.posts?.length,
+                        // itemCount: state.posts?.length,
+                        itemCount: 10,
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
@@ -230,7 +231,8 @@ class DiscoverScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: state.posts?.length,
+                        // itemCount: state.posts?.length,
+                        itemCount: 10,
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
@@ -293,7 +295,7 @@ class DiscoverScreen extends StatelessWidget {
                     shrinkWrap: true, // Add this line
                     physics:
                         const NeverScrollableScrollPhysics(), // Add this line
-                    itemCount: state.posts?.length,
+                    itemCount: 10,
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () {
