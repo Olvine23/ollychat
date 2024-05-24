@@ -1,34 +1,78 @@
+import 'dart:io';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/blocs/updateuserinfo/update_user_info_bloc.dart';
 import 'package:olly_chat/screens/profile/components/custom_text_input.dart';
 import 'package:olly_chat/screens/profile/components/divider.dart';
 import 'package:olly_chat/theme/colors.dart';
 
-// ignore: must_be_immutable
-class UpdateUserScreen extends StatelessWidget {
+class UpdateUserScreen extends StatefulWidget {
   final String userId;
   final String dp;
 
   UpdateUserScreen({super.key, required this.userId, required this.dp});
 
+  @override
+  _UpdateUserScreenState createState() => _UpdateUserScreenState();
+}
+
+class _UpdateUserScreenState extends State<UpdateUserScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   bool loading = false;
+  File? _profileImage;
+
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      CroppedFile? croppedFile = await ImageCropper().cropImage(
+        sourcePath: pickedFile.path,
+        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+        aspectRatioPresets: [CropAspectRatioPreset.square],
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Theme.of(context).colorScheme.primary,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+          ),
+          IOSUiSettings(title: 'Cropper'),
+        ],
+      );
+      if (croppedFile != null) {
+        setState(() {
+          _profileImage = File(croppedFile.path);
+        });
+        // Trigger the bloc event to upload the image
+        context.read<UpdateUserInfoBloc>().add(UploadPicture(croppedFile.path, widget.userId));
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    print(dp);
     return BlocListener<UpdateUserInfoBloc, UpdateUserInfoState>(
       listener: (context, state) {
-        // TODO: implement listener
-        if (state is UpdateUserInfoSuccess) {
-          print("success");
+        if (state is UpdatePictureSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.green,
+              content: Text(
+                'Profile picture updated successfully.',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          );
         }
       },
       child: Scaffold(
@@ -45,9 +89,7 @@ class UpdateUserScreen extends StatelessWidget {
                   foregroundColor: Colors.white),
               child: const Text("Cancel"),
             ),
-            const SizedBox(
-              width: 4,
-            ),
+            const SizedBox(width: 4),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -60,9 +102,7 @@ class UpdateUserScreen extends StatelessWidget {
                   'name': _nameController.text,
                   'handle': _usernameController.text,
                 };
-                context
-                    .read<UpdateUserInfoBloc>()
-                    .add(UpdateMyUser(userId, updates));
+                context.read<UpdateUserInfoBloc>().add(UpdateMyUser(widget.userId, updates));
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     backgroundColor: Colors.green,
@@ -72,12 +112,11 @@ class UpdateUserScreen extends StatelessWidget {
                     ),
                   ),
                 );
-
                 Navigator.pop(context);
               },
               child: loading
                   ? const Center(child: CircularProgressIndicator())
-                  : const Text("Save "),
+                  : const Text("Save"),
             ),
           ],
           title: const Text(
@@ -90,58 +129,47 @@ class UpdateUserScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-
                 Center(
-      child: Stack(
-        children: [
-          CircleAvatar(
-            radius: 60,
-            backgroundColor: Colors.white,
-            backgroundImage: dp != null
-                ? NetworkImage(dp)
-                : NetworkImage(
-                    'https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png',
-                  ) as ImageProvider,
-          ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: InkWell(
-              onTap: (){
-                
-
-              },
-              child: CircleAvatar(
-                radius: 20,
-                backgroundColor: AppColors.secondaryColor,
-                child: Icon(
-                  Icons.edit,
-                  color: Colors.white,
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundColor: Colors.white,
+                        backgroundImage: _profileImage != null
+                            ? FileImage(_profileImage!)
+                            : NetworkImage(widget.dp) as ImageProvider,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: InkWell(
+                          onTap: _pickImage,
+                          child: CircleAvatar(
+                            radius: 20,
+                            backgroundColor: AppColors.secondaryColor,
+                            child: const Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    )
-                // CircleAvatar(
-                //   radius: 60,
-                //   backgroundColor: Colors.white,
-                //   backgroundImage: NetworkImage(dp ??
-                //       'https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png'),
-                // ),
-               , CustomTextInput(
+                CustomTextInput(
+                  lines: 1,
                   controller: _nameController,
                   text: "Display Name",
                 ),
                 SizedBox(height: 2.h),
                 CustomTextInput(
-                    controller: _usernameController, text: "Username"),
+                    controller: _usernameController, text: "Username", lines: 1,),
                 SizedBox(height: 2.h),
                 CustomTextInput(
-                    controller: _descriptionController, text: "Description"),
+                    controller: _descriptionController, text: "Description", lines: 2,),
                 SizedBox(height: 2.h),
-                DividerWidget(),
+                const DividerWidget(),
                 SizedBox(height: 2.h),
                 Align(
                     alignment: Alignment.centerLeft,
@@ -152,17 +180,16 @@ class UpdateUserScreen extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           fontSize: 19.dp),
                     )),
-                     SizedBox(height: 2.h),
-                     CustomTextInput(
-                    controller: _descriptionController, text: "WhatsApp"),
-                     SizedBox(height: 2.h),
-                     CustomTextInput(
-                    controller: _descriptionController, text: "Instagram"),
-                     SizedBox(height: 2.h),
-                     CustomTextInput(
-                    controller: _descriptionController, text: "X (Formerly Twitter)"),
-          
-                SizedBox(height: 20),
+                SizedBox(height: 2.h),
+                CustomTextInput(
+                    controller: _descriptionController, text: "WhatsApp", lines: 1,),
+                SizedBox(height: 2.h),
+                CustomTextInput(
+                    controller: _descriptionController, text: "Instagram", lines: 1,),
+                SizedBox(height: 2.h),
+                CustomTextInput(
+                    controller: _descriptionController, text: "X (Formerly Twitter)", lines: 1,),
+                const SizedBox(height: 20),
               ],
             ),
           ),

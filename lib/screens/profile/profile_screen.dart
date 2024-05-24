@@ -136,7 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           width: 50.dp,
                                           height: 50.dp,
                                           decoration: BoxDecoration(
-                                            color: Colors.red,
+                                            
                                             shape: BoxShape.circle,
                                             image: DecorationImage(
                                               image: NetworkImage(state.user!.image!),
