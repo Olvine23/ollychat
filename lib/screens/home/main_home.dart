@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
+import 'package:olly_chat/screens/bookmarks/bookmark.dart';
 import 'package:olly_chat/screens/home/components/row_title.dart';
 import 'package:olly_chat/screens/home/components/top-card.dart';
 import 'package:olly_chat/screens/home/components/top_section.dart';
@@ -16,6 +17,8 @@ import 'package:post_repository/post_repository.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:user_repository/user_repository.dart';
 
+import '../notifications/notification_screen.dart';
+
 class MainHome extends StatelessWidget {
   final user = FirebaseAuth.instance.currentUser;
   MainHome({super.key});
@@ -26,6 +29,42 @@ class MainHome extends StatelessWidget {
   Widget build(BuildContext context) {
     print(user!.uid);
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+         title: Text(
+                "VoiceHub",
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
+              ),
+
+        leading:Image.asset('assets/images/nobg.png', height: 100),
+        actions: [
+           IconButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context){
+                        return BookMarkScreen();
+                      }));
+                    },
+                    icon: Icon(
+                      Icons.bookmark_added_outlined,
+                      size: 30,
+                      color: AppColors.secondaryColor,
+                      
+                    )),
+
+                    IconButton(
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context){
+                      return NotificationScreen();
+                    }));
+                  },
+                  icon: Icon(Icons.notifications_outlined, size: 30, color: AppColors.secondaryColor,)),
+
+                    
+
+        ],
+
+      ),
       
       body: BlocBuilder<GetPostBloc, GetPostState>(
         builder: (context, state) {
@@ -39,10 +78,7 @@ class MainHome extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(right: 20.0, top: 10),
-                      child: TopSection(),
-                    ),
+                   
                     const Padding(
                       padding:
                           EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),

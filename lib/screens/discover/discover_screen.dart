@@ -27,20 +27,13 @@ class DiscoverScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Row(
-            children: [
-              Image.asset(
-                'assets/images/nobg.png',
-                height: 100,
-              ),
-              Text(
-                "Discover",
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineMedium!
-                    .copyWith(fontWeight: FontWeight.bold, fontSize: 20),
-              )
-            ],
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          leading: Image.asset('assets/images/nobg.png', height: 100),
+          centerTitle: false,
+          title: Text(
+            "Discover",
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
           ),
           actions: [
             Padding(
