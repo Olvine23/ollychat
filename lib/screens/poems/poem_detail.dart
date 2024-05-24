@@ -392,7 +392,7 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                       .bodyLarge!
                       .copyWith(fontWeight: FontWeight.w900),
                 ),
-                subtitle: const Text("@olly_poet"),
+                subtitle:  Text(widget.post.myUser.handle == null ? "handle": widget.post.myUser.handle!),
                 trailing: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
