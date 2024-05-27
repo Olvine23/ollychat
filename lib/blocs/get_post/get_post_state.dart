@@ -22,27 +22,29 @@ part of 'get_post_bloc.dart';
 enum GetPostStatus { success, failure, unknown }
 
 class GetPostState extends Equatable {
-  GetPostState({this.status = GetPostStatus.unknown, this.posts});
+  GetPostState({this.status = GetPostStatus.unknown, this.posts, this.pageKey=0});
 
   GetPostState.unkonwn() : this();
 
-  GetPostState.success(List<Post> posts)
-      : this(status: GetPostStatus.success, posts: posts);
+  GetPostState.success(List<Post> posts, {int pageKey = 0})
+      : this(status: GetPostStatus.success, posts: posts, pageKey: pageKey);
 
   GetPostState.failure()
       : this(status: GetPostStatus.failure);
 
   final GetPostStatus status;
   List<Post>? posts;
+  final int pageKey;
 
   GetPostState copyWith({
     GetPostStatus? status,
     List<Post>? posts,
+  
   }) {
     return GetPostState(
-        status: status ?? this.status, posts: posts ?? this.posts);
+        status: status ?? this.status, posts: posts ?? this.posts, pageKey: pageKey);
   }
 
   @override
-  List<Object?> get props => [status, posts];
+  List<Object?> get props => [status, posts , pageKey];
 }

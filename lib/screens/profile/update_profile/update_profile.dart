@@ -15,17 +15,20 @@ import 'package:olly_chat/theme/colors.dart';
 class UpdateUserScreen extends StatefulWidget {
   final String userId;
   final String dp;
+  final String bio;
+  final String name;
+  final String handle;
 
-  UpdateUserScreen({super.key, required this.userId, required this.dp});
+  UpdateUserScreen({super.key, required this.userId, required this.dp, required this.bio, required this.name, required this.handle});
 
   @override
   _UpdateUserScreenState createState() => _UpdateUserScreenState();
 }
 
 class _UpdateUserScreenState extends State<UpdateUserScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  late TextEditingController _nameController = TextEditingController();
+  late TextEditingController _usernameController = TextEditingController();
+  late TextEditingController _descriptionController = TextEditingController();
   bool loading = false;
   File? _profileImage;
 
@@ -57,6 +60,14 @@ class _UpdateUserScreenState extends State<UpdateUserScreen> {
         context.read<UpdateUserInfoBloc>().add(UploadPicture(croppedFile.path, widget.userId));
       }
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.name);
+    _descriptionController = TextEditingController(text: widget.bio);
+    _usernameController = TextEditingController(text: widget.handle);
   }
 
   @override
@@ -101,6 +112,7 @@ class _UpdateUserScreenState extends State<UpdateUserScreen> {
                 final updates = {
                   'name': _nameController.text,
                   'handle': _usernameController.text,
+                  'bio':_descriptionController.text
                 };
                 context.read<UpdateUserInfoBloc>().add(UpdateMyUser(widget.userId, updates));
                 ScaffoldMessenger.of(context).showSnackBar(

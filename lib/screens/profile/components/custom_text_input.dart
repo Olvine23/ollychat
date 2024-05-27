@@ -18,6 +18,7 @@ class CustomTextInput extends StatelessWidget {
       maxLines: lines,
       decoration:  InputDecoration(
         
+        
         labelText: text,
         labelStyle: const TextStyle(fontWeight: FontWeight.bold)
         ),

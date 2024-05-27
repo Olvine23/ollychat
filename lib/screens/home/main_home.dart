@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:lottie/lottie.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/screens/bookmarks/bookmark.dart';
@@ -108,6 +109,7 @@ state.posts!.where((post) => post.myUser.id == user!.uid).toList();
       return Column(
         children: [
           _buildArticleSection(context, 'Recent Articles', recentArticles),
+          SizedBox(height: 2.h,),
           _buildArticleSection(context, 'My Articles', myArticles),
         ],
       );
@@ -195,7 +197,8 @@ state.posts!.where((post) => post.myUser.id == user!.uid).toList();
                         author: articles[index].myUser.name,
                         authorImg: articles[index].myUser.image!,
                         daysago: articles[index].createdAt,
-                        title: articles[index].title,
+                        title: articles[index].title, authorId: articles[index].myUser.id,
+
                       ),
                     );
                   },

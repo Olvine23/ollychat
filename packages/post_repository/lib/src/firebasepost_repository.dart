@@ -14,7 +14,7 @@ import 'package:uuid/uuid.dart';
  class FirebasePostRepository implements PostRepository {
   final postCollection = FirebaseFirestore.instance.collection('artcollection');
   final storage = FirebaseStorage.instance;
-   final int postsPerPage = 13; // Define the number of posts per page
+   final int postsPerPage = 10; // Define the number of posts per page
 
   @override
   Future<Post> createPost(Post post, String image) async {
@@ -77,19 +77,24 @@ import 'package:uuid/uuid.dart';
   }
 
   @override
-   Future<List<Post>> getPost(int page) {
-    try {
-      return postCollection.orderBy('createdAt', descending: true)
-          .limit(postsPerPage) // Limit the number of posts per page
-          .get()
-          .then((value) => value.docs.map((e) =>
-              Post.fromEntity(PostEntity.fromDocument(e.data()))
-          ).toList());
-    } catch (e) {
-      print(e.toString());
-      rethrow;
+  Future<List<Post>> getPost({DocumentSnapshot? startAfter}) async {
+  try {
+    Query query = postCollection.orderBy('createdAt', descending: true);
+
+    if (startAfter != null) {
+      query = query.startAfterDocument(startAfter);
     }
+
+    QuerySnapshot querySnapshot = await query.get();
+
+    return querySnapshot.docs.map((doc) =>
+      Post.fromEntity(PostEntity.fromDocument(doc.data() as Map<String, dynamic>))
+    ).toList();
+  } catch (e) {
+    print(e.toString());
+    rethrow;
   }
+}
 
   @override
   Stream<List<Post>> getStreamPost() {

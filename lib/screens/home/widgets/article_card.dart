@@ -1,13 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:lottie/lottie.dart';
+import 'package:olly_chat/screens/profile/profile_screen.dart';
 import 'package:olly_chat/theme/colors.dart';
 
 import '../components/image_container.dart';
 
 class ArticleCard extends StatelessWidget {
   final String articleimg;
+  final String authorId;
   final String author;
   final String authorImg;
   final DateTime daysago;
@@ -21,7 +24,7 @@ class ArticleCard extends StatelessWidget {
     required this.author,
     required this.authorImg,
     required this.daysago,
-    required this.title, required this.genre,
+    required this.title, required this.genre, required this.authorId,
   });
 
     String formatTimeAgo(DateTime timestamp) {
@@ -63,6 +66,8 @@ class ArticleCard extends StatelessWidget {
       ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: CachedNetworkImage(
+            memCacheHeight: 500,
+                memCacheWidth: 500,
           imageUrl: articleimg,
           placeholder: (context, url) => Center(child: Lottie.asset('assets/lotti/imageload.json')),
           errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -129,7 +134,11 @@ class ArticleCard extends StatelessWidget {
                   height: 4.0.h,
                 ),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              // Navigator.push(context, MaterialPageRoute(builder: (context){
+              //   return ProfileScreen( );
+              // }));
+            },
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
