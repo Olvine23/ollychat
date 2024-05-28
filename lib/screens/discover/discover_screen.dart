@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
-import 'package:olly_chat/components/article_list_card.dart';
+ 
 import 'package:olly_chat/components/row_tile.dart';
 import 'package:olly_chat/screens/bookmarks/bookmark.dart';
 import 'package:olly_chat/screens/discover/components/container_image.dart';
