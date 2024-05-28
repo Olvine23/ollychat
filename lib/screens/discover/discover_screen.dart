@@ -7,8 +7,11 @@ import 'package:olly_chat/components/row_tile.dart';
 import 'package:olly_chat/screens/bookmarks/bookmark.dart';
 import 'package:olly_chat/screens/discover/components/container_image.dart';
 import 'package:olly_chat/screens/discover/components/writers_container.dart';
+import 'package:olly_chat/screens/discover/widgets/new_articles.dart';
 import 'package:olly_chat/screens/discover/widgets/post_list.dart';
 import 'package:olly_chat/screens/discover/widgets/section_title.dart';
+import 'package:olly_chat/screens/discover/widgets/topic_list.dart';
+import 'package:olly_chat/screens/discover/widgets/writers_list.dart';
 import 'package:olly_chat/screens/home/widgets/article_card.dart';
 import 'package:olly_chat/screens/home/widgets/shimmer_widget.dart';
 import 'package:olly_chat/screens/poems/poem_detail.dart';
@@ -56,16 +59,19 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
         ),
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return const BookMarkScreen();
-              }));
-            },
-            icon: Icon(
-              Icons.bookmark_added_outlined,
-              size: 30.dp,
-              color: AppColors.secondaryColor,
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return const BookMarkScreen();
+                }));
+              },
+              icon: Icon(
+                Icons.bookmark_added_outlined,
+                size: 30.dp,
+                color: AppColors.secondaryColor,
+              ),
             ),
           ),
         ],
@@ -76,10 +82,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20.dp),
-              child: const TextField(
+              child:  TextField(
                 decoration: InputDecoration(
+                  
                   labelText: 'Search for article or writer',
                   border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18)
                     
                   ),
                   prefixIcon: Icon(Icons.search),
@@ -96,7 +104,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             SizedBox(height: 2.h),
             const SectionTitle(title: 'Top Writers'),
              SizedBox(height: 1.h),
-            WriterList(),
+            const WriterList(),
             const SectionTitle(title: 'Our Recommendations'),
             // Your code for recommendations here
             
@@ -111,84 +119,5 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
 
 
-class TopicList extends StatelessWidget {
-  const TopicList({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height / 2 - 240,
-      child: ListView.builder(
-        cacheExtent: 1000,
-        scrollDirection: Axis.horizontal,
-        itemCount: 8,
-        itemBuilder: (context, index) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: ContainerImage(),
-          );
-        },
-      ),
-    );
-  }
-}
 
-class WriterList extends StatelessWidget {
-  const WriterList({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height / 2 - 260,
-      child: ListView.builder(
-        cacheExtent: 1000,
-        scrollDirection: Axis.horizontal,
-        itemCount: 8,
-        itemBuilder: (context, index) {
-          return const WritersContainer();
-        },
-      ),
-    );
-  }
-}
-
-class NewArticlesList extends StatelessWidget {
-  const NewArticlesList({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<GetPostBloc, GetPostState>(
-      builder: (context, state) {
-        if (state.status == GetPostStatus.success) {
-          return ListView.builder(
-            shrinkWrap: true,
-            cacheExtent: 1000,
-            physics: const NeverScrollableScrollPhysics(),
-            // itemCount: state.posts?.length ?? 0,
-            itemCount: 10,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  // Handle onTap
-                },
-                child: RowTile(
-                  imageUrl: state.posts![index].thumbnail!,
-                  title: state.posts![index].title,
-                  userAvatar: state.posts![index].myUser.image!,
-                  authorName: state.posts![index].myUser.name,
-                ),
-              );
-            },
-          );
-        } else if (state.status == GetPostStatus.unknown) {
-          return Shimmer.fromColors(
-            highlightColor: Colors.white54,
-            baseColor: const Color(0xffdedad7),
-            child: project_screen_shimmer(context),
-          );
-        }
-        return const Text("No data available"); // Handle other states
-      },
-    );
-  }
-}
