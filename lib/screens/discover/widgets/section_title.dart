@@ -22,7 +22,7 @@ class SectionTitle extends StatelessWidget {
             onTap: (){
 
          title == "Explore by topics" ? Navigator.push(context, MaterialPageRoute(builder: (context){
-          return const CategoryListScreen();
+          return CategoryListScreen();
          }))  :  Navigator.push(context, MaterialPageRoute(builder: (context){
                 return AllItemsScreen(scrollController: scrollController,);
               }));

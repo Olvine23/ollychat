@@ -96,7 +96,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             ),
            SectionTitle(title: 'Explore by topics', scrollController: _scrollController,),
           
-            const TopicList(),
+             TopicList(),
              SizedBox(height: 2.h),
             const SectionTitle(title: 'Most Popular'),
             

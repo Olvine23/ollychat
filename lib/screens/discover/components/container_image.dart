@@ -5,7 +5,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 
 class ContainerImage extends StatelessWidget {
-  const ContainerImage({super.key});
+  final String categ;
+  final String image;
+  const ContainerImage({super.key, required this.categ, required this.image});
 
   @override
   Widget build(BuildContext context) {
@@ -14,10 +16,12 @@ class ContainerImage extends StatelessWidget {
       width: 220,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          image: const DecorationImage(
+          image: DecorationImage(
               image: NetworkImage(
-                  'https://images.unsplash.com/photo-1712334627388-8ef7423ac180?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwzNXx8fGVufDB8fHx8fA%3D%3D'),
-              fit: BoxFit.cover)),
+                  image),
+              fit: BoxFit.cover)
+              
+              ),
       child:  Container(
         
         decoration:  BoxDecoration(
@@ -34,7 +38,7 @@ class ContainerImage extends StatelessWidget {
             child: Column(
               mainAxisAlignment:MainAxisAlignment.end,
               children: [
-                Text("Category",
+                Text(categ,
                  
                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white, fontSize: 18.dp, fontWeight: FontWeight.bold)),
                  Text("10 Articles", style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white, fontSize: 12.dp))
