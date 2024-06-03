@@ -47,7 +47,7 @@ class AllItemsScreen extends StatelessWidget {
                           imageUrl: state.posts![index].thumbnail!,
                           title: state.posts![index].title,
                           userAvatar: state.posts![index].myUser.image!,
-                          authorName: state.posts![index].myUser.name,
+                          authorName: state.posts![index].myUser.name, authorId: state.posts![index].myUser.id,
                         ),
                         // Uncomment if you want to use ArticleCard instead of RowTile
                         // child: ArticleCard(
