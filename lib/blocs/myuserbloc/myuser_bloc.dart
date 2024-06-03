@@ -51,6 +51,17 @@ class MyUserBloc extends Bloc<MyUserEvent, MyUserState> {
       }
     });
 
+
+       on<GetAllUsers>((event, emit) async {
+      try {
+        List<MyUser> users = await _userRepository.getAllUsers();
+        emit(MyUserState.usersSuccess(users));
+      } catch (e) {
+        log(e.toString());
+        emit(const MyUserState.failure());
+      }
+    });
+
     // on<UpdateMyUser>((event, emit) async {
     //   try {
     //     await _userRepository.updateUserData(event.userId, event.updates);

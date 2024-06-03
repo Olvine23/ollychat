@@ -53,7 +53,7 @@ class CategoryListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
+          title:const Text(
             "Explore By Topics",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),

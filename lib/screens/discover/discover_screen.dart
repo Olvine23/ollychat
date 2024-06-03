@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
- 
+import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
+
 import 'package:olly_chat/components/row_tile.dart';
 import 'package:olly_chat/screens/bookmarks/bookmark.dart';
 import 'package:olly_chat/screens/discover/components/container_image.dart';
@@ -17,6 +18,7 @@ import 'package:olly_chat/screens/home/widgets/shimmer_widget.dart';
 import 'package:olly_chat/screens/poems/poem_detail.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:user_repository/user_repository.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -35,7 +37,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
       context.read<GetPostBloc>().add(const LoadMorePosts(pageKey: 3));
     }
   }
@@ -56,7 +59,10 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         backgroundColor: Colors.transparent,
         title: Text(
           "Discover",
-          style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(fontWeight: FontWeight.bold),
         ),
         actions: [
           Padding(
@@ -82,32 +88,35 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20.dp),
-              child:  TextField(
+              child: TextField(
                 decoration: InputDecoration(
-                  
                   labelText: 'Search for article or writer',
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(18)
-                    
-                  ),
+                      borderRadius: BorderRadius.circular(18)),
                   prefixIcon: Icon(Icons.search),
                 ),
               ),
             ),
-           SectionTitle(title: 'Explore by topics', scrollController: _scrollController,),
-          
-             TopicList(),
-             SizedBox(height: 2.h),
+            SectionTitle(
+              title: 'Explore by topics',
+              scrollController: _scrollController,
+            ),
+
+            TopicList(),
+            SizedBox(height: 2.h),
             const SectionTitle(title: 'Most Popular'),
-            
+
             const PostList(),
             SizedBox(height: 2.h),
-            const SectionTitle(title: 'Top Writers'),
-             SizedBox(height: 1.h),
-            const WriterList(),
+            // const SectionTitle(title: 'Top Writers'),
+            // SizedBox(height: 1.h),
+            // BlocProvider<MyUserBloc>(
+            //   create: (context) => MyUserBloc(myUserRepository: FirebaseUserRepo()),
+            //   child: const WriterList(),
+            // ),
             const SectionTitle(title: 'Our Recommendations'),
             // Your code for recommendations here
-            
+
             const NewArticlesList(),
           ],
         ),
@@ -115,9 +124,3 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 }
-
-
-
-
-
-

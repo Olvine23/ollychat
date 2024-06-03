@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const DiscoverScreen(),
  ScreenShotSnip(image: '', articlesnip: '',),
 //  UpdateUserScreen(userId: FirebaseAuth.instance.currentUser!.uid)
-  ProfileScreen( )
+  ProfileScreen(userId: FirebaseAuth.instance.currentUser!.uid, )
   ];
 
   void _onItemTapped(int index) {

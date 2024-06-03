@@ -249,6 +249,21 @@ class FirebaseUserRepo implements UserRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<List<MyUser>> getAllUsers() async {
+  try {
+    QuerySnapshot snapshot = await usersCollection.get();
+    return snapshot.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      return MyUser.fromEntity(MyUserEntity.fromDocument(data));
+    }).toList();
+  } catch (e) {
+    print(e);
+    rethrow;
+  }
+}
+
 }
 
 

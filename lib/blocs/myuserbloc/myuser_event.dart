@@ -44,6 +44,8 @@ class UnfollowUser extends MyUserEvent {
   List<Object> get props => [currentUserId, targetUserId];
 }
 
+class GetAllUsers extends MyUserEvent {}
+
 
 
  
