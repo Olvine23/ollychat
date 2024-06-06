@@ -24,17 +24,16 @@ class NewArticlesList extends StatelessWidget {
               return GestureDetector(
                 onTap: () {
                   // Handle onTap
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context){
+
                     return PoemDetailScreen(post: state.posts![index]);
                   }));
                 },
                 child: RowTile(
-                  imageUrl: state.posts![index].thumbnail == '' ? 'https://png.pngtree.com/png-vector/20190820/ourmid/pngtree-no-image-vector-illustration-isolated-png-image_1694547.jpg' : state.posts![index].thumbnail! ,
+                  imageUrl: state.posts![index].thumbnail!,
                   title: state.posts![index].title,
-                  userAvatar: state.posts![index].myUser.image == ''
-                      ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png'
-                      : state.posts![index].myUser.image!,
-                  authorName: state.posts![index].myUser.name, authorId:  state.posts![index].myUser.id, daysago: state.posts![index].createdAt,
+                  userAvatar: state.posts![index].myUser.image!,
+                  authorName: state.posts![index].myUser.name, daysago: state.posts![index].createdAt,
                 ),
               );
             },

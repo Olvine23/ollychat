@@ -1,17 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:lottie/lottie.dart';
-import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
-import 'package:olly_chat/blocs/updateuserinfo/update_user_info_bloc.dart';
-import 'package:olly_chat/screens/profile/profile_screen.dart';
 import 'package:olly_chat/theme/colors.dart';
-import 'package:post_repository/post_repository.dart';
-import 'package:user_repository/user_repository.dart';
 
 class RowTile extends StatelessWidget {
-  final String authorId;
   final String imageUrl;
   final String title;
    final DateTime daysago;
@@ -22,7 +15,7 @@ class RowTile extends StatelessWidget {
     required this.imageUrl,
     required this.title,
     required this.userAvatar,
-    required this.authorName, required this.authorId, required this.daysago,
+    required this.authorName, required this.daysago,
   });
 
     String formatTimeAgo(DateTime timestamp) {
@@ -56,7 +49,7 @@ class RowTile extends StatelessWidget {
               child: CachedNetworkImage(
                 memCacheHeight: 500,
                 memCacheWidth: 500,
-                imageUrl: imageUrl == '' ? 'https://png.pngtree.com/png-vector/20190820/ourmid/pngtree-no-image-vector-illustration-isolated-png-image_1694547.jpg' : imageUrl ,
+                imageUrl: imageUrl,
                 placeholder: (context, url) =>
                     Center(child: Lottie.asset('assets/lotti/imageload.json')),
                 errorWidget: (context, url, error) => Icon(Icons.error),
@@ -115,49 +108,27 @@ class RowTile extends StatelessWidget {
                 SizedBox(
                   height: 8,
                 ),
-                GestureDetector(
-                  onTap: (){
-                     Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return MultiBlocProvider(
-                  providers: [
-                    BlocProvider<UpdateUserInfoBloc>(
-                      create: (context) => UpdateUserInfoBloc(
-                          userRepository: FirebaseUserRepo(),
-                          postRepository: FirebasePostRepository()),
+                Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(userAvatar),
+                      radius: 20,
+                      backgroundColor: AppColors.primaryColor,
                     ),
-                    BlocProvider<MyUserBloc>(
-                      create: (context) => MyUserBloc(myUserRepository: FirebaseUserRepo()),
+                    SizedBox(
+                      width: 4.dp,
+                    ),
+                    Text(
+                      authorName,
+                      textAlign: TextAlign.justify,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall!
+                          .copyWith(
+                            color: AppColors.secondaryColor,
+                            fontWeight: FontWeight.bold),
                     ),
                   ],
-                  child: ProfileScreen(
-                    userId: authorId,
-                  ),
-                );
-              }));
-                  },
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: NetworkImage(userAvatar == ''
-                            ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png'
-                            : userAvatar),
-                        radius: 20,
-                        backgroundColor: AppColors.white,
-                      ),
-                      SizedBox(
-                        width: 4.dp,
-                      ),
-                      Expanded(
-                        child: Text(
-                          authorName,
-                          textAlign: TextAlign.justify,
-                          style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                              color: AppColors.secondaryColor,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
                 SizedBox(
                   height: 8,

@@ -38,21 +38,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     // Fetch user details using the provided userId
-    BlocProvider.of<MyUserBloc>(context)
-        .add(GetMyUser(myUserId: widget.userId));
+    BlocProvider.of<MyUserBloc>(context).add(GetMyUser(myUserId: widget.userId));
     BlocProvider.of<GetPostBloc>(context).add(GetPosts());
   }
 
   @override
   Widget build(BuildContext context) {
-   
     final currentUserId = FirebaseAuth.instance.currentUser!.uid;
     isSameUser = currentUserId == widget.userId;
 
     return RefreshIndicator(
       onRefresh: () async {
-        BlocProvider.of<MyUserBloc>(context)
-            .add(GetMyUser(myUserId: widget.userId));
+        BlocProvider.of<MyUserBloc>(context).add(GetMyUser(myUserId: widget.userId));
         BlocProvider.of<GetPostBloc>(context).add(GetPosts());
       },
       child: BlocListener<UpdateUserInfoBloc, UpdateUserInfoState>(
@@ -101,8 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               builder: (BuildContext context, BoxConstraints constraints) {
                 return SingleChildScrollView(
                   child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(minHeight: constraints.maxHeight),
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
                     child: Column(
                       children: [
                         SizedBox(height: 8.dp),
@@ -133,8 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               );
                                               if (image != null) {
                                                 CroppedFile? croppedFile =
-                                                    await ImageCropper()
-                                                        .cropImage(
+                                                    await ImageCropper().cropImage(
                                                   sourcePath: image.path,
                                                   aspectRatio:
                                                       const CropAspectRatio(
@@ -145,10 +140,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   uiSettings: [
                                                     AndroidUiSettings(
                                                       toolbarTitle: 'Cropper',
-                                                      toolbarColor:
-                                                          Theme.of(context)
-                                                              .colorScheme
-                                                              .primary,
+                                                      toolbarColor: Theme.of(
+                                                              context)
+                                                          .colorScheme
+                                                          .primary,
                                                       toolbarWidgetColor:
                                                           Colors.white,
                                                       initAspectRatio:
@@ -195,8 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             decoration: BoxDecoration(
                                               shape: BoxShape.circle,
                                               image: DecorationImage(
-                                                image:
-                                                    NetworkImage(user.image!),
+                                                image: NetworkImage(user.image!),
                                                 fit: BoxFit.cover,
                                               ),
                                             ),
@@ -210,8 +204,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               fontSize: 18.dp,
                                               fontWeight: FontWeight.bold),
                                     ),
-                                    subtitle: Text(
-                                        '@${user.handle ?? "handle"}',
+                                    subtitle: Text('@${user.handle ?? "handle"}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium!
@@ -253,18 +246,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 foregroundColor: Colors.white,
                                                 backgroundColor:
                                                     AppColors.primaryColor),
-                                            onPressed: () {},
+                                            onPressed: () {
+                                             
+                                            },
                                             child: const Text("Follow"),
                                           ),
                                   ),
                                 ],
                               );
                             } else if (state.status == MyUserStatus.failure) {
-                              return Center(
-                                  child: Text(state.status.toString()));
+                              return Center(child: Text(state.status.toString()));
                             }
-                            return const Center(
-                                child: CircularProgressIndicator());
+                            return const Center(child: CircularProgressIndicator());
                           },
                         ),
                         SizedBox(height: 8.dp),
@@ -275,15 +268,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               const DividerWidget(),
                               SizedBox(height: 8.dp),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: [
                                   Column(
                                     children: [
                                       BlocBuilder<GetPostBloc, GetPostState>(
                                         builder: (context, state) {
-                                          if (state.status ==
-                                              GetPostStatus.success) {
+                                          if (state.status == GetPostStatus.success) {
                                             myArticles = state.posts!
                                                 .where((post) =>
                                                     post.myUser.id ==
@@ -295,8 +286,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   .textTheme
                                                   .titleMedium!
                                                   .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                      fontWeight: FontWeight.bold),
                                             );
                                           } else {
                                             return const CircularProgressIndicator();
@@ -350,11 +340,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       128.dp,
                                   child: BlocBuilder<GetPostBloc, GetPostState>(
                                     builder: (context, state) {
-                                      if (state.status ==
-                                          GetPostStatus.success) {
+                                      if (state.status == GetPostStatus.success) {
                                         myArticles = state.posts!
                                             .where((post) =>
-                                                post.myUser.id == widget.userId)
+                                                post.myUser.id ==
+                                                widget.userId)
                                             .toList();
                                         return TabBarView(
                                           children: [
@@ -399,40 +389,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                                     builder:
                                                                         (context) {
                                                               return PoemDetailScreen(
-                                                                  post: myArticles[
-                                                                      index]);
+                                                                  post:
+                                                                      myArticles[
+                                                                          index]);
                                                             }));
                                                           },
                                                           child: RowTile(
                                                             imageUrl:
-                                                                myArticles[
-                                                                        index]
+                                                                myArticles[index]
                                                                     .thumbnail!,
-                                                            title: myArticles[
-                                                                    index]
-                                                                .title,
+                                                            title:
+                                                                myArticles[index]
+                                                                    .title,
                                                             userAvatar:
-                                                                myArticles[
-                                                                        index]
+                                                                myArticles[index]
                                                                     .myUser
                                                                     .image!,
                                                             authorName:
-                                                                myArticles[
-                                                                        index]
+                                                                myArticles[index]
                                                                     .myUser
-                                                                    .name,
-                                                            authorId:
-                                                                myArticles[
-                                                                        index]
-                                                                    .myUser
-                                                                    .id, daysago: myArticles[index].createdAt,
+                                                                    .name, daysago: myArticles[index].createdAt,
                                                           ),
                                                         );
                                                 },
                                               ),
                                             ),
-                                            BlocBuilder<MyUserBloc,
-                                                MyUserState>(
+                                            BlocBuilder<MyUserBloc, MyUserState>(
                                               builder: (context, state) {
                                                 final user = state.user;
                                                 if (user == null) {
@@ -459,18 +441,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold,
-                                                                fontSize:
-                                                                    18.dp),
+                                                                fontSize: 18.dp),
                                                       ),
                                                       SizedBox(height: 8.dp),
                                                       Text(
                                                           user.bio == null
                                                               ? "Lorem ipsum dolor sit amet,  t"
                                                               : user.bio!,
-                                                          style:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodyLarge),
+                                                          style: Theme.of(context)
+                                                              .textTheme
+                                                              .bodyLarge),
                                                       SizedBox(height: 8.dp),
                                                       const DividerWidget(),
                                                       SizedBox(height: 8.dp),
@@ -483,8 +463,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold,
-                                                                fontSize:
-                                                                    18.dp),
+                                                                fontSize: 18.dp),
                                                       ),
                                                       SizedBox(height: 8.dp),
                                                       const SocialHandles(
@@ -522,8 +501,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         return Shimmer.fromColors(
                                           highlightColor: Colors.white54,
                                           baseColor: const Color(0xffdedad7),
-                                          child:
-                                              project_screen_shimmer(context),
+                                          child: project_screen_shimmer(context),
                                         );
                                       }
                                       return const Text("No data available");

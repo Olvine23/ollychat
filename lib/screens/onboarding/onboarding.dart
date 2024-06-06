@@ -19,20 +19,7 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive, overlays: []);
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive, overlays: []);
-  }
-
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(

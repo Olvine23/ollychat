@@ -60,14 +60,7 @@ class RecentArticles extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: posts.length,
               itemBuilder: (context, index) {
-                return GestureDetector(onTap: () {
-                   Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  PoemDetailScreen(post: posts[index])),
-                        );
-                }, child:  RowTile(imageUrl: posts[index].thumbnail!, title: posts[index].title, userAvatar: posts[index].myUser.image!, authorName: posts[index].myUser.name, authorId: posts[index].myUser.id, daysago: posts[index].createdAt,));
+                return GestureDetector(onTap: () {}, child:  RowTile(imageUrl: posts[index].thumbnail!, title: posts[index].title, userAvatar: posts[index].myUser.image!, authorName: posts[index].myUser.name, daysago: posts[index].createdAt,));
 
                 // return Text(
                 //     '${state.posts[index].title} uploaded by ${state.posts[index].myUser.name}');
