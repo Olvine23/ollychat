@@ -25,6 +25,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool containsNumber = false;
   bool containsSpecialChar = false;
   bool contains8Length = false;
+  final confirmPasswordController = TextEditingController(); 
+   bool obscureText = true;
 
   @override
   Widget build(BuildContext context) {
@@ -87,11 +89,49 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             alignment: Alignment.topLeft,
                             child: Text("Enter Password")),
                         CustomTextField(
+                           suffixIcon: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  obscureText = !obscureText;
+                                });
+                              },
+                              child: Icon(
+                                  obscureText
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: Colors.grey),
+                            ),
                           controller: passwordController,
                           hintText: 'Password',
-                          obscureText: obscurePPassword,
+                          obscureText: obscureText,
                           keyboardType: TextInputType.visiblePassword,
                         ),
+                          const SizedBox(height: 10),
+                      const Align(alignment: Alignment.topLeft, child: Text("Confirm Password")),
+                         CustomTextField(
+                           suffixIcon: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  obscureText = !obscureText;
+                                });
+                              },
+                              child: Icon(
+                                  obscureText
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: Colors.grey),
+                            ),
+                        controller: confirmPasswordController,
+                        hintText: 'Confirm Password',
+                        obscureText: obscureText, // Always obscure the confirm password field
+                        keyboardType: TextInputType.visiblePassword,
+                        validator: (value) {
+                          if (value != passwordController.text) {
+                            return 'Passwords do not match';
+                          }
+                          return null;
+                        },
+                      ),
                           const SizedBox(
                           height: 20,
                         ),
