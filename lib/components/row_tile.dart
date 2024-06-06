@@ -14,6 +14,7 @@ class RowTile extends StatelessWidget {
   final String authorId;
   final String imageUrl;
   final String title;
+   final DateTime daysago;
   final String userAvatar;
   final String authorName;
   const RowTile({
@@ -21,8 +22,23 @@ class RowTile extends StatelessWidget {
     required this.imageUrl,
     required this.title,
     required this.userAvatar,
-    required this.authorName, required this.authorId,
+    required this.authorName, required this.authorId, required this.daysago,
   });
+
+    String formatTimeAgo(DateTime timestamp) {
+    Duration difference = DateTime.now().difference(timestamp);
+
+    if (difference.inDays > 0) {
+      return '${difference.inDays} days ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} hours ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} minutes ago';
+    } else {
+      return 'just now';
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -70,12 +86,31 @@ class RowTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge!
+                            .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                    ),
+                     Expanded(
+                       child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                       
+                          children: [
+                            Icon(Icons.favorite, color: Colors.red,),
+                            SizedBox(width: 1.4.w,),
+                            Text("999 likes", style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold, color: AppColors.secondaryColor)
+                            ,)
+                          ],
+                        ),
+                     )
+                  ],
                 ),
                 SizedBox(
                   height: 8,
@@ -112,12 +147,14 @@ class RowTile extends StatelessWidget {
                       SizedBox(
                         width: 4.dp,
                       ),
-                      Text(
-                        authorName,
-                        textAlign: TextAlign.justify,
-                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                            color: AppColors.secondaryColor,
-                            fontWeight: FontWeight.bold),
+                      Expanded(
+                        child: Text(
+                          authorName,
+                          textAlign: TextAlign.justify,
+                          style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                              color: AppColors.secondaryColor,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),
@@ -128,19 +165,9 @@ class RowTile extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("2 days ago"),
-                    SizedBox(
-                      width: 10.dp,
-                    ),
-                    Expanded(
-                      child: Container(
-                        child: Row(children: [
-                          Icon(Icons.bookmark),
-                          IconButton(
-                              onPressed: () {}, icon: Icon(Icons.more_horiz))
-                        ]),
-                      ),
-                    )
+                    Text( formatTimeAgo(daysago),),
+                   
+                    Icon(Icons.bookmark, color: AppColors.secondaryColor,)
                   ],
                 )
               ],

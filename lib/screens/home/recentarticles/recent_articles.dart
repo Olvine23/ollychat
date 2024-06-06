@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:olly_chat/components/row_tile.dart';
+import 'package:olly_chat/screens/poems/poem_detail.dart';
 import 'package:post_repository/post_repository.dart';
 
 class RecentArticles extends StatelessWidget {
@@ -37,7 +38,7 @@ class RecentArticles extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "48 Articles",
+                    "${posts.length} Articles",
                     style: Theme.of(context)
                         .textTheme
                         .bodyLarge!
@@ -59,7 +60,14 @@ class RecentArticles extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: posts.length,
               itemBuilder: (context, index) {
-                return GestureDetector(onTap: () {}, child:  RowTile(imageUrl: posts[index].thumbnail!, title: posts[index].title, userAvatar: posts[index].myUser.image!, authorName: posts[index].myUser.name, authorId: posts[index].myUser.id,));
+                return GestureDetector(onTap: () {
+                   Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  PoemDetailScreen(post: posts[index])),
+                        );
+                }, child:  RowTile(imageUrl: posts[index].thumbnail!, title: posts[index].title, userAvatar: posts[index].myUser.image!, authorName: posts[index].myUser.name, authorId: posts[index].myUser.id, daysago: posts[index].createdAt,));
 
                 // return Text(
                 //     '${state.posts[index].title} uploaded by ${state.posts[index].myUser.name}');

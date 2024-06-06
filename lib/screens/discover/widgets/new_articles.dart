@@ -34,7 +34,7 @@ class NewArticlesList extends StatelessWidget {
                   userAvatar: state.posts![index].myUser.image == ''
                       ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png'
                       : state.posts![index].myUser.image!,
-                  authorName: state.posts![index].myUser.name, authorId:  state.posts![index].myUser.id,
+                  authorName: state.posts![index].myUser.name, authorId:  state.posts![index].myUser.id, daysago: state.posts![index].createdAt,
                 ),
               );
             },

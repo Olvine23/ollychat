@@ -45,7 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.userId);
+   
     final currentUserId = FirebaseAuth.instance.currentUser!.uid;
     isSameUser = currentUserId == widget.userId;
 
@@ -425,7 +425,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                                 myArticles[
                                                                         index]
                                                                     .myUser
-                                                                    .id,
+                                                                    .id, daysago: myArticles[index].createdAt,
                                                           ),
                                                         );
                                                 },

@@ -51,6 +51,8 @@ dependencies:
   infinite_scroll_pagination: ^4.0.0
   awesome_snackbar_content: ^0.1.1
   cloud_firestore: ^4.15.8
+  firebase_messaging: ^14.7.19
+  liquid_swipe: ^3.1.0
 
 dev_dependencies:
   flutter_test:
