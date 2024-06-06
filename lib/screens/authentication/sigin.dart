@@ -38,6 +38,15 @@ class _SignInScreenState extends State<SignInScreen> {
           setState(() {
             signInRequired = false;
           });
+               ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.green,
+              content: Text(
+                'Login successful',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          );
         } else if (state is SignInProcess) {
           setState(() {
             signInRequired = true;
@@ -123,6 +132,10 @@ class _SignInScreenState extends State<SignInScreen> {
                                   context.read<SignInBloc>().add(SignInRequired(
                                       emailController.text,
                                       passwordController.text));
+
+                                  
+
+
                                 }
                               })
                          

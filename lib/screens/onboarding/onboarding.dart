@@ -11,22 +11,28 @@ class OnboardingScreen extends StatefulWidget {
   final Color textColor;
   final String slogan;
   final String backgroundColor;
-   
-  const OnboardingScreen({super.key, required this.image, required this.headText, required this.slogan, required this.backgroundColor, required this.textColor, required this.color});
+
+  const OnboardingScreen({
+    super.key,
+    required this.image,
+    required this.headText,
+    required this.slogan,
+    required this.backgroundColor,
+    required this.textColor,
+    required this.color,
+  });
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
- 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: widget.color,
-      
       body: Padding(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: Stack(
           children: [
             Align(
@@ -38,7 +44,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               right: 10,
               child: GestureDetector(
                 onTap: () {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) {
+                    print("Navigating to WelcomeScreen from OnboardingScreen");
                     return WelcomeScreen();
                   }));
                 },
@@ -53,31 +61,42 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Image.asset(widget.image),
             ),
             Positioned(
-              bottom: 160,
+              bottom: 140,
               left: 15,
-              right: 15, // Add right to allow for padding/margin on the right
+              right: 15,
               child: Text(
-                "Welcome to VoiceHub",
+                widget.headText,
                 style: TextStyle(
                   color: widget.textColor,
-                  fontSize: 22.dp, fontWeight: FontWeight.bold),
-                overflow: TextOverflow.visible, // Handle overflow
+                  fontSize: 22.dp,
+                  fontWeight: FontWeight.bold,
+                ),
+                overflow: TextOverflow.visible,
               ),
             ),
             Positioned(
-              bottom: 100,
+              bottom: 83,
               left: 15,
-              right: 15, // Add right to allow for padding/margin on the right
+              right: 15,
               child: Text(
                 "Unleash your thoughts and craft them to a reality",
                 style: TextStyle(fontSize: 16, color: widget.textColor),
-                overflow: TextOverflow.visible, // Handle overflow
+                overflow: TextOverflow.visible,
               ),
             ),
             Align(
               alignment: Alignment.bottomCenter,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      print(
+                          "Navigating to WelcomeScreen from OnboardingScreen (Get Started)");
+                      return WelcomeScreen();
+                    }),
+                  );
+                },
                 child: Text("Get Started"),
               ),
             ),

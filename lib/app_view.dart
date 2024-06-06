@@ -6,7 +6,6 @@ import 'package:olly_chat/blocs/connectivity_bloc/connectivity_bloc_bloc.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/blocs/sign_in/sign_in_bloc.dart';
-import 'package:olly_chat/screens/onboarding/onboarding.dart';
 import 'package:olly_chat/screens/onboarding/swipe_page.dart';
 import 'package:olly_chat/screens/welcome_screen.dart';
 import 'package:olly_chat/theme/app_theme.dart';
@@ -63,6 +62,8 @@ class MyAppView extends StatelessWidget {
               );
             } else {
               return SwipePage();
+              //initially
+              // return WelcomeScreen();
             }
           },
         ),
