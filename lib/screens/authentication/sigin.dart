@@ -19,6 +19,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+   bool obscureText = true;
 
   String? _errorMsg;
   bool signInRequired = false;
@@ -91,9 +92,21 @@ class _SignInScreenState extends State<SignInScreen> {
                         height: 10,
                       ),
                       CustomTextField(
+                         suffixIcon: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  obscureText = !obscureText;
+                                });
+                              },
+                              child: Icon(
+                                  obscureText
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: Colors.grey),
+                            ),
                         controller: passwordController,
                         hintText: 'Password',
-                        obscureText: obscurePPassword,
+                        obscureText: obscureText,
                         keyboardType: TextInputType.visiblePassword,
                       ),
                       const SizedBox(

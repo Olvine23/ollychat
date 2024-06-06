@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:olly_chat/screens/onboarding/widgets/commontext.dart';
 import 'package:olly_chat/screens/welcome_screen.dart';
+import 'package:olly_chat/theme/colors.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final String image;
@@ -87,6 +88,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Align(
               alignment: Alignment.bottomCenter,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryColor,
+                  minimumSize: const Size.fromHeight(50),
+                ),
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
@@ -97,7 +102,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     }),
                   );
                 },
-                child: Text("Get Started"),
+                child: Text("Get Started", style: TextStyle(color: Colors.white),),
               ),
             ),
           ],
