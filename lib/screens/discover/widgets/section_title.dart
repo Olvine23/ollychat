@@ -15,8 +15,9 @@ class SectionTitle extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleMedium!.copyWith(
-            fontWeight: FontWeight.bold
+          Text(title, style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: 18
           )),
           GestureDetector(
             onTap: (){

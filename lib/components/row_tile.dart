@@ -87,8 +87,8 @@ class RowTile extends StatelessWidget {
                         title,
                         style: Theme.of(context)
                             .textTheme
-                            .bodyLarge!
-                            .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
+                            .bodySmall!
+                            .copyWith(fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                     ),
                      Expanded(

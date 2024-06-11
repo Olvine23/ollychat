@@ -132,7 +132,7 @@ class ArticleCard extends StatelessWidget {
                       Row(
                         children: [
                           Icon(Icons.favorite, color: AppColors.secondaryColor,),
-                          Text("999 likes")
+                          Text("999")
                         ],
                       )
                     ],

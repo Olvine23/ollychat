@@ -5,6 +5,7 @@ import 'package:olly_chat/blocs/create_post/create_post_bloc.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/blocs/sign_in/sign_in_bloc.dart';
+import 'package:olly_chat/screens/poems/add_ai.dart';
 import 'package:olly_chat/screens/poems/add_poem_screen.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:post_repository/post_repository.dart';
@@ -77,7 +78,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                           return BlocProvider<CreatePostBloc>(
                             create: (context) => CreatePostBloc(
                                 postRepositry: FirebasePostRepository()),
-                            child: AddPoemScreen(state.user!),
+                            child: AddWithAI(state.user!),
                           );
                         }));
 
