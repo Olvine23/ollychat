@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
@@ -53,7 +52,7 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
   final gemmy = GoogleGemini(apiKey: apiKey!);
   @override
   Widget build(BuildContext context) {
-    log(post.toString());
+  print(bodyController.text);
 
     return BlocListener<CreatePostBloc, CreatePostState>(
       listener: (context, state) {
@@ -99,36 +98,37 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                     color: AppColors.primaryColor,
                   )),
               onPressed: () async {
-                setState(() {
-                  loading = true;
-                });
-                await gemmy
-                    .generateFromTextAndImages(
-                        image: imageFile!,
-                        query:
-                            "Compose an interesting poem from the image which has the name ${titleController.text}. Let the poem deliver heartfelt emotions")
-                    .then((value) {
-                  setState(() {
-                    loading = true;
-                  });
-                  post.body = value.text;
-                }).onError((error, stackTrace) {
-                  setState(() {
-                    loading = false;
-                  });
+                // setState(() {
+                //   loading = true;
+                // });
+                // await gemmy
+                //     .generateFromTextAndImages(
+                //         image: imageFile!,
+                //         query:
+                //             "Compose an interesting poem from the image which has the name ${titleController.text}. Let the poem deliver heartfelt emotions")
+                //     .then((value) {
+                //   setState(() {
+                //     loading = true;
+                //   });
+                //   post.body = value.text;
+                // }).onError((error, stackTrace) {
+                //   setState(() {
+                //     loading = false;
+                //   });
 
-                  showBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return Text(error.toString());
-                      });
-                });
+                //   showBottomSheet(
+                //       context: context,
+                //       builder: (context) {
+                //         return Text(error.toString());
+                //       });
+                // });
                 setState(() {
                   loading = true;
                   imageFile = File(imageString);
 
                   post.title = titleController.text;
                   post.genre = selectedItem;
+                  post.body = bodyController.text;
                   // post.thumbnail = imageString;
                 });
                 context
@@ -256,23 +256,23 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                         (String value) => setState(() => description = value),
                         description,
                       ),
-                      HtmlEditor(
-                          htmlEditorOptions: HtmlEditorOptions(
-                            hint: "Your text here...",
-                            spellCheck: true,
-                            autoAdjustHeight: true,
-                            adjustHeightForKeyboard: true
+                      // HtmlEditor(
+                      //     htmlEditorOptions: HtmlEditorOptions(
+                      //       hint: "Your text here...",
+                      //       spellCheck: true,
+                      //       autoAdjustHeight: true,
+                      //       adjustHeightForKeyboard: true
 
-                            //initalText: "text content initial, if any",
-                          ),
-                          htmlToolbarOptions: HtmlToolbarOptions(
-                            toolbarPosition: ToolbarPosition.belowEditor
-                          ),
-                          otherOptions: OtherOptions(height: 200),
-                          controller: controller),
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      //       //initalText: "text content initial, if any",
+                      //     ),
+                      //     htmlToolbarOptions: HtmlToolbarOptions(
+                      //       toolbarPosition: ToolbarPosition.belowEditor
+                      //     ),
+                      //     otherOptions: OtherOptions(height: 200),
+                      //     controller: controller),
+                      // const SizedBox(
+                      //   height: 20,
+                      // ),
                       ElevatedButton(onPressed: ()
                       
                       async {

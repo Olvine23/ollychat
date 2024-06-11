@@ -17,6 +17,7 @@ import 'package:olly_chat/screens/poems/poem_detail.dart';
 import 'package:olly_chat/screens/profile/components/divider.dart';
 import 'package:olly_chat/screens/profile/components/social_handles.dart';
 import 'package:olly_chat/screens/profile/update_profile/update_profile.dart';
+import 'package:olly_chat/screens/profile/widgets/bottom_sheet_modal.dart';
 import 'package:olly_chat/screens/welcome_screen.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:post_repository/post_repository.dart';
@@ -53,9 +54,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return BlocListener<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
         // TODO: implement listener
-        if(state.status == AuthenticationStatus.unauthenticated){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
-          return  WelcomeScreen();
+        if (state.status == AuthenticationStatus.unauthenticated) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            return WelcomeScreen();
           }));
         }
       },
@@ -93,7 +95,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         IconButton(
                           onPressed: () {
                             print("clicked sign out ");
-                            context.read<SignInBloc>().add(SignOutRequired());
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return BlocProvider(
+                                  create: (context) => SignInBloc(userRepository: FirebaseUserRepo()),
+                                  child: LogoutBottomSheet(),
+                                );
+                              },
+                            );
                           },
                           icon: Icon(Icons.logout,
                               color:
@@ -101,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         IconButton(
                           onPressed: () {
-                            context.read<SignInBloc>().add(SignOutRequired());
+                             
                           },
                           icon: Icon(Icons.settings,
                               color:

@@ -117,13 +117,25 @@ class ArticleCard extends StatelessWidget {
                   height: 1.5.h,
                 ),
                 Expanded(
-                  child: Text(
-                    title,
-                    maxLines: 2,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.bold),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title,
+                          maxLines: 2,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .copyWith(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.favorite, color: AppColors.secondaryColor,),
+                          Text("999 likes")
+                        ],
+                      )
+                    ],
                   ),
                 ),
               ],

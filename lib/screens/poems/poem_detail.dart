@@ -41,6 +41,8 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
 
   Map<String, File> cachedAudios = {}; // Cache to store audio files
 
+  
+
   String formatTimeAgo(DateTime timestamp) {
     Duration difference = DateTime.now().difference(timestamp);
 
@@ -152,6 +154,11 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
       );
       return;
     }
+     // Check if audio is already cached
+    if (cachedAudios.containsKey(text)) {
+      await playAudioFromBytes(cachedAudios[text]!);
+      return;
+    }
     //display the loading icon while we wait for request
     setState(() {
       _isLoadingVoice = true; //progress indicator turn on now
@@ -226,6 +233,110 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
     final audioSource = MyCustomSource(await audioFile.readAsBytes());
     await player.setAudioSource(audioSource);
     player.play();
+     _showAudioPlayer(); // Show the audio player bottom sheet
+  }
+
+    // Method to format the duration
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final hours = twoDigits(duration.inHours);
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return [if (duration.inHours > 0) hours, minutes, seconds].join(':');
+  }
+
+
+  // Method to show the audio player in a bottom sheet
+  void _showAudioPlayer() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return StreamBuilder<Duration?>(
+          stream: player.durationStream,
+          builder: (context, snapshot) {
+            final duration = snapshot.data ?? Duration.zero;
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                StreamBuilder<Duration>(
+                  stream: player.positionStream,
+                  builder: (context, snapshot) {
+                    final position = snapshot.data ?? Duration.zero;
+                    final clampedPosition = position <= duration
+                        ? position
+                        : duration; // Clamp the position to the duration
+                    return Column(
+                      children: [
+                        Slider(
+                          min: 0.0,
+                          max: duration.inMilliseconds.toDouble(),
+                          value: clampedPosition.inMilliseconds.toDouble(),
+                          onChanged: (value) {
+                            player.seek(Duration(milliseconds: value.toInt()));
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(_formatDuration(clampedPosition)),
+                              Text(_formatDuration(duration - clampedPosition)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.replay_10),
+                      onPressed: () {
+                        player.seek(player.position - Duration(seconds: 10));
+                      },
+                    ),
+                    StreamBuilder<PlayerState>(
+                      stream: player.playerStateStream,
+                      builder: (context, snapshot) {
+                        final playerState = snapshot.data;
+                        final processingState = playerState?.processingState;
+                        final playing = playerState?.playing;
+                        if (!(playing ?? false)) {
+                          return IconButton(
+                            icon: Icon(Icons.play_arrow),
+                            onPressed: player.play,
+                          );
+                        } else if (processingState !=
+                            ProcessingState.completed) {
+                          return IconButton(
+                            icon: Icon(Icons.pause),
+                            onPressed: player.pause,
+                          );
+                        } else {
+                          return IconButton(
+                            icon: Icon(Icons.replay),
+                            onPressed: () => player.seek(Duration.zero),
+                          );
+                        }
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.forward_10),
+                      onPressed: () {
+                        player.seek(player.position + Duration(seconds: 10));
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -267,55 +378,55 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                   icon: Icon(Icons.favorite),
                   iconSize: 30,
                 ),
-                IconButton(
-                  color: AppColors.secondaryColor,
-                  onPressed: () {
-                    // Handle settings icon tap
-                    showModalBottomSheet(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                                top: 12, left: 12, right: 12),
-                            child: SizedBox(
-                              width: double.infinity,
-                              height: 100,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    "Proceed to creating a snippy?",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                          backgroundColor:
-                                              AppColors.primaryColor),
-                                      onPressed: () {
-                                        Navigator.push(context,
-                                            MaterialPageRoute(
-                                                builder: (context) {
-                                          return ScreenShotSnip(
-                                            image: widget.post.thumbnail!,
-                                            articlesnip: widget.post.body!,
-                                          );
-                                        }));
-                                      },
-                                      child: const Text(
-                                        "Proceed",
-                                        style: TextStyle(color: Colors.white),
-                                      ))
-                                ],
-                              ),
-                            ),
-                          );
-                        });
-                  },
-                  icon: Icon(Icons.image),
-                  iconSize: 30,
-                ),
+                // IconButton(
+                //   color: AppColors.secondaryColor,
+                //   onPressed: () {
+                //     // Handle settings icon tap
+                //     showModalBottomSheet(
+                //         context: context,
+                //         builder: (BuildContext context) {
+                //           return Padding(
+                //             padding: const EdgeInsets.only(
+                //                 top: 12, left: 12, right: 12),
+                //             child: SizedBox(
+                //               width: double.infinity,
+                //               height: 100,
+                //               child: Row(
+                //                 mainAxisAlignment:
+                //                     MainAxisAlignment.spaceBetween,
+                //                 children: [
+                //                   const Text(
+                //                     "Proceed to creating a snippy?",
+                //                     style:
+                //                         TextStyle(fontWeight: FontWeight.bold),
+                //                   ),
+                //                   ElevatedButton(
+                //                       style: ElevatedButton.styleFrom(
+                //                           backgroundColor:
+                //                               AppColors.primaryColor),
+                //                       onPressed: () {
+                //                         Navigator.push(context,
+                //                             MaterialPageRoute(
+                //                                 builder: (context) {
+                //                           return ScreenShotSnip(
+                //                             image: widget.post.thumbnail!,
+                //                             articlesnip: widget.post.body!,
+                //                           );
+                //                         }));
+                //                       },
+                //                       child: const Text(
+                //                         "Proceed",
+                //                         style: TextStyle(color: Colors.white),
+                //                       ))
+                //                 ],
+                //               ),
+                //             ),
+                //           );
+                //         });
+                //   },
+                //   icon: Icon(Icons.image),
+                //   iconSize: 30,
+                // ),
               ],
             ),
           ],
@@ -361,11 +472,14 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                           width: 10,
                         ),
                         ElevatedButton(
-                          onPressed: () {
-                            playTextToSpeech(widget.post.body!);
+                          onPressed: () async{
+
+                            _showAudioPlayer();
+
+                           await  playTextToSpeech(widget.post.body!);
                           },
                           child: _isLoadingVoice
-                              ? const Center(child: CircularProgressIndicator())
+                              ? Text("loading ...", style: Theme.of(context).textTheme.bodySmall,)
                               : Icon(
                                   Icons.play_circle,
                                   color: AppColors.secondaryColor,
@@ -443,6 +557,7 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Align(
                   alignment: Alignment.center,
+                  // child: Text(widget.post.body!),
                   child: MarkdownBody(
                     styleSheet: MarkdownStyleSheet(
                       textAlign: WrapAlignment.center,

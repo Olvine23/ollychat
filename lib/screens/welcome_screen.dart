@@ -87,13 +87,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    Image.asset('assets/images/nobg.png'),
+                    Image.asset('assets/images/nobg.png' , height: 100,),
                     const Text(
                       'Welcome Back !',
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: kToolbarHeight),
+                     
                     TabBar(
                         controller: tabController,
                         unselectedLabelColor: Theme.of(context)

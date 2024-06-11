@@ -19,7 +19,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-   bool obscureText = true;
+  bool obscureText = true;
 
   String? _errorMsg;
   bool signInRequired = false;
@@ -39,7 +39,7 @@ class _SignInScreenState extends State<SignInScreen> {
           setState(() {
             signInRequired = false;
           });
-               ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               backgroundColor: Colors.green,
               content: Text(
@@ -70,9 +70,22 @@ class _SignInScreenState extends State<SignInScreen> {
                       const SizedBox(
                         height: 20,
                       ),
+                      Text(
+                        "Please enter your email and password to proceed",
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineSmall!
+                            .copyWith(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.secondaryColor),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
                       const Align(
                           alignment: Alignment.topLeft,
-                          child: Text("Your email")),
+                          child: Text("Your email", style: TextStyle(fontWeight: FontWeight.bold),)),
                       const SizedBox(
                         height: 10,
                       ),
@@ -87,23 +100,23 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                       const Align(
                           alignment: Alignment.topLeft,
-                          child: Text("Your password")),
+                          child: Text("Your password", style: TextStyle(fontWeight: FontWeight.bold),)),
                       const SizedBox(
                         height: 10,
                       ),
                       CustomTextField(
-                         suffixIcon: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  obscureText = !obscureText;
-                                });
-                              },
-                              child: Icon(
-                                  obscureText
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                  color: Colors.grey),
-                            ),
+                        suffixIcon: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              obscureText = !obscureText;
+                            });
+                          },
+                          child: Icon(
+                              obscureText
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: Colors.grey),
+                        ),
                         controller: passwordController,
                         hintText: 'Password',
                         obscureText: obscureText,
@@ -123,8 +136,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                         emailController.text));
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content:
-                                        Text('Password resert link has been sent  to your email'),
+                                    content: Text(
+                                        'Password resert link has been sent  to your email'),
                                   ),
                                 );
                               },
@@ -145,13 +158,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                   context.read<SignInBloc>().add(SignInRequired(
                                       emailController.text,
                                       passwordController.text));
-
-                                  
-
-
                                 }
                               })
-                         
                           : const CircularProgressIndicator()
                     ],
                   ),
