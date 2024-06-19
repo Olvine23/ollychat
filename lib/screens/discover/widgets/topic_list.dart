@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:olly_chat/screens/discover/components/container_image.dart';
 import 'package:olly_chat/screens/discover/screens/categories.dart';
+import 'package:olly_chat/screens/discover/screens/categories_posts_screen.dart';
+ 
 
 class TopicList extends StatelessWidget {
   TopicList({super.key});
@@ -34,10 +36,22 @@ class TopicList extends StatelessWidget {
         itemCount: categories.length,
         itemBuilder: (context, index, realIndex) {
           return Padding(
-            padding: const  EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: ContainerImage(
-              categ: categories[index].name,
-              image: categories[index].imagePath!,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CategoryPostsScreen(
+                      category: categories[index].name,
+                    ),
+                  ),
+                );
+              },
+              child: ContainerImage(
+                categ: categories[index].name,
+                image: categories[index].imagePath!,
+              ),
             ),
           );
         },

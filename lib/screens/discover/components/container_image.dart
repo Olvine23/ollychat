@@ -5,8 +5,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 
 class ContainerImage extends StatelessWidget {
-  final String categ;
+  final String categ;       
   final String image;
+  
   const ContainerImage({super.key, required this.categ, required this.image});
 
   @override

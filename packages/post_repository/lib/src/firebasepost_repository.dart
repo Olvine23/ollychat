@@ -105,6 +105,31 @@ import 'package:uuid/uuid.dart';
         .toList());
   }
 
+  //fetch by category
+   @override
+     Future<List<Post>> getPostsByCategory(String category, {DocumentSnapshot? startAfter}) async {
+    try {
+      Query query = postCollection
+          .where('genre', isEqualTo: category)
+          .orderBy('createdAt', descending: true);
+
+      if (startAfter != null) {
+        query = query.startAfterDocument(startAfter);
+      }
+
+      QuerySnapshot querySnapshot = await query.get();
+
+      return querySnapshot.docs.map((doc) =>
+        Post.fromEntity(PostEntity.fromDocument(doc.data() as Map<String, dynamic>))
+      ).toList();
+    } catch (e) {
+      print(e.toString());
+      rethrow;
+    }
+  }
+
+
+
   Future<void> updateUserInPosts(MyUser updatedUser) async {
     try {
       final postsQuerySnapshot = await postCollection

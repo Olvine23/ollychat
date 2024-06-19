@@ -5,14 +5,15 @@ import 'package:user_repository/user_repository.dart';
 
 import 'models/models.dart';
 
-abstract class PostRepository{
+abstract class PostRepository {
+  Future<Post> createPost(Post post, String file);
 
-  Future<Post> createPost(Post post,String file);
-
-Future<List<Post>> getPost({DocumentSnapshot? startAfter});
+  Future<List<Post>> getPost({DocumentSnapshot? startAfter});
 
   Stream<List<Post>> getStreamPost();
 
+  Future<List<Post>> getPostsByCategory(String category,
+      {DocumentSnapshot? startAfter});
+
   Future<void> updateAllPostsForUser(MyUser updatedUser);
-  
 }

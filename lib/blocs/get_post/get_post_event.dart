@@ -25,5 +25,13 @@ class LoadMorePosts extends GetPostEvent {
    @override
   List<Object> get props => [pageKey];
 }
+class GetPostsByCategory extends GetPostEvent {
+  final String category;
+  final int pageKey;
 
+  const GetPostsByCategory({required this.category, required this.pageKey});
+
+  @override
+  List<Object> get props => [category, pageKey];
+}
 class FetchMyArticles extends GetPostEvent {}
