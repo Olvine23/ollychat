@@ -44,6 +44,7 @@ class TopicList extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => CategoryPostsScreen(
                       category: categories[index].name,
+                       headImage: categories[index].imagePath!,
                     ),
                   ),
                 );
