@@ -12,7 +12,9 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:olly_chat/main.dart';
+import 'package:olly_chat/screens/discover/components/head_image.dart';
 import 'package:olly_chat/screens/poems/snippies/screenshotsnip.dart';
+import 'package:olly_chat/screens/poems/widgets/article_cover.dart';
 import 'package:olly_chat/screens/poems/widgets/custom_audio.dart';
 import 'package:olly_chat/screens/poems/widgets/image_widget.dart';
 import 'package:olly_chat/theme/colors.dart';
@@ -345,12 +347,18 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
     return Screenshot(
       controller: screenshotController,
       child: Scaffold(
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
+        
+          
           title: Text(
             widget.post.genre == null ? 'Genre' : widget.post.genre!,
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold),
           ),
           iconTheme: IconThemeData(
+            color: Colors.white,
             size: 30,
           ),
           backgroundColor: Colors.transparent,
@@ -378,203 +386,169 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                   icon: Icon(Icons.favorite),
                   iconSize: 30,
                 ),
-                // IconButton(
-                //   color: AppColors.secondaryColor,
-                //   onPressed: () {
-                //     // Handle settings icon tap
-                //     showModalBottomSheet(
-                //         context: context,
-                //         builder: (BuildContext context) {
-                //           return Padding(
-                //             padding: const EdgeInsets.only(
-                //                 top: 12, left: 12, right: 12),
-                //             child: SizedBox(
-                //               width: double.infinity,
-                //               height: 100,
-                //               child: Row(
-                //                 mainAxisAlignment:
-                //                     MainAxisAlignment.spaceBetween,
-                //                 children: [
-                //                   const Text(
-                //                     "Proceed to creating a snippy?",
-                //                     style:
-                //                         TextStyle(fontWeight: FontWeight.bold),
-                //                   ),
-                //                   ElevatedButton(
-                //                       style: ElevatedButton.styleFrom(
-                //                           backgroundColor:
-                //                               AppColors.primaryColor),
-                //                       onPressed: () {
-                //                         Navigator.push(context,
-                //                             MaterialPageRoute(
-                //                                 builder: (context) {
-                //                           return ScreenShotSnip(
-                //                             image: widget.post.thumbnail!,
-                //                             articlesnip: widget.post.body!,
-                //                           );
-                //                         }));
-                //                       },
-                //                       child: const Text(
-                //                         "Proceed",
-                //                         style: TextStyle(color: Colors.white),
-                //                       ))
-                //                 ],
-                //               ),
-                //             ),
-                //           );
-                //         });
-                //   },
-                //   icon: Icon(Icons.image),
-                //   iconSize: 30,
-                // ),
+                
               ],
             ),
           ],
         ),
-        body: SingleChildScrollView(
-          controller: _scrollController,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                child: Stack(
-                  children: <Widget>[
-                    imageWidget(size: size, widget: widget),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                    left: 16, right: 16, top: 8, bottom: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        widget.post.title,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge!
-                            .copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              controller: _scrollController,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 300), 
+                  // imageWidget(size: size, widget: widget),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16, right: 16, top: 8, bottom: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        Expanded(
+                          child: Text(
+                            widget.post.title,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge!
+                                .copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text(
+                              "Listen",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelMedium!
+                                  .copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            ElevatedButton(
+                              onPressed: () async{
+            
+                                _showAudioPlayer();
+            
+                               await  playTextToSpeech(widget.post.body!);
+                              },
+                              child: _isLoadingVoice
+                                  ? Text("loading ...", style: Theme.of(context).textTheme.bodySmall,)
+                                  : Icon(
+                                      Icons.play_circle,
+                                      color: AppColors.secondaryColor,
+                                    ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                  const Divider(),
+                  ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      backgroundImage: NetworkImage(widget.post.myUser.image == ''
+                          ? 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png'
+                          : widget.post.myUser.image!),
+                      backgroundColor: AppColors.primaryColor,
+                    ),
+                    title: Text(
+                      widget.post.myUser.name,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .copyWith(fontWeight: FontWeight.w900),
+                    ),
+                    subtitle:  Text(widget.post.myUser.handle == null ? "handle": widget.post.myUser.handle!),
+                    trailing: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: AppColors.primaryColor,
+                      ),
+                      onPressed: () {},
+                      child: const Text("Follow"),
+                    ),
+                  ),
+                  const Divider(),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(4.0),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.primaryColor),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 2, horizontal: 12),
+                            child: Text(
+                              widget.post.genre == null
+                                  ? 'Genre'
+                                  : widget.post.genre!,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: AppColors.primaryColor),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 12,
+                        ),
                         Text(
-                          "Listen",
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelMedium!
-                              .copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        ElevatedButton(
-                          onPressed: () async{
-
-                            _showAudioPlayer();
-
-                           await  playTextToSpeech(widget.post.body!);
-                          },
-                          child: _isLoadingVoice
-                              ? Text("loading ...", style: Theme.of(context).textTheme.bodySmall,)
-                              : Icon(
-                                  Icons.play_circle,
-                                  color: AppColors.secondaryColor,
-                                ),
+                          formatTimeAgo(
+                            widget.post.createdAt,
+                          ),
+                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.secondaryColor),
                         ),
                       ],
-                    )
-                  ],
-                ),
-              ),
-              const Divider(),
-              ListTile(
-                leading: CircleAvatar(
-                  radius: 30,
-                  backgroundImage: NetworkImage(widget.post.myUser.image == ''
-                      ? 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png'
-                      : widget.post.myUser.image!),
-                  backgroundColor: AppColors.primaryColor,
-                ),
-                title: Text(
-                  widget.post.myUser.name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .copyWith(fontWeight: FontWeight.w900),
-                ),
-                subtitle:  Text(widget.post.myUser.handle == null ? "handle": widget.post.myUser.handle!),
-                trailing: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: AppColors.primaryColor,
+                    ),
                   ),
-                  onPressed: () {},
-                  child: const Text("Follow"),
-                ),
-              ),
-              const Divider(),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(4.0),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.primaryColor),
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 2, horizontal: 12),
-                        child: Text(
-                          widget.post.genre == null
-                              ? 'Genre'
-                              : widget.post.genre!,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: AppColors.primaryColor),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Align(
+                      alignment: Alignment.center,
+                      // child: Text(widget.post.body!),
+                      child: MarkdownBody(
+                        styleSheet: MarkdownStyleSheet(
+                          textAlign: WrapAlignment.center,
+                          h1: const TextStyle(fontSize: 24, color: Colors.blue),
+                          p: GoogleFonts.ebGaramond(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14.dp,
+                          ),
+                          code: const TextStyle(fontSize: 14, color: Colors.green),
                         ),
+                        shrinkWrap: true,
+                        data: widget.post.body!,
                       ),
                     ),
-                    const SizedBox(
-                      width: 12,
-                    ),
-                    Text(
-                      formatTimeAgo(
-                        widget.post.createdAt,
-                      ),
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.secondaryColor),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Align(
-                  alignment: Alignment.center,
-                  // child: Text(widget.post.body!),
-                  child: MarkdownBody(
-                    styleSheet: MarkdownStyleSheet(
-                      textAlign: WrapAlignment.center,
-                      h1: const TextStyle(fontSize: 24, color: Colors.blue),
-                      p: GoogleFonts.ebGaramond(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14.dp,
-                      ),
-                      code: const TextStyle(fontSize: 14, color: Colors.green),
-                    ),
-                    shrinkWrap: true,
-                    data: widget.post.body!,
                   ),
-                ),
+
+
+                ],
               ),
-            ],
-          ),
+            ),
+
+              Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: ArticleCover(
+                        categ: '',
+                        image: widget.post.thumbnail!,
+                        stateCount: null,
+                        
+                        
+                        ),
+                  ),
+          ],
         ),
         floatingActionButton: Visibility(
           visible: _showScrollButton,

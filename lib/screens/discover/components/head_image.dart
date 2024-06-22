@@ -7,8 +7,9 @@ import 'package:flutter_sizer/flutter_sizer.dart';
 class HeadImage extends StatelessWidget {
   final String categ;       
   final String image;
+  final dynamic stateCount;
   
-  const HeadImage({super.key, required this.categ, required this.image});
+  const HeadImage({super.key, required this.categ, required this.image, this.stateCount});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,7 @@ class HeadImage extends StatelessWidget {
                 Text(categ,
                  
                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white, fontSize: 18.dp, fontWeight: FontWeight.bold)),
-                 Text("10 Articles", style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white, fontSize: 12.dp))
+                 Text("${stateCount.toString()} Articles", style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white, fontSize: 12.dp))
               ],
             ),
           ),

@@ -78,7 +78,7 @@ class CategoryListScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             return ContainerImage(
               categ: categories[index].name,
-              image: categories[index].imagePath!,
+              image: categories[index].imagePath!, postNo: null,
             );
           },
         ));

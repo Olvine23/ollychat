@@ -7,8 +7,8 @@ import 'package:flutter_sizer/flutter_sizer.dart';
 class ContainerImage extends StatelessWidget {
   final String categ;       
   final String image;
-  
-  const ContainerImage({super.key, required this.categ, required this.image});
+  final dynamic postNo;
+  const ContainerImage({super.key, required this.categ, required this.image,required this.postNo});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class ContainerImage extends StatelessWidget {
                 Text(categ,
                  
                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white, fontSize: 18.dp, fontWeight: FontWeight.bold)),
-                 Text("10 Articles", style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white, fontSize: 12.dp))
+                 Text("${postNo.toString()} Articles", style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white, fontSize: 12.dp))
               ],
             ),
           ),

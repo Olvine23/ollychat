@@ -111,7 +111,11 @@ backgroundColor: Colors.transparent,
                     right: 0,
                     child: HeadImage(
                         categ: category,
-                        image: headImage),
+                        image: headImage,
+                        stateCount: state.posts!.length,
+                        
+                        
+                        ),
                   ),
                 ],
               );
