@@ -12,7 +12,8 @@ class CategoryPostsScreen extends StatelessWidget {
   final String category;
   final String headImage;
 
-  const CategoryPostsScreen({Key? key, required this.category, required this.headImage})
+  const CategoryPostsScreen(
+      {Key? key, required this.category, required this.headImage})
       : super(key: key);
 
   @override
@@ -23,17 +24,23 @@ class CategoryPostsScreen extends StatelessWidget {
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          iconTheme: IconThemeData(
-            color: Colors.white
-          ),
-backgroundColor: Colors.transparent,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal:8),
+              child: GestureDetector(
+                  child: const Icon(
+                Icons.search,
+                size: 30,
+              )),
+            )
+          ],
+          iconTheme: IconThemeData(color: Colors.white),
+          backgroundColor: Colors.transparent,
           title: Text(category,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900, fontSize: 24.dp)),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 24.dp)),
         ),
         body: BlocBuilder<GetPostBloc, GetPostState>(
           builder: (context, state) {
@@ -110,12 +117,10 @@ backgroundColor: Colors.transparent,
                     left: 0,
                     right: 0,
                     child: HeadImage(
-                        categ: category,
-                        image: headImage,
-                        stateCount: state.posts!.length,
-                        
-                        
-                        ),
+                      categ: category,
+                      image: headImage,
+                      stateCount: state.posts!.length,
+                    ),
                   ),
                 ],
               );

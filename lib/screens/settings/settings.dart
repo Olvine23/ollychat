@@ -11,4 +11,4 @@ class SettingsScreen extends StatelessWidget {
       body: Center(child: Text("Settings"),),
     );
   }
-}
+} 
