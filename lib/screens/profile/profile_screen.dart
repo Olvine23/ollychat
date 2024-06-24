@@ -18,6 +18,7 @@ import 'package:olly_chat/screens/profile/components/divider.dart';
 import 'package:olly_chat/screens/profile/components/social_handles.dart';
 import 'package:olly_chat/screens/profile/update_profile/update_profile.dart';
 import 'package:olly_chat/screens/profile/widgets/bottom_sheet_modal.dart';
+import 'package:olly_chat/screens/settings/settings.dart';
 import 'package:olly_chat/screens/welcome_screen.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:post_repository/post_repository.dart';
@@ -99,7 +100,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               context: context,
                               builder: (BuildContext context) {
                                 return BlocProvider(
-                                  create: (context) => SignInBloc(userRepository: FirebaseUserRepo()),
+                                  create: (context) => SignInBloc(
+                                      userRepository: FirebaseUserRepo()),
                                   child: LogoutBottomSheet(),
                                 );
                               },
@@ -111,7 +113,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         IconButton(
                           onPressed: () {
-                             
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const SettingsScreen(),
+                              ),
+                            );
                           },
                           icon: Icon(Icons.settings,
                               color:

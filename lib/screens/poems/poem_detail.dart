@@ -374,7 +374,7 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
 
                     saveAndShare(image, widget.post.body!, widget.post.title);
                   },
-                  color: AppColors.secondaryColor,
+                   
                   icon: Icon(Icons.share),
                   iconSize: 30,
                 ),
@@ -382,7 +382,7 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                   onPressed: () {
                     // Handle favorite icon tap
                   },
-                  color: AppColors.secondaryColor,
+                  
                   icon: Icon(Icons.favorite),
                   iconSize: 30,
                 ),
