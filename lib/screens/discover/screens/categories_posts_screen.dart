@@ -69,7 +69,10 @@ class CategoryPostsScreen extends StatelessWidget {
                   SingleChildScrollView(
                     child: Column(
                       children: [
-                        SizedBox(height: 200), // Height of the fixed head image
+                        SizedBox(height: 200),
+                        
+                        
+                         // Height of the fixed head image
                         // Padding(
                         //   padding: EdgeInsets.symmetric(
                         //       horizontal: 16.dp),
@@ -95,6 +98,7 @@ class CategoryPostsScreen extends StatelessWidget {
                         //     ],
                         //   ),
                         // ),
+                        
                         ListView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,

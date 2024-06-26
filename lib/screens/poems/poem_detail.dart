@@ -469,7 +469,9 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                         foregroundColor: Colors.white,
                         backgroundColor: AppColors.primaryColor,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        
+                      },
                       child: const Text("Follow"),
                     ),
                   ),
@@ -531,6 +533,20 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                     ),
                   ),
 
+                  SizedBox(height: 20,),
+
+                Padding(
+                    padding:  EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Comments", style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
+                        Icon(Icons.arrow_forward_outlined, size: 30,color: AppColors.secondaryColor,)
+                      ],
+                    ),
+                  )
+
 
                 ],
               ),
@@ -550,13 +566,13 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                   ),
           ],
         ),
-        floatingActionButton: Visibility(
-          visible: _showScrollButton,
-          child: FloatingActionButton(
-            onPressed: _handleScrollButtonPressed,
-            child: Icon(_scrollIcon),
-          ),
-        ),
+        // floatingActionButton: Visibility(
+        //   visible: _showScrollButton,
+        //   child: FloatingActionButton(
+        //     onPressed: _handleScrollButtonPressed,
+        //     child: Icon(_scrollIcon),
+        //   ),
+        // ),
       ),
     );
   }

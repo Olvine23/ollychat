@@ -1,5 +1,3 @@
-
-
 import 'dart:developer';
 import 'dart:io';
 
@@ -12,26 +10,24 @@ import 'package:user_repository/src/models/my_user.dart';
 import 'package:user_repository/src/user_repo.dart';
 
 class FirebaseUserRepo implements UserRepository {
-
   final postRepository = FirebasePostRepository();
   
   FirebaseUserRepo({FirebaseAuth? firebaseAuth})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   final FirebaseAuth _firebaseAuth;
-  
   final usersCollection = FirebaseFirestore.instance.collection('users');
 
-//sign up user
-
+  // Sign up user
   @override
   Future<MyUser> signUp(MyUser myUser, String password) async {
     try {
       UserCredential user = await _firebaseAuth.createUserWithEmailAndPassword(
           email: myUser.email, password: password);
 
-      myUser = myUser.copyWith(id: user.user!.uid);
+      myUser = myUser.copyWith(id: user.user!.uid, followers: [], following: []);
 
+      await setUserData(myUser);
       return myUser;
     } catch (e) {
       print(e);
@@ -39,7 +35,7 @@ class FirebaseUserRepo implements UserRepository {
     }
   }
 
-  // sign in user
+  // Sign in user
   @override
   Future<void> signIn(String email, String password) async {
     try {
@@ -50,7 +46,7 @@ class FirebaseUserRepo implements UserRepository {
     }
   }
 
-  //sign out
+  // Sign out
   @override
   Future<void> logOut() async {
     try {
@@ -60,8 +56,7 @@ class FirebaseUserRepo implements UserRepository {
     }
   }
 
-  // reset password
-
+  // Reset password
   @override
   Future<void> resetPassword(String email) async {
     try {
@@ -72,7 +67,7 @@ class FirebaseUserRepo implements UserRepository {
     }
   }
 
-  //set user
+  // Set user data
   @override
   Future<void> setUserData(MyUser user) async {
     try {
@@ -82,20 +77,17 @@ class FirebaseUserRepo implements UserRepository {
     }
   }
 
-  //get user
-
+  // Get user
   @override
   Future<MyUser> getMyUser(String myUserId) async {
     try {
-    return usersCollection.doc(myUserId).get().then(
+      return usersCollection.doc(myUserId).get().then(
           (value) => MyUser.fromEntity(MyUserEntity.fromDocument(value.data()!)));
     } catch (e) {
       log(e.toString());
       print(e);
       rethrow;
     }
-
-  
   }
 
   @override
@@ -108,42 +100,35 @@ class FirebaseUserRepo implements UserRepository {
   
   @override
   Future<String> uploadPicture(String file, String userId) async {
+    try {
+      // Convert file to string
+      File imageFile = File(file);
 
+      // Create folder path
+      Reference firebaseStorageRef = FirebaseStorage.instance.ref().child(
+        '$userId/PP/${userId}_lead'
+      );
 
-    try{
-    //convert file to string
-    File imageFile = File(file);
+      // Upload to Firebase storage
+      await firebaseStorageRef.putFile(imageFile);
 
-    //create folder path
-    Reference firebaseStorageRef = FirebaseStorage.instance.ref().child(
-      '$userId/PP/${userId}_lead'
-    );
+      // Get image string
+      String url = await firebaseStorageRef.getDownloadURL();
 
-    //upload to firebase storage
-    await firebaseStorageRef.putFile(imageFile);
+      await usersCollection.doc(userId).update({
+        'image': url
+      });
 
-    //get image string
-
-    String url = await firebaseStorageRef.getDownloadURL();
-
-    await usersCollection.doc(userId).update({
-      'image':url
-    });
-
-
-    return url;
-
-    }catch(e){
+      return url;
+    } catch (e) {
       log(e.toString());
       rethrow;
-
     }
   }
 
-  
-  // update user data
+  // Update user data
   @override
-   Future<void> updateUserData(String userId, Map<String, dynamic> updates) async {
+  Future<void> updateUserData(String userId, Map<String, dynamic> updates) async {
     try {
       await usersCollection.doc(userId).update(updates);
 
@@ -158,15 +143,11 @@ class FirebaseUserRepo implements UserRepository {
     }
   }
 
-   // Follow a user
+  // Follow a user
   Future<void> followUser(String currentUserId, String targetUserId) async {
     try {
       DocumentReference currentUserRef = usersCollection.doc(currentUserId);
-      DocumentReference targetUserRef =
-
-
-
-      usersCollection.doc(targetUserId);
+      DocumentReference targetUserRef = usersCollection.doc(targetUserId);
 
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         DocumentSnapshot currentUserSnapshot = await transaction.get(currentUserRef);
@@ -194,8 +175,7 @@ class FirebaseUserRepo implements UserRepository {
     }
   }
 
-
- // Unfollow a user
+  // Unfollow a user
   Future<void> unfollowUser(String currentUserId, String targetUserId) async {
     try {
       DocumentReference currentUserRef = usersCollection.doc(currentUserId);
@@ -227,7 +207,7 @@ class FirebaseUserRepo implements UserRepository {
     }
   }
 
- // Get followers count
+  // Get followers count
   Future<int> getFollowersCount(String userId) async {
     try {
       DocumentSnapshot userSnapshot = await usersCollection.doc(userId).get();
@@ -238,7 +218,8 @@ class FirebaseUserRepo implements UserRepository {
       rethrow;
     }
   }
- // Get following count
+
+  // Get following count
   Future<int> getFollowingCount(String userId) async {
     try {
       DocumentSnapshot userSnapshot = await usersCollection.doc(userId).get();
@@ -252,20 +233,15 @@ class FirebaseUserRepo implements UserRepository {
 
   @override
   Future<List<MyUser>> getAllUsers() async {
-  try {
-    QuerySnapshot snapshot = await usersCollection.get();
-    return snapshot.docs.map((doc) {
-      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      return MyUser.fromEntity(MyUserEntity.fromDocument(data));
-    }).toList();
-  } catch (e) {
-    print(e);
-    rethrow;
+    try {
+      QuerySnapshot snapshot = await usersCollection.get();
+      return snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return MyUser.fromEntity(MyUserEntity.fromDocument(data));
+      }).toList();
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
   }
 }
-
-}
-
-
-
-
