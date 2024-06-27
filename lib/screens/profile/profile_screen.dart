@@ -287,7 +287,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   foregroundColor: Colors.white,
                                                   backgroundColor:
                                                       AppColors.primaryColor),
-                                              onPressed: () {},
+                                              onPressed: () {
+                                                context.read<MyUserBloc>().add(FollowUser(currentUserId, widget.userId));
+                                              },
                                               child: const Text("Follow"),
                                             ),
                                     ),
@@ -341,33 +343,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         const Text("Articles"),
                                       ],
                                     ),
-                                    Column(
-                                      children: [
-                                        Text(
-                                          "105",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleMedium!
-                                              .copyWith(
-                                                  fontWeight: FontWeight.bold),
-                                        ),
-                                        SizedBox(height: 4.dp),
-                                        const Text("Following"),
-                                      ],
+                                    BlocBuilder<MyUserBloc, MyUserState>(
+                                      builder: (context, state) {
+                                        final following =
+                                            state.user?.following!.length;
+                                        return Column(
+                                          children: [
+                                            
+                                           state.user?.following == null ? Text("NA"):
+                                             
+                                            Text(
+                                              following.toString(),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium!
+                                                  .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                            ),
+                                            SizedBox(height: 4.dp),
+                                            const Text("Following"),
+                                          ],
+                                        );
+                                      },
                                     ),
-                                    Column(
-                                      children: [
-                                        Text(
-                                          "23334",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleMedium!
-                                              .copyWith(
-                                                  fontWeight: FontWeight.bold),
-                                        ),
-                                        SizedBox(height: 4.dp),
-                                        const Text("Followers"),
-                                      ],
+                                    BlocBuilder<MyUserBloc, MyUserState>(
+                                      builder: (context, state) {
+                                        return Column(
+                                          children: [
+                                            state.user?.followers == null ? Text("NA"):
+
+
+                                            Text(
+                                              state.user!.followers!.length
+                                                  .toString(),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium!
+                                                  .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                            ),
+                                            SizedBox(height: 4.dp),
+                                            const Text("Followers"),
+                                          ],
+                                        );
+                                      },
                                     ),
                                   ],
                                 ),
