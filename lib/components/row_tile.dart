@@ -79,31 +79,12 @@ class RowTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall!
-                            .copyWith(fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                    ),
-                     Expanded(
-                       child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                       
-                          children: [
-                            Icon(Icons.favorite, color: Colors.red,),
-                            SizedBox(width: 1.4.w,),
-                            Text("999 likes", style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold, color: AppColors.secondaryColor)
-                            ,)
-                          ],
-                        ),
-                     )
-                  ],
+                Text(
+                  title,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 SizedBox(
                   height: 8,
