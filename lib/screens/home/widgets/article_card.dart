@@ -33,19 +33,26 @@ class ArticleCard extends StatelessWidget {
     required this.authorId,
   });
 
-  String formatTimeAgo(DateTime timestamp) {
-    Duration difference = DateTime.now().difference(timestamp);
+ String formatTimeAgo(DateTime timestamp) {
+  Duration difference = DateTime.now().difference(timestamp);
 
-    if (difference.inDays > 0) {
-      return '${difference.inDays} days ago';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours} hours ago';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} minutes ago';
-    } else {
-      return 'just now';
-    }
+  if (difference.inDays >= 365) {
+    int years = difference.inDays ~/ 365;
+    return '$years ${years == 1 ? 'year ago' : 'years ago'}';
+  } else if (difference.inDays >= 30) {
+    int months = difference.inDays ~/ 30;
+    return '$months ${months == 1 ? 'month ago' : 'months ago'}';
+  } else if (difference.inDays > 0) {
+    return '${difference.inDays} ${difference.inDays == 1 ? 'day ago' : 'days ago'}';
+  } else if (difference.inHours > 0) {
+    return '${difference.inHours} ${difference.inHours == 1 ? 'hour ago' : 'hours ago'}';
+  } else if (difference.inMinutes > 0) {
+    return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute ago' : 'minutes ago'}';
+  } else {
+    return 'just now';
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -117,25 +124,13 @@ class ArticleCard extends StatelessWidget {
                   height: 1.5.h,
                 ),
                 Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          title,
-                          maxLines: 2,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.favorite, color: AppColors.secondaryColor,),
-                          Text("999")
-                        ],
-                      )
-                    ],
+                  child: Text(
+                    title,
+                    maxLines: 2,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge!
+                        .copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
