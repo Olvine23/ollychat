@@ -46,6 +46,35 @@ class UnfollowUser extends MyUserEvent {
 
 class GetAllUsers extends MyUserEvent {}
 
+class BookmarkPost extends MyUserEvent {
+  final String userId;
+  final String postId;
+
+  const BookmarkPost(this.userId, this.postId);
+
+  @override
+  List<Object> get props => [userId, postId];
+}
+
+class UnbookmarkPost extends MyUserEvent {
+  final String userId;
+  final String postId;
+
+  const UnbookmarkPost(this.userId, this.postId);
+
+  @override
+  List<Object> get props => [userId, postId];
+}
+
+class LoadBookmarkedPosts extends MyUserEvent {
+  final String userId;
+
+  const LoadBookmarkedPosts(this.userId);
+
+  @override
+  List<Object> get props => [userId];
+}
+
 
 
  

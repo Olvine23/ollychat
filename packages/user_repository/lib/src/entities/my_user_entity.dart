@@ -9,6 +9,7 @@ class MyUserEntity extends Equatable {
   final String? image;
   final List<String> followers;
   final List<String> following;
+  final List<String> bookmarkedPosts;
 
   const MyUserEntity({
     required this.id,
@@ -18,6 +19,7 @@ class MyUserEntity extends Equatable {
     this.bio,
     this.handle,
     this.followers = const [],
+    this.bookmarkedPosts = const [],
     this.following = const [],
   });
 
@@ -32,6 +34,7 @@ class MyUserEntity extends Equatable {
       'handle': handle,
       'followers': followers,
       'following': following,
+      'bookmarkedPosts': bookmarkedPosts
     };
   }
 
@@ -46,11 +49,22 @@ class MyUserEntity extends Equatable {
       handle: doc['handle'] as String?,
       followers: List<String>.from(doc['followers'] ?? []),
       following: List<String>.from(doc['following'] ?? []),
+      bookmarkedPosts: List<String>.from(doc['bookmarkedPosts'] ?? []),
     );
   }
 
   @override
-  List<Object?> get props => [id, email, name, image, bio, handle, followers, following];
+  List<Object?> get props => [
+        id,
+        email,
+        name,
+        image,
+        bio,
+        handle,
+        followers,
+        following,
+        bookmarkedPosts
+      ];
 
   @override
   String toString() {
@@ -62,6 +76,7 @@ class MyUserEntity extends Equatable {
       bio: $bio,
       handle: $handle,
       followers: $followers,
+      bookmarkedPosts:$bookmarkedPosts,
       following: $following
     }''';
   }

@@ -10,6 +10,9 @@ class MyUser extends Equatable {
   String? handle;
   List<String>? followers;
   List<String>? following;
+  List<String>? bookmarkedPosts;
+
+
 
   MyUser({
     required this.id,
@@ -20,6 +23,7 @@ class MyUser extends Equatable {
     this.handle,
      this.followers = const [],
     this.following = const [],
+    this.bookmarkedPosts
   });
 
   // Unauthenticated user with empty values
@@ -31,6 +35,7 @@ class MyUser extends Equatable {
     bio: '',
     handle: '',
     followers: const [],
+    bookmarkedPosts: const [],
     following: const [],
   );
 
@@ -44,6 +49,7 @@ class MyUser extends Equatable {
     String? handle,
     List<String>? followers,
     List<String>? following,
+    List<String>? bookmarkedPosts,
   }) {
     return MyUser(
       id: id ?? this.id,
@@ -54,6 +60,7 @@ class MyUser extends Equatable {
       handle: handle ?? this.handle,
       followers: followers ?? this.followers,
       following: following ?? this.following,
+      bookmarkedPosts: bookmarkedPosts ?? this.bookmarkedPosts
     );
   }
 
@@ -73,6 +80,7 @@ class MyUser extends Equatable {
       handle: handle,
       followers: followers ?? [],
       following: following ?? [],
+      bookmarkedPosts: bookmarkedPosts ?? []
     );
   }
 
@@ -86,10 +94,11 @@ class MyUser extends Equatable {
       bio: entity.bio,
       followers: entity.followers,
       following: entity.following,
+      bookmarkedPosts: entity.bookmarkedPosts
     );
   }
 
   @override
   // Implement props
-  List<Object?> get props => [id, email, name, image, bio, handle, followers, following];
+  List<Object?> get props => [id, email, name, image, bio, handle, followers, following, bookmarkedPosts];
 }

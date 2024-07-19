@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:lottie/lottie.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
+import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/screens/bookmarks/bookmark.dart';
 import 'package:olly_chat/screens/home/components/row_title.dart';
 import 'package:olly_chat/screens/home/components/top-card.dart';
@@ -33,40 +34,42 @@ class MainHome extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-         title: Text(
-                "VoiceHub",
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
-              ),
-
-        leading:Image.asset('assets/images/nobg.png', height: 100),
+        title: Text(
+          "VoiceHub",
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
+        leading: Image.asset('assets/images/nobg.png', height: 100),
         actions: [
-           IconButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context){
-                        return BookMarkScreen();
-                      }));
-                    },
-                    icon: Icon(
-                      Icons.bookmark_added_outlined,
-                      size: 30,
-                      color: AppColors.secondaryColor,
-                      
-                    )),
-
-                    IconButton(
-                  onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context){
-                      return NotificationScreen();
-                    }));
-                  },
-                  icon: Icon(Icons.notifications_outlined, size: 30, color: AppColors.secondaryColor,)),
-
-                    
-
+          IconButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return BlocProvider<MyUserBloc>(
+                    create: (context) => MyUserBloc(myUserRepository: FirebaseUserRepo()),
+                    child: const BookMarkScreen(),
+                  );
+                }));
+              },
+              icon: Icon(
+                Icons.bookmark_added_outlined,
+                size: 30,
+                color: AppColors.secondaryColor,
+              )),
+          IconButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return NotificationScreen();
+                }));
+              },
+              icon: Icon(
+                Icons.notifications_outlined,
+                size: 30,
+                color: AppColors.secondaryColor,
+              )),
         ],
-
       ),
-      
       body: BlocBuilder<GetPostBloc, GetPostState>(
         builder: (context, state) {
           return RefreshIndicator(
@@ -79,7 +82,6 @@ class MainHome extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                   
                     const Padding(
                       padding:
                           EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -101,15 +103,16 @@ class MainHome extends StatelessWidget {
   Widget _buildPostList(BuildContext context, GetPostState state) {
     if (state.status == GetPostStatus.success) {
       final List<Post> myArticles =
-          
-state.posts!.where((post) => post.myUser.id == user!.uid).toList();
+          state.posts!.where((post) => post.myUser.id == user!.uid).toList();
       final List<Post> recentArticles =
           state.posts!.where((post) => post.myUser.id != user!.uid).toList();
 
       return Column(
         children: [
           _buildArticleSection(context, 'Recent Articles', recentArticles),
-          SizedBox(height: 2.h,),
+          SizedBox(
+            height: 2.h,
+          ),
           _buildArticleSection(context, 'My Articles', myArticles),
         ],
       );
@@ -171,10 +174,10 @@ state.posts!.where((post) => post.myUser.id == user!.uid).toList();
                     ),
                     Text(
                       "Nothing yet",
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16
-                      ),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .copyWith(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                   ],
                 ))
@@ -187,18 +190,24 @@ state.posts!.where((post) => post.myUser.id == user!.uid).toList();
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  PoemDetailScreen(post: articles[index])),
+                              builder: (context) => BlocProvider<MyUserBloc>(
+                                    create: (context) => MyUserBloc(
+                                        myUserRepository: FirebaseUserRepo()),
+                                    child:
+                                        PoemDetailScreen(post: articles[index]),
+                                  )),
                         );
                       },
                       child: ArticleCard(
-                        genre: articles[index].genre == null ? "Genre" :articles[index].genre! ,
+                        genre: articles[index].genre == null
+                            ? "Genre"
+                            : articles[index].genre!,
                         articleimg: articles[index].thumbnail!,
                         author: articles[index].myUser.name,
                         authorImg: articles[index].myUser.image!,
                         daysago: articles[index].createdAt,
-                        title: articles[index].title, authorId: articles[index].myUser.id,
-
+                        title: articles[index].title,
+                        authorId: articles[index].myUser.id,
                       ),
                     );
                   },

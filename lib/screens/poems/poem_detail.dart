@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:connectivity/connectivity.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -11,6 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
+import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/main.dart';
 import 'package:olly_chat/screens/discover/components/head_image.dart';
 import 'package:olly_chat/screens/poems/snippies/screenshotsnip.dart';
@@ -381,6 +384,9 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                 IconButton(
                   onPressed: () {
                     // Handle favorite icon tap
+                    context.read<MyUserBloc>().add(BookmarkPost(FirebaseAuth.instance.currentUser!.uid, widget.post.id));
+
+
                   },
                   
                   icon: Icon(Icons.favorite),

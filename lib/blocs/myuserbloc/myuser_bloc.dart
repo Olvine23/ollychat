@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:post_repository/post_repository.dart';
 
 import 'package:user_repository/user_repository.dart';
 
@@ -62,6 +63,45 @@ class MyUserBloc extends Bloc<MyUserEvent, MyUserState> {
       }
     });
 
+     // Bookmark a post
+    on<BookmarkPost>((event, emit) async {
+      try {
+        await _userRepository.bookmarkPost(event.userId, event.postId);
+        MyUser myUser = await _userRepository.getMyUser(event.userId);
+        emit(MyUserState.success(myUser));
+      } catch (e) {
+        log(e.toString());
+        emit(const MyUserState.failure());
+        print(e.toString());
+      }
+    });
+
+     // Unbookmark a post
+    on<UnbookmarkPost>((event, emit) async {
+      try {
+        await _userRepository.unbookmarkPost(event.userId, event.postId);
+        MyUser myUser = await _userRepository.getMyUser(event.userId);
+        emit(MyUserState.success(myUser));
+      } catch (e) {
+        log(e.toString());
+        emit(const MyUserState.failure());
+        print(e.toString());
+      }
+    });
+
+      // Load bookmarked posts
+    on<LoadBookmarkedPosts>((event, emit) async {
+      try {
+        List<Post> posts = await _userRepository.getBookmarkedPosts(event.userId);
+        emit(MyUserState.bookmarkedPostsSuccess(posts));
+      } catch (e) {
+        log(e.toString());
+        emit(const MyUserState.failure());
+        print(e.toString());
+      }
+    });
+  }
+
     // on<UpdateMyUser>((event, emit) async {
     //   try {
     //     await _userRepository.updateUserData(event.userId, event.updates);
@@ -76,4 +116,4 @@ class MyUserBloc extends Bloc<MyUserEvent, MyUserState> {
 
 
   }
-}
+

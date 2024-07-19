@@ -35,6 +35,53 @@ class FirebaseUserRepo implements UserRepository {
     }
   }
 
+ // Bookmark a post
+  Future<void> bookmarkPost(String userId, String postId) async {
+    try {
+      await usersCollection.doc(userId).update({
+        'bookmarkedPosts': FieldValue.arrayUnion([postId])
+      });
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+    // Unbookmark a post
+  Future<void> unbookmarkPost(String userId, String postId) async {
+    try {
+      await usersCollection.doc(userId).update({
+        'bookmarkedPosts': FieldValue.arrayRemove([postId])
+      });
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+   // Get bookmarked posts
+  Future<List<Post>> getBookmarkedPosts(String userId) async {
+    try {
+      DocumentSnapshot userSnapshot = await usersCollection.doc(userId).get();
+      List<String> bookmarkedPosts = List<String>.from(userSnapshot['bookmarkedPosts'] ?? []);
+
+      List<Post> posts = [];
+      for (String postId in bookmarkedPosts) {
+        DocumentSnapshot postSnapshot = await FirebaseFirestore.instance.collection('artcollection').doc(postId).get();
+        if (postSnapshot.exists) {
+          posts.add(Post.fromEntity(PostEntity.fromDocument(postSnapshot.data() as Map<String, dynamic>)));
+        }
+      }
+      return posts;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+
+
+
   // Sign in user
   @override
   Future<void> signIn(String email, String password) async {

@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:post_repository/post_repository.dart';
 import 'package:user_repository/src/models/models.dart';
 
 abstract class UserRepository {
@@ -31,4 +32,9 @@ abstract class UserRepository {
   Future<void> unfollowUser(String currentUserId, String targetUserId);
   Future<int> getFollowersCount(String userId);
   Future<int> getFollowingCount(String userId);
+Future<void> bookmarkPost(String userId, String postId);
+Future<void> unbookmarkPost(String userId, String postId);
+Future<List<Post>> getBookmarkedPosts(String userId);
+
+
 }
