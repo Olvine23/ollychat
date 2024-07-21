@@ -524,7 +524,7 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                         ),
                         subtitle: Text(widget.post.myUser.handle == null
                             ? "handle"
-                            : widget.post.myUser.handle!),
+                            : '@${widget.post.myUser.handle!}', style: TextStyle(color: AppColors.secondaryColor),),
                         trailing: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
@@ -578,24 +578,20 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Align(
-                          alignment: Alignment.center,
-                          // child: Text(widget.post.body!),
-                          child: MarkdownBody(
-                            styleSheet: MarkdownStyleSheet(
-                              textAlign: WrapAlignment.center,
-                              h1: const TextStyle(
-                                  fontSize: 24, color: Colors.blue),
-                              p: GoogleFonts.ebGaramond(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14.dp,
-                              ),
-                              code: const TextStyle(
-                                  fontSize: 14, color: Colors.green),
+                        child: MarkdownBody(
+                          styleSheet: MarkdownStyleSheet(
+                            textAlign: WrapAlignment.center,
+                            h1: const TextStyle(
+                                fontSize: 24, color: Colors.blue),
+                            p: GoogleFonts.ebGaramond(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16.dp,
                             ),
-                            shrinkWrap: true,
-                            data: widget.post.body!,
+                            code: const TextStyle(
+                                fontSize: 14, color: Colors.green),
                           ),
+                          shrinkWrap: true,
+                          data: widget.post.body!,
                         ),
                       ),
 

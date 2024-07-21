@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/screens/discover/components/container_image.dart';
 import 'package:olly_chat/screens/discover/screens/categories.dart';
+import 'package:olly_chat/screens/discover/screens/categories_posts_screen.dart';
 import 'package:olly_chat/screens/discover/widgets/topic_list.dart';
+import 'package:post_repository/post_repository.dart';
 
 class CategoryListScreen extends StatelessWidget {
   CategoryListScreen({super.key});
@@ -53,19 +57,11 @@ class CategoryListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title:const Text(
+          title: const Text(
             "Explore By Topics",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          actions: const [
-            Padding(
-              padding: EdgeInsets.only(right: 12),
-              child: Icon(
-                Icons.search,
-                size: 30,
-              ),
-            )
-          ],
+         
         ),
         body: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -76,9 +72,44 @@ class CategoryListScreen extends StatelessWidget {
           padding: EdgeInsets.all(8.0), // padding around the grid
           itemCount: categories.length, // total number of items
           itemBuilder: (context, index) {
-            return ContainerImage(
-              categ: categories[index].name,
-              image: categories[index].imagePath!, postNo: null,
+            return GestureDetector(
+                 onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CategoryPostsScreen(
+                      category: categories[index].name,
+                      headImage: categories[index].imagePath!,
+                    ),
+                  ),
+                );
+              },
+
+              child: BlocProvider(
+                create: (context) =>
+                    GetPostBloc(postRepository: FirebasePostRepository())
+                      ..add(GetPostsByCategory(
+                          category: categories[index].name, pageKey: 1)),
+                child: BlocBuilder<GetPostBloc, GetPostState>(
+                  builder: (context, state) {
+                    if(state.status == GetPostStatus.failure){
+                      return Center(child: Text('Failed to fetch posts'));
+                    }
+              
+                    if(state.status == GetPostStatus.success){
+                        return ContainerImage(
+                      categ: categories[index].name,
+                      image: categories[index].imagePath!,
+                      postNo: state.posts!.length,
+                    );
+              
+                    }else{
+                      return Container();
+                    }
+                  
+                  },
+                ),
+              ),
             );
           },
         ));

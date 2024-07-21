@@ -74,7 +74,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                 }));
               },
               icon: Icon(
-                Icons.bookmark_added_outlined,
+                Icons.bookmark,
                 size: 30.dp,
                 color: AppColors.secondaryColor,
               ),

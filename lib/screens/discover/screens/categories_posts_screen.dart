@@ -24,16 +24,7 @@ class CategoryPostsScreen extends StatelessWidget {
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          actions: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal:8),
-              child: GestureDetector(
-                  child: const Icon(
-                Icons.search,
-                size: 30,
-              )),
-            )
-          ],
+          
           iconTheme: IconThemeData(color: Colors.white),
           backgroundColor: Colors.transparent,
           title: Text(category,
@@ -55,7 +46,7 @@ class CategoryPostsScreen extends StatelessWidget {
                   children: [
                     Lottie.asset('assets/lotti/nothing.json', repeat: false),
                     Text(
-                      'No posts for this category',
+                      'No posts for the category, $category',
                       style: Theme.of(context)
                           .textTheme
                           .bodyLarge!
