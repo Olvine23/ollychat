@@ -11,6 +11,7 @@ import 'package:olly_chat/blocs/create_post/create_post_bloc.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/components/custom_textfield.dart';
 import 'package:olly_chat/main.dart';
+import 'package:olly_chat/services/gemini_service.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:post_repository/post_repository.dart';
 import 'package:user_repository/user_repository.dart';
@@ -24,6 +25,8 @@ class AddWithAI extends StatefulWidget {
 }
 
 class _AddWithAIState extends State<AddWithAI> {
+
+  final GeminiService geminiService = GeminiService();
   File? imageFile;
   String? imageUrl;
   bool loading = false;
@@ -219,13 +222,9 @@ class _AddWithAIState extends State<AddWithAI> {
                                   setState(() {
                                     loading = true;
                                   });
-                                  await gemmy
-                                      .generateFromTextAndImages(
-                                          image: imageFile!,
-                                          query:
-                                              "Write an interesting and creative poem from the image which has the name ${titleController.text}.")
+                                  await geminiService.generatePromptFromImage(imageFile!, titleController.text)   
                                       .then((value) {
-                                    if (value.text.isEmpty) {
+                                    if (value.isEmpty) {
                                       setState(() {
                                         loading = false;
                                       });
@@ -234,7 +233,7 @@ class _AddWithAIState extends State<AddWithAI> {
                                     }
                                     setState(() {
                                       loading = false;
-                                      text = value.text;
+                                      text = value;
                                     });
                                     // ScaffoldMessenger.of(context).showSnackBar(
                                     //   const SnackBar(

@@ -53,7 +53,7 @@ class MainHome extends StatelessWidget {
                 }));
               },
               icon: Icon(
-                Icons.bookmark_added_outlined,
+                Icons.bookmark,
                 size: 30,
                 color: AppColors.secondaryColor,
               )),

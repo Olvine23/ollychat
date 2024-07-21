@@ -41,12 +41,11 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _showScrollButton = false;
   IconData _scrollIcon = Icons.arrow_upward;
+  bool isBookmarked = false;
   final player = AudioPlayer(); //audio player obj that will play audio
   bool _isLoadingVoice = false; //for the progress indicator
 
   Map<String, File> cachedAudios = {}; // Cache to store audio files
-
-  
 
   String formatTimeAgo(DateTime timestamp) {
     Duration difference = DateTime.now().difference(timestamp);
@@ -96,6 +95,12 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
+    // Check if the post is bookmarked
+    final userBlocState = BlocProvider.of<MyUserBloc>(context).state;
+    if (userBlocState.status == MyUserStatus.success) {
+      isBookmarked =
+          userBlocState.user!.bookmarkedPosts!.contains(widget.post.id);
+    }
   }
 
   @override
@@ -159,7 +164,7 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
       );
       return;
     }
-     // Check if audio is already cached
+    // Check if audio is already cached
     if (cachedAudios.containsKey(text)) {
       await playAudioFromBytes(cachedAudios[text]!);
       return;
@@ -238,10 +243,10 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
     final audioSource = MyCustomSource(await audioFile.readAsBytes());
     await player.setAudioSource(audioSource);
     player.play();
-     _showAudioPlayer(); // Show the audio player bottom sheet
+    _showAudioPlayer(); // Show the audio player bottom sheet
   }
 
-    // Method to format the duration
+  // Method to format the duration
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final hours = twoDigits(duration.inHours);
@@ -249,7 +254,6 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
     final seconds = twoDigits(duration.inSeconds.remainder(60));
     return [if (duration.inHours > 0) hours, minutes, seconds].join(':');
   }
-
 
   // Method to show the audio player in a bottom sheet
   void _showAudioPlayer() {
@@ -349,241 +353,305 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
     Size size = MediaQuery.of(context).size;
     return Screenshot(
       controller: screenshotController,
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-        
-          
-          title: Text(
-            widget.post.genre == null ? 'Genre' : widget.post.genre!,
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold),
-          ),
-          iconTheme: IconThemeData(
-            color: Colors.white,
-            size: 30,
-          ),
-          backgroundColor: Colors.transparent,
-          actions: [
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () async {
-                    // Handle share icon tap
+      child: BlocBuilder<MyUserBloc, MyUserState>(
+        builder: (context, state) {
+          if(state.status == MyUserStatus.success){
 
-                    final image = await screenshotController.captureFromWidget(
-                        imageWidget(size: size, widget: widget));
+          }
+          return Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: AppBar(
+              title: Text(
+                widget.post.genre == null ? 'Genre' : widget.post.genre!,
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              iconTheme: IconThemeData(
+                color: Colors.white,
+                size: 30,
+              ),
+              backgroundColor: Colors.transparent,
+              actions: [
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () async {
+                        // Handle share icon tap
 
-                    saveAndShare(image, widget.post.body!, widget.post.title);
-                  },
-                   
-                  icon: Icon(Icons.share),
-                  iconSize: 30,
+                        final image =
+                            await screenshotController.captureFromWidget(
+                                imageWidget(size: size, widget: widget));
+
+                        saveAndShare(
+                            image, widget.post.body!, widget.post.title);
+                      },
+                      icon: Icon(Icons.share),
+                      iconSize: 30,
+                    ),
+                    BlocListener<MyUserBloc, MyUserState>(
+                      listener: (context, state) {
+                        // TODO: implement listener
+                        if (state.status == MyUserStatus.success) {
+                          setState(() {
+                            isBookmarked = state.user!.bookmarkedPosts!
+                                .contains(widget.post.id);
+                          });
+                        }
+                      },
+                      child: BlocBuilder<MyUserBloc, MyUserState>(
+                        builder: (context, state) {
+                          if (state.status == MyUserStatus.success) {
+                            isBookmarked = state.user!.bookmarkedPosts!
+                                .contains(widget.post.id);
+                          }
+                          return IconButton(
+                            onPressed: () {
+                              // Handle favorite icon tap
+                              if (isBookmarked) {
+                                BlocProvider.of<MyUserBloc>(context).add(
+                                    UnbookmarkPost(
+                                        FirebaseAuth.instance.currentUser!.uid,
+                                        widget.post.id));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Poem removed from bookmark'),
+                                  ),
+                                );
+                              } else {
+                                BlocProvider.of<MyUserBloc>(context).add(
+                                    BookmarkPost(
+                                        FirebaseAuth.instance.currentUser!.uid,
+                                        widget.post.id));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Poem added to bookmark'),
+                                  ),
+                                );
+                              }
+                              setState(() {
+                                isBookmarked = !isBookmarked;
+                              });
+                            },
+                            icon: Icon(isBookmarked
+                                ? Icons.bookmark
+                                : Icons.bookmark_border),
+                            iconSize: 30,
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                IconButton(
-                  onPressed: () {
-                    // Handle favorite icon tap
-                    context.read<MyUserBloc>().add(BookmarkPost(FirebaseAuth.instance.currentUser!.uid, widget.post.id));
-
-
-                  },
-                  
-                  icon: Icon(Icons.favorite),
-                  iconSize: 30,
-                ),
-                
               ],
             ),
-          ],
-        ),
-        body: Stack(
-          children: [
-            SingleChildScrollView(
-              controller: _scrollController,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 300), 
-                  // imageWidget(size: size, widget: widget),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 16, right: 16, top: 8, bottom: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            widget.post.title,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge!
-                                .copyWith(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            body: Stack(
+              children: [
+                SingleChildScrollView(
+                  controller: _scrollController,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 300),
+                      // imageWidget(size: size, widget: widget),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 16, right: 16, top: 8, bottom: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            Expanded(
+                              child: Text(
+                                widget.post.title,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge!
+                                    .copyWith(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text(
+                                  "Listen",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelMedium!
+                                      .copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    _showAudioPlayer();
+
+                                    await playTextToSpeech(widget.post.body!);
+                                  },
+                                  child: _isLoadingVoice
+                                      ? Text(
+                                          "loading ...",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall,
+                                        )
+                                      : Icon(
+                                          Icons.play_circle,
+                                          color: AppColors.secondaryColor,
+                                        ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                      const Divider(),
+                      ListTile(
+                        leading: CircleAvatar(
+                          radius: 30,
+                          backgroundImage: NetworkImage(widget
+                                      .post.myUser.image ==
+                                  ''
+                              ? 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png'
+                              : widget.post.myUser.image!),
+                          backgroundColor: AppColors.primaryColor,
+                        ),
+                        title: Text(
+                          widget.post.myUser.name,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .copyWith(fontWeight: FontWeight.w900),
+                        ),
+                        subtitle: Text(widget.post.myUser.handle == null
+                            ? "handle"
+                            : widget.post.myUser.handle!),
+                        trailing: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: AppColors.primaryColor,
+                          ),
+                          onPressed: () {},
+                          child: const Text("Follow"),
+                        ),
+                      ),
+                      const Divider(),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(4.0),
+                              decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: AppColors.primaryColor),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 2, horizontal: 12),
+                                child: Text(
+                                  widget.post.genre == null
+                                      ? 'Genre'
+                                      : widget.post.genre!,
+                                  textAlign: TextAlign.center,
+                                  style:
+                                      TextStyle(color: AppColors.primaryColor),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 12,
+                            ),
                             Text(
-                              "Listen",
+                              formatTimeAgo(
+                                widget.post.createdAt,
+                              ),
                               style: Theme.of(context)
                                   .textTheme
-                                  .labelMedium!
-                                  .copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            ElevatedButton(
-                              onPressed: () async{
-            
-                                _showAudioPlayer();
-            
-                               await  playTextToSpeech(widget.post.body!);
-                              },
-                              child: _isLoadingVoice
-                                  ? Text("loading ...", style: Theme.of(context).textTheme.bodySmall,)
-                                  : Icon(
-                                      Icons.play_circle,
-                                      color: AppColors.secondaryColor,
-                                    ),
+                                  .bodyMedium!
+                                  .copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.secondaryColor),
                             ),
                           ],
-                        )
-                      ],
-                    ),
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: CircleAvatar(
-                      radius: 30,
-                      backgroundImage: NetworkImage(widget.post.myUser.image == ''
-                          ? 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png'
-                          : widget.post.myUser.image!),
-                      backgroundColor: AppColors.primaryColor,
-                    ),
-                    title: Text(
-                      widget.post.myUser.name,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(fontWeight: FontWeight.w900),
-                    ),
-                    subtitle:  Text(widget.post.myUser.handle == null ? "handle": widget.post.myUser.handle!),
-                    trailing: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: AppColors.primaryColor,
+                        ),
                       ),
-                      onPressed: () {
-                        
-                      },
-                      child: const Text("Follow"),
-                    ),
-                  ),
-                  const Divider(),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(4.0),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: AppColors.primaryColor),
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 2, horizontal: 12),
-                            child: Text(
-                              widget.post.genre == null
-                                  ? 'Genre'
-                                  : widget.post.genre!,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: AppColors.primaryColor),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Align(
+                          alignment: Alignment.center,
+                          // child: Text(widget.post.body!),
+                          child: MarkdownBody(
+                            styleSheet: MarkdownStyleSheet(
+                              textAlign: WrapAlignment.center,
+                              h1: const TextStyle(
+                                  fontSize: 24, color: Colors.blue),
+                              p: GoogleFonts.ebGaramond(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14.dp,
+                              ),
+                              code: const TextStyle(
+                                  fontSize: 14, color: Colors.green),
                             ),
+                            shrinkWrap: true,
+                            data: widget.post.body!,
                           ),
                         ),
-                        const SizedBox(
-                          width: 12,
-                        ),
-                        Text(
-                          formatTimeAgo(
-                            widget.post.createdAt,
-                          ),
-                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.secondaryColor),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Align(
-                      alignment: Alignment.center,
-                      // child: Text(widget.post.body!),
-                      child: MarkdownBody(
-                        styleSheet: MarkdownStyleSheet(
-                          textAlign: WrapAlignment.center,
-                          h1: const TextStyle(fontSize: 24, color: Colors.blue),
-                          p: GoogleFonts.ebGaramond(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14.dp,
-                          ),
-                          code: const TextStyle(fontSize: 14, color: Colors.green),
-                        ),
-                        shrinkWrap: true,
-                        data: widget.post.body!,
                       ),
-                    ),
-                  ),
 
-                  SizedBox(height: 20,),
+                      SizedBox(
+                        height: 20,
+                      ),
 
-                Padding(
-                    padding:  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Row(
-
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Comments", style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
-                        Icon(Icons.arrow_forward_outlined, size: 30,color: AppColors.secondaryColor,)
-                      ],
-                    ),
-                  ),
-
-
-                  Align(
-                    alignment: Alignment.center,
-                    child: Text("Coming soon ...."))
-
-
-                ],
-              ),
-            ),
-
-              Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: ArticleCover(
-                        categ: '',
-                        image: widget.post.thumbnail!,
-                        stateCount: null,
-                        
-                        
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Comments",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold)),
+                            Icon(
+                              Icons.arrow_forward_outlined,
+                              size: 30,
+                              color: AppColors.secondaryColor,
+                            )
+                          ],
                         ),
+                      ),
+
+                      Align(
+                          alignment: Alignment.center,
+                          child: Text("Coming soon ...."))
+                    ],
                   ),
-          ],
-        ),
-        // floatingActionButton: Visibility(
-        //   visible: _showScrollButton,
-        //   child: FloatingActionButton(
-        //     onPressed: _handleScrollButtonPressed,
-        //     child: Icon(_scrollIcon),
-        //   ),
-        // ),
+                ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: ArticleCover(
+                    categ: '',
+                    image: widget.post.thumbnail!,
+                    stateCount: null,
+                  ),
+                ),
+              ],
+            ),
+            // floatingActionButton: Visibility(
+            //   visible: _showScrollButton,
+            //   child: FloatingActionButton(
+            //     onPressed: _handleScrollButtonPressed,
+            //     child: Icon(_scrollIcon),
+            //   ),
+            // ),
+          );
+        },
       ),
     );
   }

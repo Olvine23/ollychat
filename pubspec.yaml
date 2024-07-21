@@ -58,6 +58,7 @@ dependencies:
   flutter_quill: ^8.6.0
   awesome_dialog: ^3.2.1
   carousel_slider: ^4.2.1
+  google_generative_ai: ^0.2.2
 
 dev_dependencies:
   flutter_test:

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
+import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/screens/home/widgets/article_card.dart';
 import 'package:olly_chat/screens/home/widgets/shimmer_widget.dart';
 import 'package:olly_chat/screens/poems/poem_detail.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:user_repository/user_repository.dart';
 
 class PostList extends StatelessWidget {
   final ScrollController? scrollController;
@@ -27,8 +29,12 @@ class PostList extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return PoemDetailScreen(post: state.posts![index]);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return BlocProvider<MyUserBloc>(
+                          create: (context) => MyUserBloc(myUserRepository: FirebaseUserRepo()),
+                          child: PoemDetailScreen(post: state.posts![index]),
+                        );
                       }));
                     },
                     child: ArticleCard(
