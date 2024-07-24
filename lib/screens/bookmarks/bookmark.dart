@@ -52,80 +52,83 @@ class BookMarkScreen extends StatelessWidget {
           } else if (state.status == MyUserStatus.success &&
               state.bookmarkedPosts != null &&
               state.bookmarkedPosts!.isNotEmpty) {
-            return Column(
-              children: [
-                Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.dp, vertical: 16.dp),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "${state.bookmarkedPosts!.length} Articles",
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(fontWeight: FontWeight.w900),
-                      ),
-                      Row(
-                        children: [
-                          IconButton(
-                              onPressed: () {},
-                              icon: Icon(Icons.view_module_outlined)),
-                          IconButton(
-                              onPressed: () {}, icon: Icon(Icons.view_list))
-                        ],
-                      )
-                    ],
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.dp, vertical: 16.dp),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "${state.bookmarkedPosts!.length} Articles",
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .copyWith(fontWeight: FontWeight.w900),
+                        ),
+                        Row(
+                          children: [
+                            IconButton(
+                                onPressed: () {},
+                                icon: Icon(Icons.view_module_outlined)),
+                            IconButton(
+                                onPressed: () {}, icon: Icon(Icons.view_list))
+                          ],
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: state.bookmarkedPosts!.length,
-                  itemBuilder: (context, index) {
-                    final post = state.bookmarkedPosts![index];
-
-                    return GestureDetector(
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return BlocProvider<MyUserBloc>(
-                              create: (context) => MyUserBloc(myUserRepository: FirebaseUserRepo()),
-                              child: PoemDetailScreen(
-                                  post: state.bookmarkedPosts![index]),
-                            );
-                          }));
-                        },
-                        child: RowTile(
-                          imageUrl: state.bookmarkedPosts![index].thumbnail!,
-                          title: state.bookmarkedPosts![index].title,
-                          userAvatar:
-                              state.bookmarkedPosts![index].myUser.image!,
-                          authorName: state.bookmarkedPosts![index].myUser.name,
-                          daysago: state.bookmarkedPosts![index].createdAt,
-                        ));
-                    // return ListTile(
-                    //   leading: CircleAvatar(
-                    //     radius: 20,
-                    //     backgroundImage: NetworkImage(post.thumbnail!),
-                    //   ),
-                    //   title: Text(post.title),
-                    //   trailing: IconButton(
-                    //     icon: Icon(Icons.delete, color: Colors.red),
-                    //     onPressed: () {
-                    //       BlocProvider.of<MyUserBloc>(context).add(
-                    //         UnbookmarkPost(
-                    //           FirebaseAuth.instance.currentUser!.uid,
-                    //           post.id,
-                    //         ),
-                    //       );
-                    //       BlocProvider.of<MyUserBloc>(context).add(LoadBookmarkedPosts(FirebaseAuth.instance.currentUser!.uid));
-                    //     },
-                    //   ),
-                    // );
-                  },
-                ),
-              ],
+                  ListView.builder(
+                     physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: state.bookmarkedPosts!.length,
+                    itemBuilder: (context, index) {
+                      final post = state.bookmarkedPosts![index];
+              
+                      return GestureDetector(
+                          onTap: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return BlocProvider<MyUserBloc>(
+                                create: (context) => MyUserBloc(myUserRepository: FirebaseUserRepo()),
+                                child: PoemDetailScreen(
+                                    post: state.bookmarkedPosts![index]),
+                              );
+                            }));
+                          },
+                          child: RowTile(
+                            imageUrl: state.bookmarkedPosts![index].thumbnail!,
+                            title: state.bookmarkedPosts![index].title,
+                            userAvatar:
+                                state.bookmarkedPosts![index].myUser.image!,
+                            authorName: state.bookmarkedPosts![index].myUser.name,
+                            daysago: state.bookmarkedPosts![index].createdAt,
+                          ));
+                      // return ListTile(
+                      //   leading: CircleAvatar(
+                      //     radius: 20,
+                      //     backgroundImage: NetworkImage(post.thumbnail!),
+                      //   ),
+                      //   title: Text(post.title),
+                      //   trailing: IconButton(
+                      //     icon: Icon(Icons.delete, color: Colors.red),
+                      //     onPressed: () {
+                      //       BlocProvider.of<MyUserBloc>(context).add(
+                      //         UnbookmarkPost(
+                      //           FirebaseAuth.instance.currentUser!.uid,
+                      //           post.id,
+                      //         ),
+                      //       );
+                      //       BlocProvider.of<MyUserBloc>(context).add(LoadBookmarkedPosts(FirebaseAuth.instance.currentUser!.uid));
+                      //     },
+                      //   ),
+                      // );
+                    },
+                  ),
+                ],
+              ),
             );
           } else if (state.status == MyUserStatus.success &&
               (state.bookmarkedPosts == null ||

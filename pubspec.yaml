@@ -59,6 +59,9 @@ dependencies:
   awesome_dialog: ^3.2.1
   carousel_slider: ^4.2.1
   google_generative_ai: ^0.2.2
+  onesignal_flutter: ^5.1.2
+  firebase_app_check:
+
 
 dev_dependencies:
   flutter_test:

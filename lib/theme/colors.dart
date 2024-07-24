@@ -17,7 +17,7 @@ class AppColors{
   static const onBackgroundlight = Color(0xFF000000);
 
   //
-  static const backgroundDark = Color(0xFF212121);
+  static const backgroundDark = Color.fromARGB(255, 3, 5, 7);
   static const onBackgroundDark = Color(0xFFFFFFFF);
 
 

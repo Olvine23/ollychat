@@ -9,18 +9,20 @@ import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/blocs/updateuserinfo/update_user_info_bloc.dart';
 import 'package:olly_chat/screens/discover/discover_screen.dart';
 import 'package:olly_chat/screens/home/main_home.dart';
-import 'package:olly_chat/screens/poems/add_poem_screen.dart';
 import 'package:olly_chat/screens/poems/my_articles/my_articles.dart';
 import 'package:olly_chat/screens/poems/snippies/screenshotsnip.dart';
 import 'package:olly_chat/screens/profile/profile_screen.dart';
 import 'package:olly_chat/screens/profile/update_profile/update_profile.dart';
 import 'package:olly_chat/screens/profile/widgets/custom_modal_sheet.dart';
+import 'package:olly_chat/screens/search/search_screen.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:post_repository/post_repository.dart';
 import 'package:user_repository/user_repository.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final Function(ThemeMode) toggleTheme;
+
+  const HomeScreen({super.key, required this.toggleTheme});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -33,18 +35,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final PageController pageController = PageController(initialPage: 0);
 
-  static List<Widget> pages = [
-    MainHome(),
-    const DiscoverScreen(),
-    ScreenShotSnip(
-      image: '',
-      articlesnip: '',
-    ),
-//  UpdateUserScreen(userId: FirebaseAuth.instance.currentUser!.uid)
-    ProfileScreen(
-      userId: FirebaseAuth.instance.currentUser!.uid,
-    )
-  ];
+  late List<Widget> pages;
+
+  @override
+  void initState() {
+    super.initState();
+    pages = [
+      MainHome(toggleTheme: widget.toggleTheme),
+      const DiscoverScreen(),
+      PostSearchScreen(),
+      ProfileScreen(
+        userId: FirebaseAuth.instance.currentUser!.uid, toggleTheme: widget.toggleTheme,
+      ),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -75,62 +79,41 @@ class _HomeScreenState extends State<HomeScreen> {
                   foregroundColor: AppColors.white,
                   child: const Icon(Icons.add),
                   onPressed: () async {
-                    if(!_isModalVisible){
-                    showModalBottomSheet(
-                        context: context,
-                        builder: ((BuildContext context) {
-                          return BlocProvider<MyUserBloc>(
-                            create: (context) => MyUserBloc(
-                                myUserRepository: context
-                                    .read<AuthenticationBloc>()
-                                    .userRepository)
-                              ..add(GetMyUser(
-                                  myUserId: context
+                    if (!_isModalVisible) {
+                      showModalBottomSheet(
+                          context: context,
+                          builder: ((BuildContext context) {
+                            return BlocProvider<MyUserBloc>(
+                              create: (context) => MyUserBloc(
+                                  myUserRepository: context
                                       .read<AuthenticationBloc>()
-                                      .state
-                                      .user!
-                                      .uid)),
-                            child: CustomBottomSheet(
-                              onModalClosed: () {
-                                setState(() {
-                                  _isModalVisible = false;
-                                });
-                              }
-                            ),
-                          ); 
-                        }
-                        
-                        )
-                        
-                        ).whenComplete(() {
-                          setState(() {
-                            _isModalVisible = false;
-                          });
+                                      .userRepository)
+                                ..add(GetMyUser(
+                                    myUserId: context
+                                        .read<AuthenticationBloc>()
+                                        .state
+                                        .user!
+                                        .uid)),
+                              child: CustomBottomSheet(
+                                onModalClosed: () {
+                                  setState(() {
+                                    _isModalVisible = false;
+                                  });
+                                },
+                              ),
+                            );
+                          })).whenComplete(() {
+                        setState(() {
+                          _isModalVisible = false;
                         });
-
-                    // var newPost =  await  Navigator.push(context,
-                    //       MaterialPageRoute(builder: (context) {
-                    //     return BlocProvider<CreatePostBloc>(
-                    //       create: (context) => CreatePostBloc(
-                    //           postRepositry: FirebasePostRepository()),
-                    //       child:  AddPoemScreen(state.user!),
-                    //     );
-                    //   }));
-
-                    //   if(newPost != null){
-                    //     setState(() {
-                    //       context.read<GetPostBloc>().state.posts!.insert(0, newPost);
-                    //     });
-
-                    //   }
-                  }
-            });
-            } else if(state.status == MyUserStatus.loading) {
-              return  CircularProgressIndicator();
+                      });
+                    }
+                  });
+            } else if (state.status == MyUserStatus.loading) {
+              return CircularProgressIndicator();
             }
 
             return Container();
-            
           }),
           bottomNavigationBar: BlocBuilder<MyUserBloc, MyUserState>(
             builder: (context, state) {

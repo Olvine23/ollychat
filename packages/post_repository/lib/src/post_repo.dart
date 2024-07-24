@@ -8,6 +8,8 @@ import 'models/models.dart';
 abstract class PostRepository {
   Future<Post> createPost(Post post, String file);
 
+  Future<List<Post>> searchPosts(String query);
+
   Future<List<Post>> getPost({DocumentSnapshot? startAfter});
 
   Stream<List<Post>> getStreamPost();

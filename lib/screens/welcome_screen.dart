@@ -72,7 +72,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
                              
                       ],
-                      child: HomeScreen(),
+                      child: HomeScreen(toggleTheme: (ThemeMode ) {  },),
                     )),
           );
         }

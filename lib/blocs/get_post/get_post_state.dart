@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 part of 'get_post_bloc.dart';
 
 // sealed class GetPostState extends Equatable {
@@ -22,7 +24,7 @@ part of 'get_post_bloc.dart';
 enum GetPostStatus { success, failure, unknown }
 
 class GetPostState extends Equatable {
-  GetPostState({this.status = GetPostStatus.unknown, this.posts, this.pageKey=0});
+  GetPostState({this.status = GetPostStatus.unknown,this.searchResults, this.posts, this.pageKey=0});
 
   GetPostState.unkonwn() : this();
 
@@ -35,10 +37,14 @@ class GetPostState extends Equatable {
   final GetPostStatus status;
   List<Post>? posts;
   final int pageKey;
+  
+
+  final List<Post>? searchResults;
 
   GetPostState copyWith({
     GetPostStatus? status,
     List<Post>? posts,
+    
   
   }) {
     return GetPostState(

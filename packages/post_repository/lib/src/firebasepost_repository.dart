@@ -1,5 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -15,6 +17,43 @@ import 'package:uuid/uuid.dart';
   final postCollection = FirebaseFirestore.instance.collection('artcollection');
   final storage = FirebaseStorage.instance;
    final int postsPerPage = 10; // Define the number of posts per page
+
+    @override
+      Future<List<Post>> searchPosts(String query) async {
+    try {
+      QuerySnapshot querySnapshot = await postCollection
+          .where('title', isGreaterThanOrEqualTo: query)
+          .where('title', isLessThanOrEqualTo: query + '\uf8ff')
+          .get();
+
+      return querySnapshot.docs.map((doc) =>
+        Post.fromEntity(PostEntity.fromDocument(doc.data() as Map<String, dynamic>))
+      ).toList();
+    } catch (e) {
+      print(e.toString());
+      rethrow;
+    }
+  }
+
+   Future<void> sendNotification(String title, String content) async {
+    final response = await http.post(
+      Uri.parse('https://onesignal.com/api/v1/notifications'),
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Authorization': 'NTU1NjYwMDEtZjgyMy00ZDg3LWI3Y2EtM2QyZmY1N2JmNTIx',
+      },
+      body: jsonEncode({
+        'app_id': 'ed03b794-a7a6-4e2c-893b-a859ce8da8fb',
+        'included_segments': ['All'],
+        'headings': {'en': title},
+        'contents': {'en': content},
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to send notification');
+    }
+  }
 
   @override
   Future<Post> createPost(Post post, String image) async {
@@ -42,6 +81,10 @@ import 'package:uuid/uuid.dart';
       await postCollection.doc(post.id).update({
         'thumbnail': url
       });
+
+      
+
+      //  await sendNotification('New Article Published', post.title);
 
       return post;
     } catch (e) {

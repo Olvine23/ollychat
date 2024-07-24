@@ -154,7 +154,7 @@ class ArticleCard extends StatelessWidget {
                     ),
                   ],
                   child: ProfileScreen(
-                    userId: authorId,
+                    userId: authorId, toggleTheme: (ThemeMode ) {  },
                   ),
                 );
               }));

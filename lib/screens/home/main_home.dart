@@ -21,14 +21,23 @@ import 'package:user_repository/user_repository.dart';
 
 import '../notifications/notification_screen.dart';
 
-class MainHome extends StatelessWidget {
+class MainHome extends StatefulWidget {
+  final Function(ThemeMode) toggleTheme;
+
+  const MainHome({super.key, required this.toggleTheme});
+
+  @override
+  State<MainHome> createState() => _MainHomeState();
+}
+
+class _MainHomeState extends State<MainHome> {
   final user = FirebaseAuth.instance.currentUser;
-  MainHome({super.key});
 
   bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
+      bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     print(user!.uid);
     return Scaffold(
       appBar: AppBar(
@@ -43,6 +52,16 @@ class MainHome extends StatelessWidget {
         ),
         leading: Image.asset('assets/images/nobg.png', height: 100),
         actions: [
+          //  Switch(
+          //   value: isDarkMode,
+          //   onChanged: (bool value) {
+
+          //      print('Switch toggled: $value');
+          //     value
+          //         ? widget.toggleTheme(ThemeMode.dark)
+          //         : widget.toggleTheme(ThemeMode.light);
+          //   },
+          // ),
           IconButton(
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {

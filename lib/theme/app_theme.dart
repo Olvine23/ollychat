@@ -18,8 +18,11 @@ ThemeData appTheme = ThemeData(
 );
 
 ThemeData appThemeDark = ThemeData(
-   
-  fontFamily: 'Inter',
+    textTheme: GoogleFonts.josefinSansTextTheme().apply(
+    bodyColor: Colors.white,
+    displayColor: Colors.white,
+  ),
+  fontFamily: 'Nunito',
   useMaterial3: true,
   colorScheme:  ColorScheme.dark(
     

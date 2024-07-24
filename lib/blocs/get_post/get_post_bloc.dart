@@ -17,19 +17,21 @@ class GetPostBloc extends Bloc<GetPostEvent, GetPostState> {
     on<GetPosts>(_onGetPosts);
     on<LoadMorePosts>(_onLoadMorePosts);
     on<GetPostsByCategory>(_onGetPostsByCategory);
+    on<SearchPosts>(_onSearchPosts); // Add this line
   }
 
   void _onGetPosts(GetPosts event, Emitter<GetPostState> emit) async {
     try {
       lastDocument = null;
       List<Post> posts = await _postRepository.getPost();
+      
       if (posts.isNotEmpty) {
         lastDocument = await FirebaseFirestore.instance
             .collection('artcollection')
             .doc(posts.last.id)
             .get();
       }
-      emit(GetPostState.success(posts, pageKey: event.pageKey));
+      emit(GetPostState.success(posts, pageKey: event.pageKey,));
     } catch (_) {
       emit(GetPostState.failure());
     }
@@ -65,6 +67,21 @@ class GetPostBloc extends Bloc<GetPostEvent, GetPostState> {
             .get();
       }
       emit(GetPostState.success(posts, pageKey: event.pageKey));
+    } catch (_) {
+      emit(GetPostState.failure());
+    }
+
+    
+  }
+
+   void _onSearchPosts(SearchPosts event, Emitter<GetPostState> emit) async {
+
+    print('Searching for posts with query: ${event.query}');
+    try {
+      lastDocument = null;
+      List<Post> posts = await _postRepository.searchPosts(event.query);
+      print('Found ${posts.length} posts');
+      emit(GetPostState.success(posts));
     } catch (_) {
       emit(GetPostState.failure());
     }

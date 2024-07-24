@@ -16,7 +16,9 @@ import 'package:olly_chat/screens/discover/widgets/writers_list.dart';
 import 'package:olly_chat/screens/home/widgets/article_card.dart';
 import 'package:olly_chat/screens/home/widgets/shimmer_widget.dart';
 import 'package:olly_chat/screens/poems/poem_detail.dart';
+import 'package:olly_chat/screens/search/search_screen.dart';
 import 'package:olly_chat/theme/colors.dart';
+import 'package:post_repository/post_repository.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:user_repository/user_repository.dart';
 
@@ -70,7 +72,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             child: IconButton(
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const BookMarkScreen();
+                  return BookMarkScreen();
                 }));
               },
               icon: Icon(
@@ -89,6 +91,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20.dp),
               child: TextField(
+                onChanged: (query) {
+                  context.read<GetPostBloc>().add(SearchPosts(query));
+                },
                 decoration: InputDecoration(
                   labelText: 'Search for article or writer',
                   border: OutlineInputBorder(

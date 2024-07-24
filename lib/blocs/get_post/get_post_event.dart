@@ -35,3 +35,12 @@ class GetPostsByCategory extends GetPostEvent {
   List<Object> get props => [category, pageKey];
 }
 class FetchMyArticles extends GetPostEvent {}
+
+class SearchPosts extends GetPostEvent {
+  final String query;
+
+  const SearchPosts(this.query);
+
+  @override
+  List<Object> get props => [query];
+}

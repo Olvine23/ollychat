@@ -27,8 +27,9 @@ import 'package:user_repository/user_repository.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userId;
+   final Function(ThemeMode) toggleTheme;
 
-  const ProfileScreen({Key? key, required this.userId}) : super(key: key);
+  const ProfileScreen({Key? key, required this.userId, required this.toggleTheme}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -126,7 +127,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => const SettingsScreen(),
+                                  builder: (context) =>  SettingsScreen(toggleTheme: widget.toggleTheme, ),
                                 ),
                               );
                             },
