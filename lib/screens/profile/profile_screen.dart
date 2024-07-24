@@ -27,9 +27,11 @@ import 'package:user_repository/user_repository.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userId;
-   final Function(ThemeMode) toggleTheme;
+  final Function(ThemeMode) toggleTheme;
 
-  const ProfileScreen({Key? key, required this.userId, required this.toggleTheme}) : super(key: key);
+  const ProfileScreen(
+      {Key? key, required this.userId, required this.toggleTheme})
+      : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -69,9 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         listener: (context, state) {
           // TODO: implement listener
 
-          if(state.status == MyUserStatus.success){
-            
-          }
+          if (state.status == MyUserStatus.success) {}
         },
         child: RefreshIndicator(
           onRefresh: () async {
@@ -127,7 +127,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) =>  SettingsScreen(toggleTheme: widget.toggleTheme, ),
+                                  builder: (context) => BlocProvider<MyUserBloc>(
+                                    create: (context) => MyUserBloc(myUserRepository: FirebaseUserRepo()),
+                                    child: SettingsScreen(
+                                      toggleTheme: widget.toggleTheme,
+                                    ),
+                                  ),
                                 ),
                               );
                             },
@@ -311,11 +316,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                         AppColors.primaryColor),
                                                 onPressed: () {
                                                   if (isFollowing) {
-                                                     
-                                                  } else {
-                                                    
-                                                         
-                                                  }
+                                                  } else {}
                                                 },
                                                 child: Text(
                                                   isFollowing

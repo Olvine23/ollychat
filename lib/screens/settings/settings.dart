@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/blocs/sign_in/sign_in_bloc.dart';
 import 'package:olly_chat/screens/profile/widgets/bottom_sheet_modal.dart';
 import 'package:user_repository/user_repository.dart';
 
 class SettingsScreen extends StatefulWidget {
-   final Function(ThemeMode) toggleTheme;
-  
+  final Function(ThemeMode) toggleTheme;
+
   const SettingsScreen({super.key, required this.toggleTheme});
 
   @override
@@ -16,21 +17,32 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
-     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
       ),
       body: ListView(
-       
         children: [
-          _buildListTile(
-            context,
-            icon: Icons.person,
-            title: 'Personal Info',
-            onTap: () {
-              // Navigate to Personal Info screen
-              Navigator.pushNamed(context, '/personalInfo');
+          BlocBuilder<MyUserBloc, MyUserState>(
+            builder: (context, state) {
+              if(state.status == MyUserStatus.failure)
+              {
+                return Container();
+              }
+             else {
+                return _buildListTile(
+                context,
+                icon: Icons.person,
+                title: 'Personal Info',
+                onTap: () {
+                  // Navigate to Personal Info screen
+
+                  print(state.user!.name);
+                },
+
+              );
+              }
             },
           ),
           _buildListTile(
@@ -60,27 +72,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Navigator.pushNamed(context, '/about');
             },
           ),
-
           ListTile(
-
             leading: Icon(Icons.remove_red_eye),
             trailing: Switch(
-            value: isDarkMode,
-            onChanged: (bool value) {
-
-               print('Switch toggled: $value');
+                value: isDarkMode,
+                onChanged: (bool value) {
+                  print('Switch toggled: $value');
 
                   value
-                  ? widget.toggleTheme(ThemeMode.dark)
-                  : widget.toggleTheme(ThemeMode.light);
-            
-               
-               }
-           
-          ),
-
+                      ? widget.toggleTheme(ThemeMode.dark)
+                      : widget.toggleTheme(ThemeMode.light);
+                }),
             title: Text("Dark Mode"),
-
           ),
           _buildListTile(
             context,
@@ -114,17 +117,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     // Implement logout logic here
     // For example:
     // Navigator.pushReplacementNamed(context, '/login');
-      
+
     print('Logout clicked');
-      showModalBottomSheet(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return BlocProvider(
-                                    create: (context) => SignInBloc(
-                                        userRepository: FirebaseUserRepo()),
-                                    child: LogoutBottomSheet(),
-                                  );
-                                },
-                              );
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return BlocProvider(
+          create: (context) => SignInBloc(userRepository: FirebaseUserRepo()),
+          child: LogoutBottomSheet(),
+        );
+      },
+    );
   }
 }
