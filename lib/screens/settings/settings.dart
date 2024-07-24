@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:olly_chat/blocs/sign_in/sign_in_bloc.dart';
+import 'package:olly_chat/screens/profile/widgets/bottom_sheet_modal.dart';
+import 'package:user_repository/user_repository.dart';
 
 class SettingsScreen extends StatefulWidget {
    final Function(ThemeMode) toggleTheme;
@@ -110,6 +114,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     // Implement logout logic here
     // For example:
     // Navigator.pushReplacementNamed(context, '/login');
+      
     print('Logout clicked');
+      showModalBottomSheet(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return BlocProvider(
+                                    create: (context) => SignInBloc(
+                                        userRepository: FirebaseUserRepo()),
+                                    child: LogoutBottomSheet(),
+                                  );
+                                },
+                              );
   }
 }
