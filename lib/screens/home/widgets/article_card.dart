@@ -206,7 +206,7 @@ class ArticleCard extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(width: 2.w,)
+        SizedBox(width: 2.5.w,)
       ],
     );
   }
