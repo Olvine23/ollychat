@@ -44,3 +44,6 @@ class SearchPosts extends GetPostEvent {
   @override
   List<Object> get props => [query];
 }
+
+
+class ClearSearch extends GetPostEvent {}

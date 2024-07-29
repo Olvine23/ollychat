@@ -7,6 +7,7 @@ import 'package:olly_chat/components/row_tile.dart';
 import 'package:olly_chat/screens/home/widgets/article_card.dart';
 import 'package:olly_chat/screens/home/widgets/shimmer_widget.dart';
 import 'package:olly_chat/screens/poems/poem_detail.dart';
+import 'package:olly_chat/screens/search/search_screen.dart';
 import 'package:shimmer/shimmer.dart';
 
 class AllItemsScreen extends StatelessWidget {
@@ -19,7 +20,11 @@ class AllItemsScreen extends StatelessWidget {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context){
+                  return PostSearchScreen();
+                }));
+            },
             icon: Icon(
               Icons.search,
               size: 30.dp,

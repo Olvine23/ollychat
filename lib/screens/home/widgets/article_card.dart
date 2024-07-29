@@ -65,7 +65,7 @@ class ArticleCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 30.2.h,
+                height: 29.2.h,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

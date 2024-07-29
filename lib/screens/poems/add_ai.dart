@@ -103,6 +103,7 @@ class _AddWithAIState extends State<AddWithAI> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(height: 2.0.h,),
                         Text(
                           "Articles will be generated based on the picked image and title",
                           textAlign: TextAlign.center,
@@ -115,14 +116,17 @@ class _AddWithAIState extends State<AddWithAI> {
                                   fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 4.h),
-                        Text(
-                          "Select an image",
-                          textAlign: TextAlign.start,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Select an image",
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
                         ),
                         GestureDetector(
                           onTap: () async {
