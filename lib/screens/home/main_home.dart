@@ -181,6 +181,7 @@ class _MainHomeState extends State<MainHome> {
             ],
           ),
         ),
+        SizedBox(height: 2.h,),
         SizedBox(
           height: MediaQuery.of(context).size.height / 2 - 70,
           child: articles.isEmpty

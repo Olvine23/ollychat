@@ -29,14 +29,7 @@ class SectionTitle extends StatelessWidget {
               }));
 
             },
-            child: Row(
-              children: [
-              Text("See All", style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.secondaryColor),),
-              const SizedBox(width: 8,),
-              Icon(Icons.arrow_forward, color: AppColors.secondaryColor, size: 30),
-              
-              ],
-            ),
+            child: Icon(Icons.arrow_forward, color: AppColors.secondaryColor, size: 30),
           ),
         ],
       ),

@@ -41,7 +41,7 @@ class ContainerImage extends StatelessWidget {
               children: [
                 Text(categ,
                  
-                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white, fontSize: 18.dp, fontWeight: FontWeight.bold)),
+                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white, fontSize: 14.dp, fontWeight: FontWeight.bold)),
                  Text("${postNo.toString()} Articles", style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white, fontSize: 12.dp))
               ],
             ),

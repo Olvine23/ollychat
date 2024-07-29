@@ -582,11 +582,8 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                           styleSheet: MarkdownStyleSheet(
                             textAlign: WrapAlignment.center,
                             h1: const TextStyle(
-                                fontSize: 24, color: Colors.blue),
-                            p: GoogleFonts.ebGaramond(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16.dp,
-                            ),
+                                fontSize: 24),
+                           
                             code: const TextStyle(
                                 fontSize: 14, color: Colors.green),
                           ),

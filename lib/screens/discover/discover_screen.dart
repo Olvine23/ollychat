@@ -107,9 +107,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               scrollController: _scrollController,
             ),
 
+             SizedBox(height: 2.h),
+
             TopicList(),
-            SizedBox(height: 2.h),
+            SizedBox(height: 4.h),
             const SectionTitle(title: 'Most Popular'),
+            SizedBox(height: 2.h),
 
             const PostList(),
             SizedBox(height: 2.h),
@@ -119,7 +122,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             //   create: (context) => MyUserBloc(myUserRepository: FirebaseUserRepo()),
             //   child: const WriterList(),
             // ),
-            const SectionTitle(title: 'Our Recommendations'),
+            const SectionTitle(title: 'Recommendations'),
+             SizedBox(height: 2.h),
             // Your code for recommendations here
 
             const NewArticlesList(),

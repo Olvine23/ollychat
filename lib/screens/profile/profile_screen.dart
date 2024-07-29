@@ -127,8 +127,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => BlocProvider<MyUserBloc>(
-                                    create: (context) => MyUserBloc(myUserRepository: FirebaseUserRepo()),
+                                  builder: (context) =>
+                                      BlocProvider<MyUserBloc>(
+                                    create: (context) => MyUserBloc(
+                                        myUserRepository: FirebaseUserRepo()),
                                     child: SettingsScreen(
                                       toggleTheme: widget.toggleTheme,
                                     ),
@@ -491,9 +493,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                                     MaterialPageRoute(
                                                                         builder:
                                                                             (context) {
-                                                                  return PoemDetailScreen(
-                                                                      post: myArticles[
-                                                                          index]);
+                                                                  return BlocProvider<
+                                                                      MyUserBloc>(
+                                                                    create: (context) =>
+                                                                        MyUserBloc(
+                                                                            myUserRepository:
+                                                                                FirebaseUserRepo()),
+                                                                    child: PoemDetailScreen(
+                                                                        post: myArticles[
+                                                                            index]),
+                                                                  );
                                                                 }));
                                                               },
                                                               child: RowTile(
@@ -591,6 +600,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                                     .instagram,
                                                             platform:
                                                                 'instagram',
+                                                            url:
+                                                                'https://x.com/GeorgeOlivine',
                                                           ),
                                                           SizedBox(
                                                               height: 8.dp),
@@ -599,6 +610,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                                 FontAwesomeIcons
                                                                     .twitter,
                                                             platform: 'twitter',
+                                                            url:
+                                                                'x://user?username=GeorgeOlivine',
                                                           ),
                                                           SizedBox(
                                                               height: 8.dp),
@@ -608,6 +621,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                                     .linkedin,
                                                             platform:
                                                                 'linkedin',
+                                                            url:
+                                                                'https://x.com/GeorgeOlivine',
                                                           ),
                                                           SizedBox(
                                                               height: 8.dp),
@@ -617,6 +632,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                                     .whatsapp,
                                                             platform:
                                                                 'Whatsapp',
+                                                            url:
+                                                                'https://x.com/GeorgeOlivine',
                                                           ),
                                                         ],
                                                       ),
