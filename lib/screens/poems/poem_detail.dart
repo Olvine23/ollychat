@@ -362,7 +362,7 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
             extendBodyBehindAppBar: true,
             appBar: AppBar(
               title: Text(
-                widget.post.genre == null ? 'Genre' : widget.post.genre!,
+                widget.post.title,
                 style:
                     TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
