@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
+import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/screens/bookmarks/bookmark.dart';
 import 'package:olly_chat/screens/discover/widgets/new_articles.dart';
 import 'package:olly_chat/screens/discover/widgets/post_list.dart';
 import 'package:olly_chat/screens/discover/widgets/section_title.dart';
 import 'package:olly_chat/screens/discover/widgets/topic_list.dart';
+import 'package:olly_chat/screens/poems/poem_detail.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:post_repository/post_repository.dart';
+import 'package:user_repository/user_repository.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -125,6 +128,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                 return ListTile(
                                   title: Text(post.title),
                                   onTap: () {
+                                      Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return BlocProvider(
+                                create: (context) => MyUserBloc(myUserRepository: FirebaseUserRepo()),
+                                child: PoemDetailScreen(post: post),
+                              );
+                            }));
                                     
                                   },
                                 );

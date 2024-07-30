@@ -3,10 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:lottie/lottie.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
+import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/components/row_tile.dart';
 import 'package:olly_chat/screens/discover/components/container_image.dart';
 import 'package:olly_chat/screens/discover/components/head_image.dart';
+import 'package:olly_chat/screens/poems/poem_detail.dart';
 import 'package:post_repository/post_repository.dart';
+import 'package:user_repository/user_repository.dart';
 
 class CategoryPostsScreen extends StatelessWidget {
   final String category;
@@ -96,12 +99,27 @@ class CategoryPostsScreen extends StatelessWidget {
                           itemCount: state.posts!.length,
                           itemBuilder: (context, index) {
                             final post = state.posts![index];
-                            return RowTile(
-                                imageUrl: post.thumbnail!,
-                                title: post.title,
-                                userAvatar: post.myUser.image!,
-                                authorName: post.myUser.name,
-                                daysago: post.createdAt);
+                            return GestureDetector(
+                              onTap: (){
+                                 Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BlocProvider<MyUserBloc>(
+                                    create: (context) => MyUserBloc(
+                                        myUserRepository: FirebaseUserRepo()),
+                                    child:
+                                        PoemDetailScreen(post: state.posts![index]),
+                                  )),
+                        );
+
+                              },
+                              child: RowTile(
+                                  imageUrl: post.thumbnail!,
+                                  title: post.title,
+                                  userAvatar: post.myUser.image!,
+                                  authorName: post.myUser.name,
+                                  daysago: post.createdAt),
+                            );
                           },
                         ),
                       ],
