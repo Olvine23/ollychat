@@ -6,7 +6,7 @@ import 'package:google_gemini/google_gemini.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
-import 'package:markdown_editable_textinput/markdown_text_input.dart';
+// import 'package:markdown_editable_textinput/markdown_text_input.dart';
 import 'package:olly_chat/blocs/create_post/create_post_bloc.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/components/custom_textfield.dart';
@@ -137,9 +137,9 @@ class _AddWithAIState extends State<AddWithAI> {
                               CroppedFile? croppedFile = await ImageCropper()
                                   .cropImage(
                                       sourcePath: image.path,
-                                      aspectRatioPresets: [
-                                    CropAspectRatioPreset.square
-                                  ],
+                                  //     aspectRatioPresets: [
+                                  //   CropAspectRatioPreset.square
+                                  // ],
                                       uiSettings: [
                                     AndroidUiSettings(
                                         toolbarTitle: 'Cropper',
@@ -280,11 +280,11 @@ class _AddWithAIState extends State<AddWithAI> {
                         const SizedBox(
                           height: 10,
                         ),
-                        MarkdownTextInput(
-                          controller: bodyController,
-                          (String value) => setState(() => text = value),
-                          text,
-                        ),
+                        // MarkdownTextInput(
+                        //   controller: bodyController,
+                        //   (String value) => setState(() => text = value),
+                        //   text,
+                        // ),
                         SizedBox(
                           height: 10,
                         ),

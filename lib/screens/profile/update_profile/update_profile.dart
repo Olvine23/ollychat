@@ -40,7 +40,7 @@ class _UpdateUserScreenState extends State<UpdateUserScreen> {
       CroppedFile? croppedFile = await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
         aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-        aspectRatioPresets: [CropAspectRatioPreset.square],
+        // aspectRatioPresets: [CropAspectRatioPreset.square],
         uiSettings: [
           AndroidUiSettings(
             toolbarTitle: 'Cropper',

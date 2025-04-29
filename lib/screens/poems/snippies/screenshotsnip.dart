@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+// import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:olly_chat/screens/home/components/image_container.dart';
 import 'package:olly_chat/screens/poems/widgets/image_widget.dart';
 import 'package:path_provider/path_provider.dart';
@@ -36,21 +36,22 @@ class _ScreenShotSnipState extends State<ScreenShotSnip> {
         .replaceAll(':', '-');
     final name = 'screenshot_$time';
 
-    final result = await ImageGallerySaver.saveImage(bytes, name: name);
+    final result = '';
 
-    return result['filepath'];
+    // return result['filepath'];
+    return result; // Ensure a String is always returned
   }
 
-  Future<String> saveAndShare(Uint8List bytes) async {
-    final dir = await getApplicationDocumentsDirectory();
-    final image = await File('${dir.path}/flutter.png').create();
-     image.writeAsBytesSync(bytes);
+  // Future<String> saveAndShare(Uint8List bytes) async {
+  //   final dir = await getApplicationDocumentsDirectory();
+  //   final image = await File('${dir.path}/flutter.png').create();
+  //    image.writeAsBytesSync(bytes);
 
-    // ignore: deprecated_member_use
-    var retrr = await Share.shareFiles([image.path]);
+    
+  //   var retrr = await Share.shareFiles([image.path]);
 
-    return retrr as String;
-  }
+  //   return retrr as String;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +64,7 @@ class _ScreenShotSnipState extends State<ScreenShotSnip> {
             IconButton(onPressed: () async{
               final imageTwo = await screenshotController.captureFromWidget(snap(widget: widget));
 
-              saveAndShare(imageTwo);
+              // saveAndShare(imageTwo);
 
               saveImage(imageTwo);
 

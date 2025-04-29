@@ -108,7 +108,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return ListTile(
       trailing: Icon(Icons.chevron_right),
       leading: Icon(icon, color: Theme.of(context).iconTheme.color),
-      title: Text(title, style: Theme.of(context).textTheme.bodyText1),
+      title: Text(title),
       onTap: onTap,
     );
   }

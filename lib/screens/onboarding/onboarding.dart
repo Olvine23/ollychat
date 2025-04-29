@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
+import 'package:olly_chat/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:olly_chat/blocs/sign_in/sign_in_bloc.dart';
+import 'package:olly_chat/screens/authentication/sigin.dart';
 import 'package:olly_chat/screens/onboarding/widgets/commontext.dart';
 import 'package:olly_chat/screens/welcome_screen.dart';
 import 'package:olly_chat/theme/colors.dart';
@@ -98,11 +102,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     MaterialPageRoute(builder: (context) {
                       print(
                           "Navigating to WelcomeScreen from OnboardingScreen (Get Started)");
-                      return WelcomeScreen();
+                      return BlocProvider<SignInBloc>(
+                        create: (context) => SignInBloc(userRepository: context
+                                      .read<AuthenticationBloc>()
+                                      .userRepository,),
+                        child: SignInScreen(),
+                      );
                     }),
                   );
                 },
-                child: Text("Get Started", style: TextStyle(color: Colors.white),),
+                child: Text(
+                  "Get Started",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
           ],

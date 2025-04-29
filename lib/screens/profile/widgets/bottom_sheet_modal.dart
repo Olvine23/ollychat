@@ -50,7 +50,7 @@ class LogoutBottomSheet extends StatelessWidget {
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.grey[300], // Background color
+                    backgroundColor: Colors.grey[300], // Background color
                   ),
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -62,7 +62,7 @@ class LogoutBottomSheet extends StatelessWidget {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).colorScheme.primary, // Background color
+                    backgroundColor: Theme.of(context).colorScheme.primary, // Background color
                   ),
                   onPressed: () {
                     context.read<SignInBloc>().add(SignOutRequired());

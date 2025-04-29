@@ -12,6 +12,7 @@ import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/blocs/sign_in/sign_in_bloc.dart';
 import 'package:olly_chat/blocs/updateuserinfo/update_user_info_bloc.dart';
 import 'package:olly_chat/components/row_tile.dart';
+import 'package:olly_chat/screens/authentication/sigin.dart';
 import 'package:olly_chat/screens/home/widgets/shimmer_widget.dart';
 import 'package:olly_chat/screens/poems/poem_detail.dart';
 import 'package:olly_chat/screens/profile/components/divider.dart';
@@ -63,7 +64,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (state.status == AuthenticationStatus.unauthenticated) {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) {
-            return WelcomeScreen();
+            return BlocProvider<SignInBloc>(
+              create: (context) => SignInBloc(
+                  userRepository:
+                      context.read<AuthenticationBloc>().userRepository),
+              child: SignInScreen(),
+            );
           }));
         }
       },
@@ -191,10 +197,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                           const CropAspectRatio(
                                                               ratioX: 1,
                                                               ratioY: 1),
-                                                      aspectRatioPresets: [
-                                                        CropAspectRatioPreset
-                                                            .square
-                                                      ],
+                                                      // aspectRatioPresets: [
+                                                      //   CropAspectRatioPreset
+                                                      //       .square
+                                                      // ],
                                                       uiSettings: [
                                                         AndroidUiSettings(
                                                           toolbarTitle:

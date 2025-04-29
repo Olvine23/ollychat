@@ -70,7 +70,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.grey[300], // Background color
+                        backgroundColor: Colors.grey[300], // Background color
                       ),
                       onPressed: () async{
                           var newPost = await Navigator.push(context,
@@ -99,7 +99,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Theme.of(context)
+                        backgroundColor: Theme.of(context)
                             .colorScheme
                             .primary, // Background color
                       ),

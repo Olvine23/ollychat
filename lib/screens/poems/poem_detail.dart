@@ -10,7 +10,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+// import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
@@ -73,23 +73,25 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
         .replaceAll(':', '-');
     final name = 'screenshot_$time';
 
-    final result = await ImageGallerySaver.saveImage(bytes, name: name);
+    
 
-    return result['filepath'];
+    final  result = '';
+
+    return result;
   }
 
-  Future<String> saveAndShare(
-      Uint8List bytes, String text, String subject) async {
-    final dir = await getApplicationDocumentsDirectory();
-    final image = await File('${dir.path}/flutter.png').create();
-    image.writeAsBytesSync(bytes);
+  // Future<String> saveAndShare(
+  //     Uint8List bytes, String text, String subject) async {
+  //   final dir = await getApplicationDocumentsDirectory();
+  //   final image = await File('${dir.path}/flutter.png').create();
+  //   image.writeAsBytesSync(bytes);
 
-    // ignore: deprecated_member_use
-    var retrr =
-        await Share.shareFiles([image.path], text: text, subject: subject);
+  //   // ignore: deprecated_member_use
+  //   // var retrr =
+  //   //     await Share.shareFiles([image.path], text: text, subject: subject);
 
-    return retrr as String;
-  }
+  //   // return retrr as String;
+  // }
 
   @override
   void initState() {
@@ -378,12 +380,12 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                       onPressed: () async {
                         // Handle share icon tap
 
-                        final image =
-                            await screenshotController.captureFromWidget(
-                                imageWidget(size: size, widget: widget));
+                        // final image =
+                        //     await screenshotController.captureFromWidget(
+                        //         imageWidget(size: size, widget: widget));
 
-                        saveAndShare(
-                            image, widget.post.body!, widget.post.title);
+                        // saveAndShare(
+                        //     image, widget.post.body!, widget.post.title);
                       },
                       icon: Icon(Icons.share),
                       iconSize: 30,
