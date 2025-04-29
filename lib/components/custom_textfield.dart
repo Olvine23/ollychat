@@ -36,6 +36,7 @@ class CustomTextField extends StatelessWidget {
         
       ),
       child: TextFormField(
+        style: TextStyle(color: Colors.white), // 👈 typed text will be white
           validator: validator,
           controller: controller,
           obscureText: obscureText,
@@ -47,22 +48,17 @@ class CustomTextField extends StatelessWidget {
           decoration: InputDecoration(
             suffixIcon: suffixIcon,
             prefixIcon: prefixIcon,
-      
-            border: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: AppColors.secondaryColor
-              ),
-              borderRadius: BorderRadius.circular(12)),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(18),
-              borderSide: BorderSide(width: 1.0, color: AppColors.secondaryColor),
-            ),
+       border: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12),
+    borderSide: BorderSide.none, // Optional: no border at all
+  ),
             errorBorder: const UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.red)),
             // fillColor: Colors.grey.shade200,
-            filled: true,
+          fillColor: Colors.white.withOpacity(0.2),
+
             hintText: hintText,
-            hintStyle: TextStyle(color: Colors.grey[500]),
+            hintStyle: TextStyle(color: Colors.white),
             errorText: errorMsg,
           )),
     );

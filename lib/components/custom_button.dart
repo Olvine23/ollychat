@@ -3,14 +3,15 @@ import 'package:olly_chat/theme/colors.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
+  final Color butttonColor;
   final dynamic onPressed;
-  const CustomButton({super.key, required this.text, required this.onPressed});
+  const CustomButton({super.key, required this.text, required this.onPressed, required this.butttonColor});
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryColor,
+          backgroundColor: butttonColor,
 
           minimumSize: const Size.fromHeight(60), //
         ),
