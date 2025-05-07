@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'dart:typed_data';
-import 'package:connectivity/connectivity.dart';
+// import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
@@ -73,25 +74,26 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
         .replaceAll(':', '-');
     final name = 'screenshot_$time';
 
-    
-
-    final  result = '';
+    final result = '';
 
     return result;
   }
 
-  // Future<String> saveAndShare(
-  //     Uint8List bytes, String text, String subject) async {
-  //   final dir = await getApplicationDocumentsDirectory();
-  //   final image = await File('${dir.path}/flutter.png').create();
-  //   image.writeAsBytesSync(bytes);
+  Future<String> saveAndShare(
+      Uint8List bytes, String text, String subject) async {
+    final dir = await getApplicationDocumentsDirectory();
+    final image = await File('${dir.path}/flutter.png').create();
+    image.writeAsBytesSync(bytes);
 
-  //   // ignore: deprecated_member_use
-  //   // var retrr =
-  //   //     await Share.shareFiles([image.path], text: text, subject: subject);
+    // ignore: deprecated_member_use
+    // var retrr =
+    //     await Share.shareFiles([image.path], text: text, subject: subject);
 
-  //   // return retrr as String;
-  // }
+    // return retrr as String;
+
+    // Ensure a return statement or throw an exception
+    return 'Image saved and shared successfully';
+  }
 
   @override
   void initState() {
@@ -108,7 +110,7 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
   @override
   void dispose() {
     _scrollController.removeListener(_scrollListener);
-    player.dispose();
+    // player.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -140,14 +142,14 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
       // Scroll to the top
       _scrollController.animateTo(
         0,
-        duration: Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
       );
     } else if (_scrollIcon == Icons.arrow_downward) {
       // Scroll to the bottom
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
       );
     }
@@ -155,29 +157,29 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
 
   //For the Text To Speech
   Future<void> playTextToSpeech(String text) async {
-    // Check network connectivity
-    var connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.none) {
-      // Device is offline, handle accordingly (e.g., show a message)
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('No internet connection'),
-        ),
-      );
+    // var connectivityResult = await Connectivity().checkConnectivity();
+    // if (connectivityResult == ConnectivityResult.none) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('No internet connection')),
+    //   );
+    //   return;
+    // }
+
+    // Use a unique file name based on the text
+    final appDocDir = await getApplicationDocumentsDirectory();
+    final audioFile = File('${appDocDir.path}/audio_${text.hashCode}.mp3');
+
+    // If file exists, just play it
+    if (await audioFile.exists()) {
+      await playAudioFromBytes(audioFile);
       return;
     }
-    // Check if audio is already cached
-    if (cachedAudios.containsKey(text)) {
-      await playAudioFromBytes(cachedAudios[text]!);
-      return;
-    }
-    //display the loading icon while we wait for request
+
     setState(() {
-      _isLoadingVoice = true; //progress indicator turn on now
+      _isLoadingVoice = true;
     });
 
-    String voiceRachel =
-        'aEO01A4wXwd1O8GPgGlF'; //Rachel voice - change if you know another Voice ID
+    String voiceRachel = 'aEO01A4wXwd1O8GPgGlF'; // Replace if needed
 
     String url = 'https://api.elevenlabs.io/v1/text-to-speech/$voiceRachel';
     final response = await http.post(
@@ -199,47 +201,29 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
     );
 
     setState(() {
-      _isLoadingVoice = false; //progress indicator turn off now
+      _isLoadingVoice = false;
     });
 
     if (response.statusCode == 200) {
-      final bytes = response.bodyBytes; //get the bytes ElevenLabs sent back
+      final bytes = response.bodyBytes;
 
-      // Get the temporary directory on the device
-      final cacheDir = await getTemporaryDirectory();
-
-      // Save the audio bytes to a file in the cache directory
-      File audioFile = File(
-          '${cacheDir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.mp3');
+      // Save to permanent storage
       await audioFile.writeAsBytes(bytes);
 
-      // Cache the audio file
+      // Cache in memory for quick reuse during this session
       cachedAudios[text] = audioFile;
 
       await playAudioFromBytes(audioFile);
 
-      // Save the audio bytes to a file
-      // File audioFile = File('$tempPath/audio.mp3');
-      // await audioFile.writeAsBytes(bytes);
-
-      // Print out the path where the file is saved
-      print('Audio saved to: ${audioFile.path}');
-
-      // Show a message indicating that the audio has been downloaded
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Audio downloaded successfully'),
-        ),
+        const SnackBar(content: Text('Audio downloaded and saved')),
       );
-      // await player.setAudioSource(MyCustomSource(
-      //     bytes)); //send the bytes to be read from the JustAudio library
-      // player.play(); //play the audio
     } else {
-      // throw Exception('Failed to load audio');
-      return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to download audio')),
+      );
     }
-  } //getResponse from Eleven Labs
+  }
 
   Future<void> playAudioFromBytes(File audioFile) async {
     final audioSource = MyCustomSource(await audioFile.readAsBytes());
@@ -255,6 +239,40 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
     final minutes = twoDigits(duration.inMinutes.remainder(60));
     final seconds = twoDigits(duration.inSeconds.remainder(60));
     return [if (duration.inHours > 0) hours, minutes, seconds].join(':');
+  }
+
+  Future<bool> requestStoragePermission() async {
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      status = await Permission.manageExternalStorage.request();
+    }
+
+    if (status.isGranted) {
+      return true;
+    } else {
+      // Optional: direct user to app settings
+      openAppSettings();
+      return false;
+    }
+  }
+
+  Future<void> downloadAudioFile(File cachedAudioFile, String filename) async {
+    // final hasPermission = await requestStoragePermission();
+    // if (!hasPermission) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text("Storage permission denied")),
+    //   );
+    //   return;
+    // }
+
+    final downloadsDirectory = await getExternalStorageDirectory();
+    final newFilePath = '${downloadsDirectory!.path}/$filename.mp3';
+
+    await cachedAudioFile.copy(newFilePath);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Audio saved to Downloads as $filename.mp3")),
+    );
   }
 
   // Method to show the audio player in a bottom sheet
@@ -304,9 +322,10 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.replay_10),
+                      icon: const Icon(Icons.replay_10),
                       onPressed: () {
-                        player.seek(player.position - Duration(seconds: 10));
+                        player.seek(
+                            player.position - const Duration(seconds: 10));
                       },
                     ),
                     StreamBuilder<PlayerState>(
@@ -317,27 +336,28 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                         final playing = playerState?.playing;
                         if (!(playing ?? false)) {
                           return IconButton(
-                            icon: Icon(Icons.play_arrow),
+                            icon: const Icon(Icons.play_arrow),
                             onPressed: player.play,
                           );
                         } else if (processingState !=
                             ProcessingState.completed) {
                           return IconButton(
-                            icon: Icon(Icons.pause),
+                            icon: const Icon(Icons.pause),
                             onPressed: player.pause,
                           );
                         } else {
                           return IconButton(
-                            icon: Icon(Icons.replay),
+                            icon: const Icon(Icons.replay),
                             onPressed: () => player.seek(Duration.zero),
                           );
                         }
                       },
                     ),
                     IconButton(
-                      icon: Icon(Icons.forward_10),
+                      icon: const Icon(Icons.forward_10),
                       onPressed: () {
-                        player.seek(player.position + Duration(seconds: 10));
+                        player.seek(
+                            player.position + const Duration(seconds: 10));
                       },
                     ),
                   ],
@@ -357,22 +377,25 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
       controller: screenshotController,
       child: BlocBuilder<MyUserBloc, MyUserState>(
         builder: (context, state) {
-          if(state.status == MyUserStatus.success){
-
-          }
+          if (state.status == MyUserStatus.success) {}
           return Scaffold(
             extendBodyBehindAppBar: true,
+
             appBar: AppBar(
+              centerTitle: true,
               title: Text(
                 widget.post.title,
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    fontSize: 22,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
               ),
-              iconTheme: IconThemeData(
+              iconTheme: const IconThemeData(
                 color: Colors.white,
                 size: 30,
               ),
-              backgroundColor: Colors.transparent,
+              backgroundColor: Colors.black.withOpacity(0.3),
+              elevation: 0,
               actions: [
                 Row(
                   children: [
@@ -380,14 +403,14 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                       onPressed: () async {
                         // Handle share icon tap
 
-                        // final image =
-                        //     await screenshotController.captureFromWidget(
-                        //         imageWidget(size: size, widget: widget));
+                        final image =
+                            await screenshotController.captureFromWidget(
+                                imageWidget(size: size, widget: widget));
 
-                        // saveAndShare(
-                        //     image, widget.post.body!, widget.post.title);
+                        saveAndShare(
+                            image, widget.post.body!, widget.post.title);
                       },
-                      icon: Icon(Icons.share),
+                      icon: const Icon(Icons.share),
                       iconSize: 30,
                     ),
                     BlocListener<MyUserBloc, MyUserState>(
@@ -415,7 +438,7 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                                         FirebaseAuth.instance.currentUser!.uid,
                                         widget.post.id));
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
+                                  const SnackBar(
                                     content: Text('Poem removed from bookmark'),
                                   ),
                                 );
@@ -425,7 +448,7 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                                         FirebaseAuth.instance.currentUser!.uid,
                                         widget.post.id));
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
+                                  const SnackBar(
                                     content: Text('Poem added to bookmark'),
                                   ),
                                 );
@@ -448,194 +471,238 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
             ),
             body: Stack(
               children: [
-                SingleChildScrollView(
-                  controller: _scrollController,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 300),
-                      // imageWidget(size: size, widget: widget),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 16, right: 16, top: 8, bottom: 8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                widget.post.title,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .copyWith(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                // Background image
+                // Background image without opacity or blend mode
+                Positioned.fill(
+                  child: CachedNetworkImage(
+                    imageUrl: widget.post.thumbnail!,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) =>
+                        Center(child: CircularProgressIndicator()),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                  ),
+                ),
+
+                // Gradient overlay (on top of image)
+                Positioned.fill(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color.fromRGBO(
+                              0, 0, 0, 0.7), // Top: fully transparent
+                          Color.fromRGBO(0, 0, 0, 0.6), // Mid: slight darkness
+                          Color.fromRGBO(0, 0, 0,
+                              0.9), // Bottom: strong dark// Bottom: fade to transparent
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                // Main content
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: SingleChildScrollView(
+                      controller: _scrollController,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Hero(
+                            tag: widget.post.id,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  "Listen",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelMedium!
-                                      .copyWith(fontWeight: FontWeight.bold),
+                                Expanded(
+                                  child: ListTile(
+                                    contentPadding: EdgeInsets.zero,
+                                    leading: CircleAvatar(
+                                      radius: 30,
+                                      backgroundImage: widget
+                                                      .post.myUser.image ==
+                                                  null ||
+                                              widget.post.myUser.image!.isEmpty
+                                          ? const NetworkImage(
+                                              'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png')
+                                          : NetworkImage(
+                                              widget.post.myUser.image!),
+                                      backgroundColor: AppColors.primaryColor,
+                                    ),
+                                    title: Text(
+                                      widget.post.myUser.name,
+                                      style: const TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    subtitle: Text(
+                                      formatTimeAgo(widget.post.createdAt),
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.white70),
+                                    ),
+                                  ),
                                 ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    _showAudioPlayer();
-
-                                    await playTextToSpeech(widget.post.body!);
-                                  },
-                                  child: _isLoadingVoice
-                                      ? Text(
-                                          "loading ...",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall,
-                                        )
-                                      : Icon(
-                                          Icons.play_circle,
-                                          color: AppColors.secondaryColor,
-                                        ),
-                                ),
+                                // Text(
+                                //   widget.post.title,
+                                //   style: TextStyle(
+                                //     fontSize: 24,
+                                //     fontWeight: FontWeight.bold,
+                                //     color: Colors.white,
+                                //   ),
+                                // ),
+                                if (_isLoadingVoice)
+                                  const Center(
+                                      child: CircularProgressIndicator()),
+                                if (!_isLoadingVoice)
+                                  ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.deepPurple,
+                                      shape: const StadiumBorder(),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 2),
+                                    ),
+                                    onPressed: () => playTextToSpeech(
+                                        widget.post.body ?? ''),
+                                    icon: const Icon(
+                                      Icons.headphones,
+                                      color: Colors.white70,
+                                    ),
+                                    label: const Text(
+                                      "Listen",
+                                      style: TextStyle(color: Colors.white70),
+                                    ),
+                                  ),
                               ],
-                            )
-                          ],
-                        ),
-                      ),
-                      const Divider(),
-                      ListTile(
-                        leading: CircleAvatar(
-                          radius: 30,
-                          backgroundImage: NetworkImage(widget
-                                      .post.myUser.image ==
-                                  ''
-                              ? 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png'
-                              : widget.post.myUser.image!),
-                          backgroundColor: AppColors.primaryColor,
-                        ),
-                        title: Text(
-                          widget.post.myUser.name,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(fontWeight: FontWeight.w900),
-                        ),
-                        subtitle: Text(widget.post.myUser.handle == null
-                            ? "handle"
-                            : '@${widget.post.myUser.handle!}', style: TextStyle(color: AppColors.secondaryColor),),
-                        trailing: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: AppColors.primaryColor,
+                            ),
                           ),
-                          onPressed: () {},
-                          child: const Text("Follow"),
-                        ),
-                      ),
-                      const Divider(),
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(4.0),
-                              decoration: BoxDecoration(
-                                border:
-                                    Border.all(color: AppColors.primaryColor),
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 2, horizontal: 12),
-                                child: Text(
-                                  widget.post.genre == null
-                                      ? 'Genre'
-                                      : widget.post.genre!,
-                                  textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(color: AppColors.primaryColor),
+                          const SizedBox(height: 8),
+                          // Text(widget.post.genre!,
+                          //     style: TextStyle(
+                          //         fontSize: 16,
+                          //         fontWeight: FontWeight.w600,
+                          //         color: Colors.white70)),
+                          // Text(
+                          //   formatTimeAgo(widget.post.createdAt),
+                          //   style: TextStyle(
+                          //       fontWeight: FontWeight.w700,
+                          //       color: Colors.white70),
+                          // ),
+                          // SizedBox(height: 16),
+                          // // Author Info Section
+                          // ListTile(
+                          //   contentPadding: EdgeInsets.zero,
+                          //   leading: CircleAvatar(
+                          //     radius: 30,
+                          //     backgroundImage: widget.post.myUser.image ==
+                          //                 null ||
+                          //             widget.post.myUser.image!.isEmpty
+                          //         ? NetworkImage(
+                          //             'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png')
+                          //         : NetworkImage(widget.post.myUser.image!),
+                          //     backgroundColor: AppColors.primaryColor,
+                          //   ),
+                          //   title: Text(
+                          //     widget.post.myUser.name,
+                          //     style: GoogleFonts.lora(
+                          //       fontSize: 20,
+                          //       fontWeight: FontWeight.bold,
+                          //       color: Colors.white,
+                          //     ),
+                          //   ),
+                          //   subtitle: Text(
+                          //     widget.post.myUser.handle != null
+                          //         ? '@${widget.post.myUser.handle!}'
+                          //         : '',
+                          //     style: TextStyle(
+                          //         color: Colors.white70, fontSize: 14),
+                          //   ),
+                          // ),
+                          const SizedBox(height: 16),
+
+                          widget.post.body == ''
+                              ? Container(
+                                  constraints:
+                                      const BoxConstraints(minHeight: 100),
+                                )
+                              : Container(
+                                  width: double.infinity,
+                                  constraints: const BoxConstraints(
+                                      minHeight: 100, minWidth: 90),
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Color.fromRGBO(0, 0, 0,
+                                            0.5), // Top-left: semi-transparent black
+                                        Color.fromRGBO(0, 0, 0,
+                                            0.6), // Mid: slight darkness
+                                        Color.fromRGBO(0, 0, 0,
+                                            0.6), // Bottom-right: lighter transparent black
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    widget.post.body ?? '',
+                                    style: TextStyle(
+                                        wordSpacing: 8,
+                                        fontFamily:
+                                            GoogleFonts.manrope().fontFamily,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16,
+                                        height: 1.6),
+                                  ),
                                 ),
-                              ),
+                          ElevatedButton.icon(
+                            label: Text("Download Audio",
+                                style: TextStyle(color: Colors.white)),
+                            icon: Icon(Icons.download, color: Colors.white,),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurple,
+                              shape: const StadiumBorder(),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 2),
                             ),
-                            const SizedBox(
-                              width: 12,
-                            ),
-                            Text(
-                              formatTimeAgo(
-                                widget.post.createdAt,
-                              ),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium!
-                                  .copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.secondaryColor),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: MarkdownBody(
-                          styleSheet: MarkdownStyleSheet(
-                            textAlign: WrapAlignment.center,
-                            h1: const TextStyle(
-                                fontSize: 24),
-                           
-                            code: const TextStyle(
-                                fontSize: 14, color: Colors.green),
+                            onPressed: () async {
+                              // await requestStoragePermission();
+                              //  var status = await Permission.storage.status;
+                              //  print(status);
+                              //    print(cachedAudios[widget.post.body]);
+                              // if (status.isGranted) {
+                              if (cachedAudios.containsKey(widget.post.body)) {
+                                print(cachedAudios[widget.post.body]);
+                                downloadAudioFile(
+                                    cachedAudios[widget.post.body]!,
+                                    'poem_audio');
+                              }
+                            },
+                            
                           ),
-                          shrinkWrap: true,
-                          data: widget.post.body!,
-                        ),
-                      ),
 
-                      SizedBox(
-                        height: 20,
+                          const SizedBox(height: 24),
+                        ],
                       ),
-
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Comments",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold)),
-                            Icon(
-                              Icons.arrow_forward_outlined,
-                              size: 30,
-                              color: AppColors.secondaryColor,
-                            )
-                          ],
-                        ),
-                      ),
-
-                      Align(
-                          alignment: Alignment.center,
-                          child: Text("Coming soon ...."))
-                    ],
+                    ),
                   ),
                 ),
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  child: ArticleCover(
-                    categ: '',
-                    image: widget.post.thumbnail!,
-                    stateCount: null,
+
+                // Floating scroll button
+                if (_showScrollButton)
+                  Positioned(
+                    right: 16,
+                    bottom: 120,
+                    child: FloatingActionButton(
+                      onPressed: _handleScrollButtonPressed,
+                      backgroundColor: Colors.deepPurple,
+                      child: Icon(_scrollIcon),
+                    ),
                   ),
-                ),
               ],
             ),
             // floatingActionButton: Visibility(

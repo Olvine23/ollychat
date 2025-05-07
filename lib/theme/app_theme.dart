@@ -30,7 +30,7 @@ ThemeData appThemeDark = ThemeData(
     secondary: AppColors.secondaryColor,
     tertiary: AppColors.secondaryColor,
    
-    background: AppColors.backgroundDark,
-    onBackground: AppColors.onBackgroundDark,
+    surface: AppColors.backgroundDark,
+    onSurface: AppColors.onBackgroundDark,
   ),
 );

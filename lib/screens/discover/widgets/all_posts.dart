@@ -21,9 +21,9 @@ class AllItemsScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context){
-                  return PostSearchScreen();
-                }));
+              // Navigator.push(context, MaterialPageRoute(builder: (context){
+              //     return PostSearchScreen();
+              //   }));
             },
             icon: Icon(
               Icons.search,

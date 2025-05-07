@@ -280,6 +280,7 @@ class _AddWithAIState extends State<AddWithAI> {
                         const SizedBox(
                           height: 10,
                         ),
+                        Text(text),
                         // MarkdownTextInput(
                         //   controller: bodyController,
                         //   (String value) => setState(() => text = value),

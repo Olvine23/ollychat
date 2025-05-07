@@ -33,6 +33,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  audio_service:
+    dependency: "direct main"
+    description:
+      name: audio_service
+      sha256: "887ddf15fce31fd12aa8044c3bffd14c58929fb20e31d96284fe3aaf48315ac6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.18.17"
+  audio_service_platform_interface:
+    dependency: transitive
+    description:
+      name: audio_service_platform_interface
+      sha256: "6283782851f6c8b501b60904a32fc7199dc631172da0629d7301e66f672ab777"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.3"
+  audio_service_web:
+    dependency: transitive
+    description:
+      name: audio_service_web
+      sha256: b8ea9243201ee53383157fbccf13d5d2a866b5dda922ec19d866d1d5d70424df
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.4"
   audio_session:
     dependency: "direct main"
     description:
@@ -113,6 +137,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0"
+  charcode:
+    dependency: transitive
+    description:
+      name: charcode
+      sha256: fb0f1107cac15a5ea6ef0a6ef71a807b9e4267c713bb93e00e92d737cc8dbd8a
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.0"
   clock:
     dependency: transitive
     description:
@@ -153,38 +185,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
-  connectivity:
-    dependency: "direct main"
-    description:
-      name: connectivity
-      sha256: a8e91263cf3e25fb5cc95e19dfde4999e32a648ac3b9e8a558a28165731678f8
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.6"
-  connectivity_for_web:
-    dependency: transitive
-    description:
-      name: connectivity_for_web
-      sha256: "01a390c1d5adc2ed1fa1f52d120c07fe9fd01166a93f965a832fd6cfc0ea6482"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.0+1"
-  connectivity_macos:
-    dependency: transitive
-    description:
-      name: connectivity_macos
-      sha256: "51ae08d5162eca9669b9d8951ed83ce19c5355a81149f94e4dee2740beb93628"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.1+2"
-  connectivity_platform_interface:
-    dependency: transitive
-    description:
-      name: connectivity_platform_interface
-      sha256: "2d82e942df9d49f29a24bb07fb5ce085d4a53e47818c62364d2b6deb9e0d7a8e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.1"
   cross_file:
     dependency: transitive
     description:
@@ -201,6 +201,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.6"
+  csslib:
+    dependency: transitive
+    description:
+      name: csslib
+      sha256: "09bad715f418841f976c77db72d5398dc1253c21fb9c0c7f0b0b985860b2d58e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -209,6 +217,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  dart_quill_delta:
+    dependency: transitive
+    description:
+      name: dart_quill_delta
+      sha256: bddb0b2948bd5b5a328f1651764486d162c59a8ccffd4c63e8b2c5e44be1dac4
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.8.3"
+  diff_match_patch:
+    dependency: transitive
+    description:
+      name: diff_match_patch
+      sha256: "2efc9e6e8f449d0abe15be240e2c2a3bcd977c8d126cfd70598aee60af35c0a4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.1"
   equatable:
     dependency: "direct main"
     description:
@@ -446,6 +470,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.1"
+  flutter_colorpicker:
+    dependency: transitive
+    description:
+      name: flutter_colorpicker
+      sha256: "969de5f6f9e2a570ac660fb7b501551451ea2a1ab9e2097e89475f60e07816ea"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   flutter_dotenv:
     dependency: "direct main"
     description:
@@ -542,6 +574,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  flutter_keyboard_visibility_temp_fork:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility_temp_fork
+      sha256: e3d02900640fbc1129245540db16944a0898b8be81694f4bf04b6c985bed9048
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   flutter_keyboard_visibility_web:
     dependency: transitive
     description:
@@ -587,6 +627,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.26"
+  flutter_quill:
+    dependency: "direct main"
+    description:
+      name: flutter_quill
+      sha256: f33f9b42705ef0ab9c633fadb7d47622235f0f96d26c8516b4c7a785b49d85e2
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.8.2"
+  flutter_quill_delta_from_html:
+    dependency: transitive
+    description:
+      name: flutter_quill_delta_from_html
+      sha256: "4597bd0853a704696837aa6b05cffd851f587b176204c234edddfed1c1862a09"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.2"
   flutter_sizer:
     dependency: "direct main"
     description:
@@ -661,6 +717,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
+  html:
+    dependency: transitive
+    description:
+      name: html
+      sha256: "6d1264f2dffa1b1101c25a91dff0dc2daee4c18e87cd8538729773c073dbf602"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.15.6"
   html_editor_enhanced:
     dependency: "direct main"
     description:
@@ -1128,10 +1192,26 @@ packages:
     dependency: transitive
     description:
       name: provider
-      sha256: "489024f942069c2920c844ee18bb3d467c69e48955a4f32d1677f71be103e310"
+      sha256: "4abbd070a04e9ddc287673bf5a030c7ca8b685ff70218720abab8b092f53dd84"
       url: "https://pub.dev"
     source: hosted
-    version: "6.1.4"
+    version: "6.1.5"
+  quill_native_bridge:
+    dependency: transitive
+    description:
+      name: quill_native_bridge
+      sha256: "7e2050567c5dae3516b6c399fdd2036971aa16114e19c51832523f2ec1b8faca"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.6.2"
+  quiver:
+    dependency: transitive
+    description:
+      name: quiver
+      sha256: ea0b925899e64ecdfbf9c7becb60d5b50e706ade44a85b2363be2a22d88117d2
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.2"
   rive:
     dependency: transitive
     description:
@@ -1361,6 +1441,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.2"
+  timeago:
+    dependency: "direct main"
+    description:
+      name: timeago
+      sha256: "054cedf68706bb142839ba0ae6b135f6b68039f0b8301cbe8784ae653d5ff8de"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.7.0"
   typed_data:
     dependency: transitive
     description:
@@ -1528,6 +1616,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.5.0"
+  youtube_player_flutter:
+    dependency: "direct main"
+    description:
+      name: youtube_player_flutter
+      sha256: "30f84e2f7063c56e536f507e37c1e803546842707cf58e5b5a71253b9ff9b455"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.0.4"
 sdks:
-  dart: ">=3.5.0 <4.0.0"
+  dart: ">=3.5.1 <4.0.0"
   flutter: ">=3.24.0"

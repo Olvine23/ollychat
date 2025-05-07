@@ -56,6 +56,7 @@ class ArticleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       children: [
         Container(
@@ -94,12 +95,12 @@ class ArticleCard extends StatelessWidget {
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              gradient: const LinearGradient(
+                              gradient: LinearGradient(
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                                 colors: [
                                   Colors.transparent,
-                                  Colors.black,
+                                   isDark ?  Colors.white.withOpacity(0.6) : Colors.black.withOpacity(0.8),
                                 ],
                               ),
                             ),
@@ -139,7 +140,7 @@ class ArticleCard extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: 4.0.h,
+                height: 3.0.h,
               ),
               GestureDetector(
                 onTap: () {
@@ -181,7 +182,7 @@ class ArticleCard extends StatelessWidget {
                           author,
                           textAlign: TextAlign.justify,
                           style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                              color: AppColors.secondaryColor,
+                            
                               fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -197,7 +198,9 @@ class ArticleCard extends StatelessWidget {
                         style: Theme.of(context)
                             .textTheme
                             .bodySmall!
-                            .copyWith(fontWeight: FontWeight.bold, fontSize: 10.dp),
+                            .copyWith(
+                                color: isDark ? Colors.white54 :Colors.black54,
+                              fontWeight: FontWeight.bold, fontSize: 10.dp),
                       ),
                     ))
                   ],
@@ -211,3 +214,4 @@ class ArticleCard extends StatelessWidget {
     );
   }
 }
+ 

@@ -30,13 +30,14 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
         
       ),
       child: TextFormField(
-        style: TextStyle(color: Colors.white), // 👈 typed text will be white
+        style: TextStyle(color: isDark ? Colors.white : Colors.black), // 👈 typed text will be white
           validator: validator,
           controller: controller,
           obscureText: obscureText,
@@ -58,7 +59,7 @@ class CustomTextField extends StatelessWidget {
           fillColor: Colors.white.withOpacity(0.2),
 
             hintText: hintText,
-            hintStyle: TextStyle(color: Colors.white),
+            hintStyle: TextStyle(color: isDark ? Colors.white : Colors.black54, fontWeight: FontWeight.bold),
             errorText: errorMsg,
           )),
     );

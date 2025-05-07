@@ -31,26 +31,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final confirmPasswordController = TextEditingController(); 
    bool obscureText = true;
 
-   Widget glassTextField({required Widget child}) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withOpacity(0.3)),
+
+
+  Widget glassTextField({required BuildContext context, required Widget child}) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+
+  return ClipRRect(
+    borderRadius: BorderRadius.circular(16),
+    child: BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        decoration: BoxDecoration(
+          color: isDark
+              ? Colors.white.withOpacity(0.2)
+               
+              : Colors.black.withOpacity(0.25),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withOpacity(0.15)
+                : Colors.white.withOpacity(0.3),
           ),
-          child: child,
         ),
+        child: child,
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
     return BlocListener<SignUpBloc, SignUpState>(
       listener: (context, state) {
        // implement listener
@@ -69,16 +82,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
       },
       child: Scaffold(
         body: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xFF6A11CB), // Purple-ish
-                  Color(0xFF2575FC), // Blue-ish
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
+            // decoration: const BoxDecoration(
+            //   gradient: LinearGradient(
+            //     colors: [
+            //       Color(0xFF6A11CB), // Purple-ish
+            //       Color(0xFF2575FC), // Blue-ish
+            //     ],
+            //     begin: Alignment.topLeft,
+            //     end: Alignment.bottomRight,
+            //   ),
+            // ),
 
           child: SafeArea(
             child: Padding(
@@ -94,14 +107,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             Container(
                                   // padding: const EdgeInsets.all(8.0),
                                   decoration: const BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black54                                         , // subtle shadow
-                                        blurRadius: 6,
-                                        offset: Offset(0,
-                                            3), // moves the shadow down a bit
-                                      ),
-                                    ],
+                                     
                                   ),
                                   child: ClipRRect(
                                        borderRadius: BorderRadius.circular(20),
@@ -113,7 +119,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 'Create your account ',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    color: Colors.white70,
+                             
                                     fontSize: 30, fontWeight: FontWeight.bold),
                               ),
                                const SizedBox(
@@ -124,9 +130,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  color:
-                                       Colors.white70,
-                                ),
+                                )
                               ),
                                  const SizedBox(height: 32),
                             // const Align(
@@ -136,6 +140,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             //   height: 10,
                             // ),
                              glassTextField(
+                              context: context,
                                child: CustomTextField(
                                 controller: nameController,
                                 hintText: 'Name',
@@ -150,6 +155,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             //     alignment: Alignment.topLeft,
                             //     child: Text("Your email")),
                             glassTextField(
+                              context: context,
                               child: CustomTextField(
                                 controller: emailController,
                                 hintText: 'Email',
@@ -164,6 +170,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             //     alignment: Alignment.topLeft,
                             //     child: Text("Enter Password")),
                             glassTextField(
+                              context: context,
                               child: CustomTextField(
                                  suffixIcon: GestureDetector(
                                     onTap: () {
@@ -186,6 +193,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               const SizedBox(height: 16),
                           // const Align(alignment: Alignment.topLeft, child: Text("Confirm Password")),
                              glassTextField(
+                              context: context,
                                child: CustomTextField(
                                  suffixIcon: GestureDetector(
                                     onTap: () {

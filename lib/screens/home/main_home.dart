@@ -6,6 +6,7 @@ import 'package:lottie/lottie.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
 import 'package:olly_chat/screens/bookmarks/bookmark.dart';
+import 'package:olly_chat/screens/home/components/home_carousel.dart';
 import 'package:olly_chat/screens/home/components/row_title.dart';
 import 'package:olly_chat/screens/home/components/top-card.dart';
 import 'package:olly_chat/screens/home/components/top_section.dart';
@@ -37,7 +38,7 @@ class _MainHomeState extends State<MainHome> {
 
   @override
   Widget build(BuildContext context) {
-      bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    // bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     print(user!.uid);
     return Scaffold(
       appBar: AppBar(
@@ -66,7 +67,8 @@ class _MainHomeState extends State<MainHome> {
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return BlocProvider<MyUserBloc>(
-                    create: (context) => MyUserBloc(myUserRepository: FirebaseUserRepo()),
+                    create: (context) =>
+                        MyUserBloc(myUserRepository: FirebaseUserRepo()),
                     child: const BookMarkScreen(),
                   );
                 }));
@@ -79,7 +81,7 @@ class _MainHomeState extends State<MainHome> {
           IconButton(
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return NotificationScreen();
+                  return const NotificationScreen();
                 }));
               },
               icon: Icon(
@@ -91,21 +93,160 @@ class _MainHomeState extends State<MainHome> {
       ),
       body: BlocBuilder<GetPostBloc, GetPostState>(
         builder: (context, state) {
+          final List<Post> shuffledPosts = (state.posts ?? []).toList()
+            ..shuffle();
+          final Post? randomPost =
+              shuffledPosts.isNotEmpty ? shuffledPosts.first : null;
+
           return RefreshIndicator(
             onRefresh: () async {
-              BlocProvider.of<GetPostBloc>(context).add(GetPosts());
-              return await Future.delayed(Duration(seconds: 2));
+              BlocProvider.of<GetPostBloc>(context).add(const GetPosts());
+              return await Future.delayed(const Duration(seconds: 2));
             },
             child: SingleChildScrollView(
-                physics: AlwaysScrollableScrollPhysics(),
+                physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Padding(
+                    //                    Padding(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 16.0,),
+                    //   child: HomeCarousel(posts: state.posts!),
+                    // ),
+                    Padding(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      child: TopCard(),
+                          EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              BlocBuilder<MyUserBloc, MyUserState>(
+                                builder: (context, state) {
+                                  if (state.status == MyUserStatus.loading) {
+                                    return const CircularProgressIndicator();
+                                  } else if (state.status == MyUserStatus.failure) {
+                                    return const Text("Error loading user data");
+                                  } else if (state.status == MyUserStatus.success) {
+                                    return Text(
+                                      'Welcome back, ${state.user!.name} 👋',
+                                      style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    );
+                                  }
+                                  return Text(
+                                    'Welcome back, Olvine 👋',
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  );
+                                },
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Here’s what’s new for you',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(height: 10),
+
+                    if (state.status == GetPostStatus.success &&
+                        state.posts!.isNotEmpty &&
+                        randomPost != null)
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) {
+                                return BlocProvider<MyUserBloc>(
+                                  create: (context) => MyUserBloc(
+                                      myUserRepository: FirebaseUserRepo()),
+                                  child: PoemDetailScreen(post: randomPost),
+                                );
+                              },
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                final slideTween = Tween<Offset>(
+                                    begin: Offset(0.0, 0.1), end: Offset.zero);
+                                final fadeTween =
+                                    Tween<double>(begin: 0.0, end: 1.0);
+
+                                return SlideTransition(
+                                  position: animation
+                                      .drive(CurveTween(curve: Curves.easeOut))
+                                      .drive(slideTween),
+                                  child: FadeTransition(
+                                    opacity: animation
+                                        .drive(CurveTween(curve: Curves.easeIn))
+                                        .drive(fadeTween),
+                                    child: child,
+                                  ),
+                                );
+                              },
+                              transitionDuration: Duration(milliseconds: 500),
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          child: TopCard(
+                            post: randomPost,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder:
+                                      (context, animation, secondaryAnimation) {
+                                    return BlocProvider<MyUserBloc>(
+                                      create: (context) => MyUserBloc(
+                                          myUserRepository: FirebaseUserRepo()),
+                                      child: PoemDetailScreen(post: randomPost),
+                                    );
+                                  },
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    final slideTween = Tween<Offset>(
+                                        begin: Offset(0.0, 0.1),
+                                        end: Offset.zero);
+                                    final fadeTween =
+                                        Tween<double>(begin: 0.0, end: 1.0);
+
+                                    return SlideTransition(
+                                      position: animation
+                                          .drive(
+                                              CurveTween(curve: Curves.easeOut))
+                                          .drive(slideTween),
+                                      child: FadeTransition(
+                                        opacity: animation
+                                            .drive(CurveTween(
+                                                curve: Curves.easeIn))
+                                            .drive(fadeTween),
+                                        child: child,
+                                      ),
+                                    );
+                                  },
+                                  transitionDuration:
+                                      Duration(milliseconds: 500),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 8),
@@ -142,7 +283,7 @@ class _MainHomeState extends State<MainHome> {
         child: project_screen_shimmer(context),
       );
     }
-    return Text("No data available"); // Handle other states
+    return const Text("No data available"); // Handle other states
   }
 
   Widget _buildArticleSection(
@@ -181,7 +322,9 @@ class _MainHomeState extends State<MainHome> {
             ],
           ),
         ),
-        SizedBox(height: 2.h,),
+        SizedBox(
+          height: 2.h,
+        ),
         SizedBox(
           height: MediaQuery.of(context).size.height / 2 - 70,
           child: articles.isEmpty
@@ -209,13 +352,36 @@ class _MainHomeState extends State<MainHome> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => BlocProvider<MyUserBloc>(
-                                    create: (context) => MyUserBloc(
-                                        myUserRepository: FirebaseUserRepo()),
-                                    child:
-                                        PoemDetailScreen(post: articles[index]),
-                                  )),
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) {
+                              return BlocProvider<MyUserBloc>(
+                                create: (context) => MyUserBloc(
+                                    myUserRepository: FirebaseUserRepo()),
+                                child: PoemDetailScreen(post: articles[index]),
+                              );
+                            },
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              final slideTween = Tween<Offset>(
+                                  begin: Offset(0.0, 0.1), end: Offset.zero);
+                              final fadeTween =
+                                  Tween<double>(begin: 0.0, end: 1.0);
+
+                              return SlideTransition(
+                                position: animation
+                                    .drive(CurveTween(curve: Curves.easeOut))
+                                    .drive(slideTween),
+                                child: FadeTransition(
+                                  opacity: animation
+                                      .drive(CurveTween(curve: Curves.easeIn))
+                                      .drive(fadeTween),
+                                  child: child,
+                                ),
+                              );
+                            },
+                            transitionDuration: Duration(milliseconds: 500),
+                          ),
                         );
                       },
                       child: ArticleCard(

@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     pages = [
       MainHome(toggleTheme: widget.toggleTheme),
       const DiscoverScreen(),
-      PostSearchScreen(),
+      PoetryVideoList(),
       ProfileScreen(
         userId: FirebaseAuth.instance.currentUser!.uid, toggleTheme: widget.toggleTheme,
       ),
@@ -133,8 +133,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         label: 'Discover',
                         backgroundColor: AppColors.primaryColor),
                     BottomNavigationBarItem(
-                        icon: const Icon(Icons.edit_document),
-                        label: 'My Creations',
+                        icon: const Icon(Icons.video_library),
+                        label: 'Videos',
                         backgroundColor: AppColors.primaryColor),
                     BottomNavigationBarItem(
                       backgroundColor: AppColors.primaryColor,

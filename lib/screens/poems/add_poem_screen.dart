@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:google_gemini/google_gemini.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
@@ -20,6 +21,7 @@ import 'package:olly_chat/screens/poems/snippies/screenshotsnip.dart';
 import 'package:olly_chat/screens/poems/snippies/snippy.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:post_repository/post_repository.dart';
+ 
 import 'package:user_repository/user_repository.dart';
 
 class AddPoemScreen extends StatefulWidget {
@@ -37,6 +39,9 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
   late Post post;
   late String imageString = '';
   String text = '';
+ final QuillController _controller = QuillController.basic();
+
+   
   @override
   void initState() {
     post = Post.empty;
@@ -44,8 +49,10 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
     super.initState();
   }
 
+
+
   final titleController = TextEditingController();
-  HtmlEditorController controller = HtmlEditorController();
+ 
   final bodyController = TextEditingController();
   String description = 'Article goes here ';
   List<String> topics = [
@@ -285,6 +292,9 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                         const SizedBox(
                           height: 10,
                         ),
+
+                        
+       
                         // MarkdownTextInput(
                         //   textStyle: Theme.of(context).textTheme.bodyLarge,
                         //   controller: bodyController,

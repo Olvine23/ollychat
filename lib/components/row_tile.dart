@@ -114,7 +114,7 @@ class RowTile extends StatelessWidget {
                               .textTheme
                               .bodySmall!
                               .copyWith(
-                                color: AppColors.secondaryColor,
+                                
                                 fontWeight: FontWeight.bold),
                         ),
                       ],

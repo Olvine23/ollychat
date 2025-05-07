@@ -67,9 +67,9 @@ class _MyAppViewState extends State<MyAppView> {
             if (state.status == AuthenticationStatus.authenticated) {
               return MultiBlocProvider(
                 providers: [
-                  BlocProvider<ConnectivityBloc>(
-                    create: (BuildContext context) => ConnectivityBloc(),
-                  ),
+                  // BlocProvider<ConnectivityBloc>(
+                  //   create: (BuildContext context) => ConnectivityBloc(),
+                  // ),
                   BlocProvider(
                     create: (context) => SignInBloc(
                         userRepository:
