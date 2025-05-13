@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
@@ -12,7 +13,7 @@ import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
- 
+
 import 'package:olly_chat/blocs/create_post/create_post_bloc.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/components/custom_textfield.dart';
@@ -21,7 +22,7 @@ import 'package:olly_chat/screens/poems/snippies/screenshotsnip.dart';
 import 'package:olly_chat/screens/poems/snippies/snippy.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:post_repository/post_repository.dart';
- 
+
 import 'package:user_repository/user_repository.dart';
 
 class AddPoemScreen extends StatefulWidget {
@@ -36,12 +37,14 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
   File? imageFile;
   String? imageUrl;
   bool loading = false;
+  bool _isPublic = true;
+
   late Post post;
   late String imageString = '';
-  String text = '';
- final QuillController _controller = QuillController.basic();
 
-   
+  String text = '';
+  final QuillController _controller = QuillController.basic();
+
   @override
   void initState() {
     post = Post.empty;
@@ -49,10 +52,8 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
     super.initState();
   }
 
-
-
   final titleController = TextEditingController();
- 
+
   final bodyController = TextEditingController();
   String description = 'Article goes here ';
   List<String> topics = [
@@ -66,12 +67,100 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
     'Education',
     'Travel',
     'Food',
-    'Lifestyle'
+    'Lifestyle',
+    'Other (Add new)'
   ];
+
+  String selectedGenre = "Love";
+
+  void _showAddGenreDialog(BuildContext context) {
+    String newGenre = '';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 10,
+        insetPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        backgroundColor: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Add a New Genre',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                onChanged: (value) => newGenre = value,
+                style: TextStyle(
+                    color: Colors.black), // Set the input text color here
+                decoration: InputDecoration(
+                  hintText: 'Enter genre name',
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                autofocus: true,
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('Cancel',
+                          style: TextStyle(
+                              color: Colors.grey[700],
+                              fontWeight: FontWeight.bold))),
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (newGenre.trim().isNotEmpty) {
+                        setState(() {
+                          topics.insert(topics.length - 1, newGenre.trim());
+                          selectedGenre = newGenre.trim();
+                          selectedItem = newGenre.trim();
+                        });
+                      }
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'Add',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   String selectedItem = "Love";
   final gemmy = GoogleGemini(apiKey: apiKey!);
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     print(bodyController.text);
 
     return BlocListener<CreatePostBloc, CreatePostState>(
@@ -80,7 +169,7 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
           setState(() {
             loading = false;
           });
-          context.read<GetPostBloc>().add(GetPosts());
+          context.read<GetPostBloc>().add(const GetPosts());
           Navigator.pop(context, state.post);
         } else if (state is CreatePostLoading) {
           setState(() {
@@ -93,75 +182,65 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
         }
       },
       child: Scaffold(
-        // appBar: AppBar(
-        //   title: Text(
-        //     "Create",
-        //     style:
-        //         Theme.of(context).textTheme.titleMedium!.copyWith(fontSize: 20),
-        //   ),
-        //   actions: [
-        //     ElevatedButton(
-        //       onPressed: () {},
-        //       style: ElevatedButton.styleFrom(
-        //           backgroundColor: AppColors.primaryColor,
-        //           foregroundColor: Colors.white),
-        //       child: const Text("Save"),
-        //     ),
-        //     const SizedBox(
-        //       width: 4,
-        //     ),
-        //     ElevatedButton(
-        //       style: ElevatedButton.styleFrom(
-        //           backgroundColor: Colors.white,
-        //           side: BorderSide(
-        //             width: 1.0,
-        //             color: AppColors.primaryColor,
-        //           )),
-        //       onPressed: () async {
-        //         // setState(() {
-        //         //   loading = true;
-        //         // });
-        //         // await gemmy
-        //         //     .generateFromTextAndImages(
-        //         //         image: imageFile!,
-        //         //         query:
-        //         //             "Compose an interesting poem from the image which has the name ${titleController.text}. Let the poem deliver heartfelt emotions")
-        //         //     .then((value) {
-        //         //   setState(() {
-        //         //     loading = true;
-        //         //   });
-        //         //   post.body = value.text;
-        //         // }).onError((error, stackTrace) {
-        //         //   setState(() {
-        //         //     loading = false;
-        //         //   });
-
-        //         //   showBottomSheet(
-        //         //       context: context,
-        //         //       builder: (context) {
-        //         //         return Text(error.toString());
-        //         //       });
-        //         // });
-        //         setState(() {
-        //           loading = true;
-        //           imageFile = File(imageString);
-
-        //           post.title = titleController.text;
-        //           post.genre = selectedItem;
-        //           post.body = bodyController.text;
-        //           // post.thumbnail = imageString;
-        //         });
-        //         context
-        //             .read<CreatePostBloc>()
-        //             .add(CreatePost(post, imageString));
-        //       },
-        //       child: loading
-        //           ? const Center(child: CircularProgressIndicator())
-        //           : const Text("Publish"),
-        //     ),
-        //     IconButton(onPressed: () {}, icon: const Icon(Icons.delete))
-        //   ],
-        // ),
+        appBar: AppBar(
+          actions: [
+            // IconButton(onPressed: () {}, icon:  Icon(Icons.save,color: AppColors.secondaryColor,)),
+            TextButton(
+              onPressed: () async {
+                setState(() {
+                  loading = true;
+                  imageFile = File(imageString);
+                  post.title = titleController.text;
+                  post.genre = selectedItem;
+                  post.body =
+                      jsonEncode(_controller.document.toDelta().toJson());
+                });
+                context
+                    .read<CreatePostBloc>()
+                    .add(CreatePost(post, imageString));
+              },
+              child: loading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        iconColor: Colors.white,
+                        backgroundColor: AppColors.primaryColor,
+                        side: BorderSide(
+                          width: 1.0,
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                      onPressed: () async {
+                        setState(() {
+                          loading = true;
+                          imageFile = File(imageString);
+                          post.title = titleController.text;
+                          post.genre = selectedItem;
+                          post.isPrivate = _isPublic;
+                          post.body = jsonEncode(
+                              _controller.document.toDelta().toJson());
+                        });
+                        context
+                            .read<CreatePostBloc>()
+                            .add(CreatePost(post, imageString));
+                      },
+                      icon: Icon(Icons.publish),
+                      label: const Text(
+                        "Publish",
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      )),
+            ),
+          ],
+          title: const Text(
+            'Write Now',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
         body: loading
             ? Center(child: Lottie.asset('assets/lotti/creating.json'))
             : SafeArea(
@@ -170,6 +249,7 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 14.0),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(height: 4.h),
                         Text(
@@ -181,6 +261,7 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                               .copyWith(
                                   fontSize: 18, fontWeight: FontWeight.bold),
                         ),
+                        const SizedBox(height: 8),
                         GestureDetector(
                           onTap: () async {
                             final ImagePicker picker = ImagePicker();
@@ -188,12 +269,12 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                                 source: ImageSource.gallery, imageQuality: 100);
 
                             if (image != null) {
-                              CroppedFile? croppedFile = await ImageCropper()
-                                  .cropImage(
+                              CroppedFile? croppedFile =
+                                  await ImageCropper().cropImage(
                                       sourcePath: image.path,
-                                  //     aspectRatioPresets: [
-                                  //   CropAspectRatioPreset.square
-                                  // ],
+                                      //     aspectRatioPresets: [
+                                      //   CropAspectRatioPreset.square
+                                      // ],
                                       uiSettings: [
                                     AndroidUiSettings(
                                         toolbarTitle: 'Cropper',
@@ -223,33 +304,38 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                               }
                             }
                           },
-                          child: Container(
-                            height: MediaQuery.of(context).size.height / 3,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                                // color: AppColors.greenWhite,
-                                borderRadius: BorderRadius.circular(20)),
-                            child: imageFile == null
-                                ? Center(
-                                    child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.image_rounded,
-                                        size: 80,
-                                        color: AppColors.secondaryColor,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Container(
+                              height: 200,
+                              color: isDark
+                                  ? Colors.grey.shade500
+                                  : Colors.grey[200],
+                              child: imageFile == null
+                                  ? Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.image_rounded,
+                                            size: 60,
+                                            color: AppColors.primaryColor,
+                                          ),
+                                          SizedBox(height: 8),
+                                          Text(
+                                            "Tap to add article image",
+                                            style: TextStyle(
+                                                color: isDark
+                                                    ? Colors.white60
+                                                    : Colors.black87,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        "Tap to add article image",
-                                        style: TextStyle(
-                                            color: AppColors.secondaryColor),
-                                      ),
-                                    ],
-                                  ))
-                                : Image.file(
-                                    imageFile!,
-                                    fit: BoxFit.cover,
-                                  ),
+                                    )
+                                  : Image.file(imageFile!, fit: BoxFit.cover),
+                            ),
                           ),
                         ),
                         const SizedBox(
@@ -258,7 +344,7 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                         Align(
                             alignment: Alignment.topLeft,
                             child: Text(
-                              "Title",
+                              "What do you want this piece to be called?",
                               style: Theme.of(context)
                                   .textTheme
                                   .titleMedium!
@@ -271,13 +357,58 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                         ),
                         CustomTextField(
                           controller: titleController,
-                          hintText: 'Title',
+                          hintText: 'Title goes here ...',
                           obscureText: false,
                           keyboardType: TextInputType.name,
                         ),
                         const SizedBox(
                           height: 20,
                         ),
+
+                        /// GENRE DROPDOWN
+                        Text(
+                          "Which theme do you want it to fall under?",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+
+                        DropdownButtonFormField<String>(
+                          value: selectedItem,
+                          onChanged: (value) {
+                            if (value != null) {
+                              if (value == 'Other (Add new)') {
+                                _showAddGenreDialog(context);
+                              } else {
+                                setState(() {
+                                  selectedItem = value;
+                                });
+                              }
+                              // setState(() {
+                              //   selectedItem = value;
+                              // });
+                            }
+                          },
+                          items: topics.map((topic) {
+                            return DropdownMenuItem(
+                              value: topic,
+                              child: Text(topic),
+                            );
+                          }).toList(),
+                          // decoration: InputDecoration(
+                          //   border: OutlineInputBorder(
+                          //       borderRadius: BorderRadius.circular(12)),
+                          //   contentPadding: const EdgeInsets.symmetric(
+                          //       vertical: 12, horizontal: 16),
+                          // ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+
                         Align(
                             alignment: Alignment.topLeft,
                             child: Text(
@@ -292,103 +423,98 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                         const SizedBox(
                           height: 10,
                         ),
+                        QuillToolbar.simple(
+                          configurations: QuillSimpleToolbarConfigurations(
+                            controller: _controller,
+                            // toolbarIconSize: 24,
+                            multiRowsDisplay: false,
+                            showFontFamily: false,
+                            showFontSize: false,
+                            showBoldButton: true,
+                            showItalicButton: true,
+                            showUnderLineButton: false,
+                            showStrikeThrough: false,
+                            showAlignmentButtons: true,
+                            showListNumbers: false,
+                            showListBullets: false,
+                            showListCheck: false,
+                            showCodeBlock: false,
+                            showQuote: false,
+                            showIndent: false,
+                            showLink: false,
+                            showUndo: false,
+                            showRedo: false,
+                            showDirection: false,
+                            showClearFormat: false,
+                            showColorButton: false,
+                            showBackgroundColorButton: false,
+                            showHeaderStyle: false,
+                            showJustifyAlignment: false,
+                            showLeftAlignment: true,
+                            showCenterAlignment: true,
+                            showRightAlignment: true,
+                            sharedConfigurations:
+                                const QuillSharedConfigurations(
+                              locale: Locale('en'),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? Colors.grey.shade500
+                                : Colors.grey.shade100,
+                            border: Border.all(color: Colors.grey.shade400),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          height: 400, // adjust as needed
+                          child: QuillEditor.basic(
+                            configurations: QuillEditorConfigurations(
+                              placeholder: 'Write your article here...',
 
-                        
-       
-                        // MarkdownTextInput(
-                        //   textStyle: Theme.of(context).textTheme.bodyLarge,
-                        //   controller: bodyController,
-                        //   (String value) => setState(() => description = value),
-                        //   description,
-                        // ),
-                        // HtmlEditor(
-                        //     htmlEditorOptions: HtmlEditorOptions(
-                        //       hint: "Your text here...",
-                        //       spellCheck: true,
-                        //       autoAdjustHeight: true,
-                        //       adjustHeightForKeyboard: true
+                              controller: _controller,
 
-                        //       //initalText: "text content initial, if any",
-                        //     ),
-                        //     htmlToolbarOptions: HtmlToolbarOptions(
-                        //       toolbarPosition: ToolbarPosition.belowEditor
-                        //     ),
-                        //     otherOptions: OtherOptions(height: 200),
-                        //     controller: controller),
-                        // const SizedBox(
-                        //   height: 20,
-                        // ),
+                              // readOnly: false,
+                              sharedConfigurations:
+                                  const QuillSharedConfigurations(
+                                locale: Locale('en'),
+                              ),
+                            ),
+                          ),
+                        ),
+
                         SizedBox(
                           height: 4.h,
                         ),
 
-                        Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              "Select Topics",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .copyWith(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                            )),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        SizedBox(
-                          width: double.infinity,
-                          child: DropdownButtonFormField(
-                              decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(
-                                          width: 0.5, color: Colors.grey))),
-                              value: selectedItem,
-                              items: topics.map((String items) {
-                                return DropdownMenuItem(
-                                  value: items,
-                                  child: Text(items),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  selectedItem = newValue!;
-                                });
-                              }),
-                        ),
-                        SizedBox(
-                          height: 4.h,
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(50),
-                              backgroundColor: AppColors.primaryColor,
-                              side: BorderSide(
-                                width: 1.0,
-                                color: AppColors.primaryColor,
-                              )),
-                          onPressed: () async {
-                            setState(() {
-                              loading = true;
-                              imageFile = File(imageString);
+                      Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    const Text(
+      "Do you want this to be seen by everyone?",
+      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+    ),
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(_isPublic ? "Yes, make it public" : "No, keep it private",    style: TextStyle(
+    color: _isPublic ? Colors.green : Colors.red,
+    fontWeight: FontWeight.bold,
+  ),),
+        Switch(
+          value: _isPublic,
+          onChanged: (val) {
+            setState(() {
+              _isPublic = val;
+            });
+          },
+        ),
+      ],
+    ),
+  ],
+),
 
-                              post.title = titleController.text;
-                              post.genre = selectedItem;
-                              post.body = bodyController.text;
-                              // post.thumbnail = imageString;
-                            });
-                            context
-                                .read<CreatePostBloc>()
-                                .add(CreatePost(post, imageString));
-                          },
-                          child: loading
-                              ? const Center(child: CircularProgressIndicator())
-                              : const Text(
-                                  "Publish",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                        ),
                       ],
                     ),
                   ),

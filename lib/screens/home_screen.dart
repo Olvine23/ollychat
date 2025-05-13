@@ -45,7 +45,8 @@ class _HomeScreenState extends State<HomeScreen> {
       const DiscoverScreen(),
       PoetryVideoList(),
       ProfileScreen(
-        userId: FirebaseAuth.instance.currentUser!.uid, toggleTheme: widget.toggleTheme,
+        userId: FirebaseAuth.instance.currentUser!.uid,
+        toggleTheme: widget.toggleTheme,
       ),
     ];
   }
@@ -80,6 +81,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: const Icon(Icons.add),
                   onPressed: () async {
                     if (!_isModalVisible) {
+                      setState(() {
+                        _isModalVisible = true;
+                      });
                       showModalBottomSheet(
                           context: context,
                           builder: ((BuildContext context) {

@@ -10,7 +10,7 @@ class PostEntity{
   DateTime createdAt;
   String? genre;
   MyUser myUser;
-
+  bool? isPrivate;
 
   PostEntity(
       {
@@ -20,7 +20,7 @@ class PostEntity{
         required this.createdAt,
         this.genre,
         this.thumbnail, 
-        this.body
+        this.body,this.isPrivate
         }
         );
 
@@ -33,7 +33,9 @@ class PostEntity{
       'thumbnail': thumbnail,
       'myUser': myUser.toEntity().toDocument(),
       'body':body,
-      'genre':genre
+      'genre':genre,
+      'isPrivate': isPrivate,
+
     };
   }
 
@@ -47,14 +49,15 @@ class PostEntity{
        body: doc['body'] as String?,
        createdAt:   (doc['createdAt'] as Timestamp).toDate(),
        myUser:  MyUser.fromEntity(MyUserEntity.fromDocument(doc['myUser'])),
-       genre: doc['genre'] as String?
+       genre: doc['genre'] as String?,
+      isPrivate: doc['isPrivate'] as bool?,
 
        
        );
   }
 
   @override
-  List<Object?> get props => [id, thumbnail,title, createdAt,myUser, genre];
+  List<Object?> get props => [id, thumbnail,title, createdAt,myUser, genre, isPrivate];
 
   @override
   String toString() {
@@ -66,6 +69,7 @@ class PostEntity{
       myUser:$myUser
       body:$body
       genre:$genre
+      isPrivate:$isPrivate
     }
 
 

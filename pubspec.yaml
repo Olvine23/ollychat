@@ -67,6 +67,8 @@ dependencies:
   flutter_quill: ^10.8.2
   youtube_player_flutter: ^9.0.4
   timeago: ^3.7.0
+  flutter_local_notifications: ^19.1.0
+  timezone: ^0.10.1
  
 
 

@@ -18,4 +18,7 @@ abstract class PostRepository {
       {DocumentSnapshot? startAfter});
 
   Future<void> updateAllPostsForUser(MyUser updatedUser);
+
+  Future<List<Post>> getPrivatePosts(String userId, {DocumentSnapshot? startAfter});
+
 }

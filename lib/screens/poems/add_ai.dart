@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,6 +35,7 @@ class _AddWithAIState extends State<AddWithAI> {
   late Post post;
   late String imageString = '';
   String text = '';
+  bool _isPublic = true;
 
   @override
   void initState() {
@@ -41,7 +43,7 @@ class _AddWithAIState extends State<AddWithAI> {
     post.myUser = widget.myUser;
     super.initState();
   }
-
+  final moodController = TextEditingController();
   final titleController = TextEditingController();
   final bodyController = TextEditingController();
   String description = 'Article goes here ';
@@ -56,13 +58,98 @@ class _AddWithAIState extends State<AddWithAI> {
     'Education',
     'Travel',
     'Food',
-    'Lifestyle'
+    'Lifestyle',
+    'Other (Add new)'
   ];
   String selectedItem = "Love";
+  void _showAddGenreDialog(BuildContext context) {
+    String newGenre = '';
+      
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 10,
+        insetPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        backgroundColor: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Add a New Genre',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                onChanged: (value) => newGenre = value,
+                style: TextStyle(
+                    color: Colors.black), // Set the input text color here
+                decoration: InputDecoration(
+                  hintText: 'Enter genre name',
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                autofocus: true,
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('Cancel',
+                          style: TextStyle(
+                              color: Colors.grey[700],
+                              fontWeight: FontWeight.bold))),
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (newGenre.trim().isNotEmpty) {
+                        setState(() {
+                          topics.insert(topics.length - 1, newGenre.trim());
+                          
+                          selectedItem = newGenre.trim();
+                        });
+                      }
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'Add',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
   final gemmy = GoogleGemini(apiKey: apiKey!);
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return BlocListener<CreatePostBloc, CreatePostState>(
       listener: (context, state) {
         if (state is CreatePostSuccess) {
@@ -82,7 +169,69 @@ class _AddWithAIState extends State<AddWithAI> {
         }
       },
       child: Scaffold(
-        body: loading
+        appBar: AppBar(
+              title: const Text(
+            'Write Now',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+             actions: [
+            // IconButton(onPressed: () {}, icon:  Icon(Icons.save,color: AppColors.secondaryColor,)),
+            TextButton(
+              onPressed: () async {
+                setState(() {
+                 setState(() {
+                              loading = true;
+                              imageFile = File(imageString);
+                              post.body = text;
+                              post.title = titleController.text;
+                              post.genre = selectedItem;
+                            });
+                            context
+                                .read<CreatePostBloc>()
+                                .add(CreatePost(post, imageString));
+                });
+                context
+                    .read<CreatePostBloc>()
+                    .add(CreatePost(post, imageString));
+              },
+              child: loading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        iconColor: Colors.white,
+                        backgroundColor: AppColors.primaryColor,
+                        side: BorderSide(
+                          width: 1.0,
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                      onPressed: () async {
+                        setState(() {
+                          loading = true;
+                          imageFile = File(imageString);
+                          post.title = titleController.text;
+                          post.genre = selectedItem;
+                           post.body = text;
+                         
+                        });
+                        context
+                            .read<CreatePostBloc>()
+                            .add(CreatePost(post, imageString));
+                      },
+                      icon: Icon(Icons.publish),
+                      label: const Text(
+                        "Publish",
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      )),
+            ),
+          ],
+          
+        ),        body: loading
             ? Center(
                 child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -105,29 +254,27 @@ class _AddWithAIState extends State<AddWithAI> {
                       children: [
                         SizedBox(height: 2.0.h,),
                         Text(
-                          "Articles will be generated based on the picked image and title",
+                          "Articles will be generated based on the inputs provided",
                           textAlign: TextAlign.center,
                           style: Theme.of(context)
                               .textTheme
                               .headlineSmall!
                               .copyWith(
-                                  color: AppColors.primaryColor,
+                                  color: isDark ? Colors.white60 :    Colors.black54,
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 4.h),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            "Select an image",
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
+                       Text(
+                          "Select a cover image for your piece",
+                          textAlign: TextAlign.start,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
                         ),
+                         const SizedBox(height: 8),
                         GestureDetector(
                           onTap: () async {
                             final ImagePicker picker = ImagePicker();
@@ -163,33 +310,58 @@ class _AddWithAIState extends State<AddWithAI> {
                               }
                             }
                           },
-                          child: Container(
-                            height: MediaQuery.of(context).size.height / 3,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20)),
-                            child: imageFile == null
-                                ? Center(
-                                    child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.image_rounded,
-                                        size: 80,
-                                        color: AppColors.secondaryColor,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Container(
+                              height: 200,
+                              color:  isDark ? Colors.grey.shade500 :    Colors.grey[200],
+                              child: imageFile == null
+                                  ? Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.image_rounded,
+                                            size: 60,
+                                            color: AppColors.primaryColor,
+                                          ),
+                                          SizedBox(height: 8),   
+                                          Text(
+                                            "Tap to add article image",
+                                            style: TextStyle(
+                                                color: isDark ? Colors.white60 :   Colors.black87,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        "Tap to add article image",
-                                        style: TextStyle(
-                                            color: AppColors.secondaryColor),
-                                      ),
-                                    ],
-                                  ))
-                                : Image.file(
-                                    imageFile!,
-                                    fit: BoxFit.cover,
-                                  ),
+                                    )
+                                  : Image.file(imageFile!, fit: BoxFit.cover),
+                            ),
                           ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                         Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              "Hey, what’s on your heart today?",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                            )),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        CustomTextField(
+                          controller: moodController,
+                          hintText: 'Write down what you feel ...',
+                          obscureText: false,
+                          keyboardType: TextInputType.name,
                         ),
                         const SizedBox(
                           height: 20,
@@ -197,7 +369,7 @@ class _AddWithAIState extends State<AddWithAI> {
                         Align(
                             alignment: Alignment.topLeft,
                             child: Text(
-                              "Title",
+                              "What do you want this piece to be called?",
                               style: Theme.of(context)
                                   .textTheme
                                   .titleMedium!
@@ -210,13 +382,56 @@ class _AddWithAIState extends State<AddWithAI> {
                         ),
                         CustomTextField(
                           controller: titleController,
-                          hintText: 'Title',
+                          hintText: 'Title goes here ...',
                           obscureText: false,
                           keyboardType: TextInputType.name,
                         ),
                         const SizedBox(
                           height: 20,
                         ),
+
+                         Text(
+                          "Which theme do you want it to fall under?",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                          const SizedBox(height: 8),
+                           DropdownButtonFormField<String>(
+                          value: selectedItem,
+                          onChanged: (value) {
+                            if (value != null) {
+                              if (value == 'Other (Add new)') {
+                                _showAddGenreDialog(context);
+                              } else {
+                                setState(() {
+                                  selectedItem = value;
+                                });
+                              }
+                              // setState(() {
+                              //   selectedItem = value;
+                              // });
+                            }
+                          },
+                          items: topics.map((topic) {
+                            return DropdownMenuItem(
+                              value: topic,
+                              child: Text(topic),
+                            );
+                          }).toList(),
+                          // decoration: InputDecoration(
+                          //   border: OutlineInputBorder(
+                          //       borderRadius: BorderRadius.circular(12)),
+                          //   contentPadding: const EdgeInsets.symmetric(
+                          //       vertical: 12, horizontal: 16),
+                          // ),
+                        ),
+                              const SizedBox(
+                          height: 20,
+                        ),
+
                         loading
                             ? const Align(
                                 alignment: Alignment.center,
@@ -226,12 +441,14 @@ class _AddWithAIState extends State<AddWithAI> {
                                   setState(() {
                                     loading = true;
                                   });
-                                  await geminiService.generatePromptFromImage(imageFile!, titleController.text)   
+                                  await geminiService.generatePromptFromText( titleController.text, moodController.text,selectedItem)   
                                       .then((value) {
                                     if (value.isEmpty) {
                                       setState(() {
                                         loading = false;
                                       });
+
+                                      print(value);
                                       _showCustomDialog(context,
                                           "Whoopsie ...try another image");
                                     }
@@ -258,9 +475,16 @@ class _AddWithAIState extends State<AddWithAI> {
                                     minimumSize: const Size.fromHeight(50),
                                     backgroundColor: AppColors.primaryColor,
                                     foregroundColor: Colors.white),
-                                child: const Text(
-                                  "Generate ",
-                                  style: TextStyle(color: Colors.white),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.auto_awesome),
+                                    SizedBox(width: 8,),
+                                    const Text(
+                                      "Generate ",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
                                 ),
                               ),
                         const SizedBox(
@@ -274,6 +498,7 @@ class _AddWithAIState extends State<AddWithAI> {
                                   .textTheme
                                   .titleMedium!
                                   .copyWith(
+                                     color: isDark ? Colors.white60 :    Colors.black87,
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold),
                             )),
@@ -287,73 +512,65 @@ class _AddWithAIState extends State<AddWithAI> {
                         //   text,
                         // ),
                         SizedBox(
-                          height: 10,
+                          height: 4.h
                         ),
-                        Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              "Select Topics",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .copyWith(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                            )),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        SizedBox(
-                          width: double.infinity,
-                          child: DropdownButtonFormField(
-                              decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(
-                                          width: 0.5, color: Colors.grey))),
-                              value: selectedItem,
-                              items: topics.map((String items) {
-                                return DropdownMenuItem(
-                                  value: items,
-                                  child: Text(items),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  selectedItem = newValue!;
-                                });
-                              }),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(50),
-                              backgroundColor: AppColors.primaryColor,
-                              side: BorderSide(
-                                width: 1.0,
-                                color: AppColors.primaryColor,
-                              )),
-                          onPressed: () async {
-                            setState(() {
-                              loading = true;
-                              imageFile = File(imageString);
-                              post.body = text;
-                              post.title = titleController.text;
-                              post.genre = selectedItem;
-                            });
-                            context
-                                .read<CreatePostBloc>()
-                                .add(CreatePost(post, imageString));
-                          },
-                          child: loading
-                              ? const Center(child: CircularProgressIndicator())
-                              : const Text(
-                                  "Publish",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                        ),
+                        
+                      Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    const Text(
+      "Do you want this to be seen by everyone?",
+      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+    ),
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(_isPublic ? "Yes, make it public" : "No, keep it private",    style: TextStyle(
+    color: _isPublic ? Colors.green : Colors.red,
+    fontWeight: FontWeight.bold,
+  ),),
+        Switch(
+          value: _isPublic,
+          onChanged: (val) {
+            setState(() {
+              _isPublic = val;
+            });
+          },
+        ),
+      ],
+    ),
+  ],
+),
+                      
+                      
+                       
+                        // ElevatedButton(
+                        //   style: ElevatedButton.styleFrom(
+                        //       minimumSize: const Size.fromHeight(50),
+                        //       backgroundColor: AppColors.primaryColor,
+                        //       side: BorderSide(
+                        //         width: 1.0,
+                        //         color: AppColors.primaryColor,
+                        //       )),
+                        //   onPressed: () async {
+                        //     setState(() {
+                        //       loading = true;
+                        //       imageFile = File(imageString);
+                        //       post.body = text;
+                        //       post.title = titleController.text;
+                        //       post.genre = selectedItem;
+                        //     });
+                        //     context
+                        //         .read<CreatePostBloc>()
+                        //         .add(CreatePost(post, imageString));
+                        //   },
+                        //   child: loading
+                        //       ? const Center(child: CircularProgressIndicator())
+                        //       : const Text(
+                        //           "Publish",
+                        //           style: TextStyle(color: Colors.white),
+                        //         ),
+                        // ),
                       ],
                     ),
                   ),

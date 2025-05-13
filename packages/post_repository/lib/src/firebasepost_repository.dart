@@ -171,6 +171,27 @@ import 'package:uuid/uuid.dart';
     }
   }
 
+Future<List<Post>> getPrivatePosts(String userId, {DocumentSnapshot? startAfter}) async {
+  try {
+    Query query = postCollection
+        .where('private', isEqualTo: true)
+        .where('myUser.id', isEqualTo: userId)
+        .orderBy('createdAt', descending: true);
+
+    if (startAfter != null) {
+      query = query.startAfterDocument(startAfter);
+    }
+
+    QuerySnapshot querySnapshot = await query.get();
+
+    return querySnapshot.docs.map((doc) =>
+      Post.fromEntity(PostEntity.fromDocument(doc.data() as Map<String, dynamic>))
+    ).toList();
+  } catch (e) {
+    print(e.toString());
+    rethrow;
+  }
+}
 
 
   Future<void> updateUserInPosts(MyUser updatedUser) async {

@@ -1,24 +1,22 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:google_generative_ai/google_generative_ai.dart';
 
- 
 class GeminiService {
-  final GenerativeModel model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: 'AIzaSyApGwZlbEZFK5G0LG1gygYbqZdApMJLu1Y');
+  final GenerativeModel model = GenerativeModel(
+    model: 'gemini-1.5-flash',
+    apiKey: 'AIzaSyApGwZlbEZFK5G0LG1gygYbqZdApMJLu1Y',
+  );
 
-  Future<String> generatePromptFromImage(File image , String title) async {
-    // final bytes = await image.readAsBytes();
-    final imageParts = [
-        DataPart('image/jpeg', await image.readAsBytes()),
-      ];
-    final prompt = TextPart("Generate an interesting spoken word piece based on the image which has the title, $title ");
+  Future<String> generatePromptFromText(String title, String mood, String genre) async {
+    final prompt = TextPart(
+      '''
+Write a heartfelt article or spoken word piece based on the title: "$title".
+Let the writing reflect the mood of "$mood" and align it with the theme of "$genre".
+Avoid stage directions or theatrical scenes. Instead, make it deeply personal and reflective — something the reader can connect with, feel, and ponder long after reading.
+It should feel like someone's honest thoughts spilled onto a page.
+'''
+    );
 
-    // final base64Image = base64Encode(bytes);
-    // final content = Content.multi([prompt, DataPart(base64Image, bytes)]);
-
-    final response = await model.generateContent([Content.multi([prompt, ...imageParts])]);
-    print(response.text);
-    return response.text!;
+    final response = await model.generateContent([Content.text(prompt.text)]);
+    return response.text ?? '';
   }
 }

@@ -20,6 +20,7 @@ import 'package:olly_chat/screens/discover/components/head_image.dart';
 import 'package:olly_chat/screens/poems/snippies/screenshotsnip.dart';
 import 'package:olly_chat/screens/poems/widgets/article_cover.dart';
 import 'package:olly_chat/screens/poems/widgets/custom_audio.dart';
+import 'package:olly_chat/screens/poems/widgets/font_selection.dart';
 import 'package:olly_chat/screens/poems/widgets/image_widget.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:path_provider/path_provider.dart';
@@ -42,6 +43,33 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _showScrollButton = false;
   IconData _scrollIcon = Icons.arrow_upward;
+
+
+   String selectedFont = 'Roboto'; // Default font
+
+  // Function to show the bottom sheet for font selection
+  void openFontSelectionBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return FontSelectionBottomSheet(
+          onFontSelected: (font) {
+            setState(() {
+              selectedFont = font; // Update font when selected
+            });
+            Navigator.pop(context); // Close the bottom sheet
+             ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('Switched to "$font" font'),
+      duration: Duration(seconds: 2),
+      
+    ),
+  );
+          },
+        );
+      },
+    );
+  }
   bool isBookmarked = false;
   final player = AudioPlayer(); //audio player obj that will play audio
   bool _isLoadingVoice = false; //for the progress indicator
@@ -225,6 +253,16 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
     }
   }
 
+  List<String> splitTextIntoPages(String text, {int maxCharsPerPage = 600}) {
+  List<String> pages = [];
+  for (int i = 0; i < text.length; i += maxCharsPerPage) {
+    int end = (i + maxCharsPerPage < text.length) ? i + maxCharsPerPage : text.length;
+    pages.add(text.substring(i, end).trim());
+  }
+  return pages;
+}
+
+
   Future<void> playAudioFromBytes(File audioFile) async {
     final audioSource = MyCustomSource(await audioFile.readAsBytes());
     await player.setAudioSource(audioSource);
@@ -372,6 +410,50 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final deltaJson = widget.post.body;
+String extractedText = '';
+
+try {
+  final deltaOps = jsonDecode(deltaJson!);
+  for (var op in deltaOps) {
+    extractedText += op['insert'] ?? '';
+  }
+} catch (e) {
+  extractedText = 'Error loading post content';
+}
+
+String extractTextFromDelta(String? deltaJson) {
+  if (deltaJson == null || deltaJson.isEmpty) {
+    return '';
+  }
+
+  try {
+    final decoded = jsonDecode(deltaJson);
+
+    // If it's a list, assume it's a Quill Delta
+    if (decoded is List) {
+      String result = '';
+      for (var op in decoded) {
+        result += op['insert'] ?? '';
+      }
+      return result;
+    }
+
+    // If it's not a list, just return the original (maybe plain text)
+    return deltaJson;
+  } catch (e) {
+    // Fallback: Treat as plain text if not JSON
+    return deltaJson;
+  }
+}
+
+
+final List<String> contentPages = splitTextIntoPages(
+  extractTextFromDelta(widget.post.body),
+  maxCharsPerPage: 600, // Tweak for UX
+);
+
+
     Size size = MediaQuery.of(context).size;
     return Screenshot(
       controller: screenshotController,
@@ -382,93 +464,79 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
             extendBodyBehindAppBar: true,
 
             appBar: AppBar(
-              centerTitle: true,
-              title: Text(
-                widget.post.title,
-                style: const TextStyle(
-                    fontSize: 22,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-              ),
-              iconTheme: const IconThemeData(
-                color: Colors.white,
-                size: 30,
-              ),
-              backgroundColor: Colors.black.withOpacity(0.3),
-              elevation: 0,
-              actions: [
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () async {
-                        // Handle share icon tap
-
-                        final image =
-                            await screenshotController.captureFromWidget(
-                                imageWidget(size: size, widget: widget));
-
-                        saveAndShare(
-                            image, widget.post.body!, widget.post.title);
-                      },
-                      icon: const Icon(Icons.share),
-                      iconSize: 30,
-                    ),
-                    BlocListener<MyUserBloc, MyUserState>(
-                      listener: (context, state) {
-                        // TODO: implement listener
-                        if (state.status == MyUserStatus.success) {
-                          setState(() {
-                            isBookmarked = state.user!.bookmarkedPosts!
-                                .contains(widget.post.id);
-                          });
-                        }
-                      },
-                      child: BlocBuilder<MyUserBloc, MyUserState>(
-                        builder: (context, state) {
-                          if (state.status == MyUserStatus.success) {
-                            isBookmarked = state.user!.bookmarkedPosts!
-                                .contains(widget.post.id);
-                          }
-                          return IconButton(
-                            onPressed: () {
-                              // Handle favorite icon tap
-                              if (isBookmarked) {
-                                BlocProvider.of<MyUserBloc>(context).add(
-                                    UnbookmarkPost(
-                                        FirebaseAuth.instance.currentUser!.uid,
-                                        widget.post.id));
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Poem removed from bookmark'),
-                                  ),
-                                );
-                              } else {
-                                BlocProvider.of<MyUserBloc>(context).add(
-                                    BookmarkPost(
-                                        FirebaseAuth.instance.currentUser!.uid,
-                                        widget.post.id));
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Poem added to bookmark'),
-                                  ),
-                                );
-                              }
-                              setState(() {
-                                isBookmarked = !isBookmarked;
-                              });
-                            },
-                            icon: Icon(isBookmarked
-                                ? Icons.bookmark
-                                : Icons.bookmark_border),
-                            iconSize: 30,
-                          );
-                        },
+  centerTitle: true,
+  title: Text(
+    widget.post.title,
+    style: const TextStyle(
+      fontSize: 22,
+      color: Colors.white,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+  iconTheme: const IconThemeData(
+    color: Colors.white,
+    size: 30,
+  ),
+  backgroundColor: Colors.black.withOpacity(0.3),
+  elevation: 0,
+  actions: [
+    Row(
+      children: [
+        // Font Icon with Tooltip
+        IconButton(
+          icon: Icon(Icons.text_fields), // Font-related icon
+          onPressed: openFontSelectionBottomSheet, // Open font selection
+          tooltip: 'Switch Font', // Tooltip to explain action
+        ),
+        BlocListener<MyUserBloc, MyUserState>(
+          listener: (context, state) {
+            // TODO: implement listener
+            if (state.status == MyUserStatus.success) {
+              setState(() {
+                isBookmarked = state.user!.bookmarkedPosts!.contains(widget.post.id);
+              });
+            }
+          },
+          child: BlocBuilder<MyUserBloc, MyUserState>(
+            builder: (context, state) {
+              if (state.status == MyUserStatus.success) {
+                isBookmarked = state.user!.bookmarkedPosts!.contains(widget.post.id);
+              }
+              return IconButton(
+                onPressed: () {
+                  // Handle bookmark icon tap
+                  if (isBookmarked) {
+                    BlocProvider.of<MyUserBloc>(context).add(
+                        UnbookmarkPost(FirebaseAuth.instance.currentUser!.uid, widget.post.id));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Poem removed from bookmark'),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                    );
+                  } else {
+                    BlocProvider.of<MyUserBloc>(context).add(
+                        BookmarkPost(FirebaseAuth.instance.currentUser!.uid, widget.post.id));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Poem added to bookmark'),
+                      ),
+                    );
+                  }
+                  setState(() {
+                    isBookmarked = !isBookmarked;
+                  });
+                },
+                icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border),
+                iconSize: 30,
+              );
+            },
+          ),
+        ),
+      ],
+    ),
+  ],
+),
+
             body: Stack(
               children: [
                 // Background image
@@ -578,48 +646,7 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                               ],
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          // Text(widget.post.genre!,
-                          //     style: TextStyle(
-                          //         fontSize: 16,
-                          //         fontWeight: FontWeight.w600,
-                          //         color: Colors.white70)),
-                          // Text(
-                          //   formatTimeAgo(widget.post.createdAt),
-                          //   style: TextStyle(
-                          //       fontWeight: FontWeight.w700,
-                          //       color: Colors.white70),
-                          // ),
-                          // SizedBox(height: 16),
-                          // // Author Info Section
-                          // ListTile(
-                          //   contentPadding: EdgeInsets.zero,
-                          //   leading: CircleAvatar(
-                          //     radius: 30,
-                          //     backgroundImage: widget.post.myUser.image ==
-                          //                 null ||
-                          //             widget.post.myUser.image!.isEmpty
-                          //         ? NetworkImage(
-                          //             'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png')
-                          //         : NetworkImage(widget.post.myUser.image!),
-                          //     backgroundColor: AppColors.primaryColor,
-                          //   ),
-                          //   title: Text(
-                          //     widget.post.myUser.name,
-                          //     style: GoogleFonts.lora(
-                          //       fontSize: 20,
-                          //       fontWeight: FontWeight.bold,
-                          //       color: Colors.white,
-                          //     ),
-                          //   ),
-                          //   subtitle: Text(
-                          //     widget.post.myUser.handle != null
-                          //         ? '@${widget.post.myUser.handle!}'
-                          //         : '',
-                          //     style: TextStyle(
-                          //         color: Colors.white70, fontSize: 14),
-                          //   ),
-                          // ),
+
                           const SizedBox(height: 16),
 
                           widget.post.body == ''
@@ -628,62 +655,63 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                                       const BoxConstraints(minHeight: 100),
                                 )
                               : Container(
-                                  width: double.infinity,
                                   constraints: const BoxConstraints(
                                       minHeight: 100, minWidth: 90),
                                   padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        Color.fromRGBO(0, 0, 0,
-                                            0.5), // Top-left: semi-transparent black
-                                        Color.fromRGBO(0, 0, 0,
-                                            0.6), // Mid: slight darkness
-                                        Color.fromRGBO(0, 0, 0,
-                                            0.6), // Bottom-right: lighter transparent black
-                                      ],
-                                    ),
+                                      color: Color(0xFFFAF3E0), // a warm paper-like color
+                                    // gradient: const LinearGradient(
+                                    //   begin: Alignment.topLeft,
+                                    //   end: Alignment.bottomRight,
+                                    //   colors: [
+                                    //     Color.fromRGBO(0, 0, 0,
+                                    //         0.5), // Top-left: semi-transparent black
+                                    //     Color.fromRGBO(0, 0, 0,
+                                    //         0.6), // Mid: slight darkness
+                                    //     Color.fromRGBO(0, 0, 0,
+                                    //         0.6), // Bottom-right: lighter transparent black
+                                    //   ],
+                                    // ),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
-                                    widget.post.body ?? '',
+                                 extractTextFromDelta(widget.post.body),
                                     style: TextStyle(
-                                        wordSpacing: 8,
+                                        wordSpacing: 5,
                                         fontFamily:
-                                            GoogleFonts.manrope().fontFamily,
-                                        color: Colors.white,
+                                           GoogleFonts.getFont(selectedFont).fontFamily,
+                                        color: Colors.black,
                                         fontWeight: FontWeight.w500,
                                         fontSize: 16,
+                                        letterSpacing: 1,
                                         height: 1.6),
                                   ),
                                 ),
-                          ElevatedButton.icon(
-                            label: Text("Download Audio",
-                                style: TextStyle(color: Colors.white)),
-                            icon: Icon(Icons.download, color: Colors.white,),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepPurple,
-                              shape: const StadiumBorder(),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 2),
-                            ),
-                            onPressed: () async {
-                              // await requestStoragePermission();
-                              //  var status = await Permission.storage.status;
-                              //  print(status);
-                              //    print(cachedAudios[widget.post.body]);
-                              // if (status.isGranted) {
-                              if (cachedAudios.containsKey(widget.post.body)) {
-                                print(cachedAudios[widget.post.body]);
-                                downloadAudioFile(
-                                    cachedAudios[widget.post.body]!,
-                                    'poem_audio');
-                              }
-                            },
+                          // ElevatedButton.icon(
+                          //   label: Text("Download Audio",
+                          //       style: TextStyle(color: Colors.white)),
+                          //   icon: Icon(Icons.download, color: Colors.white,),
+                          //   style: ElevatedButton.styleFrom(
+                          //     backgroundColor: Colors.deepPurple,
+                          //     shape: const StadiumBorder(),
+                          //     padding: const EdgeInsets.symmetric(
+                          //         horizontal: 12, vertical: 2),
+                          //   ),
+                          //   onPressed: () async {
+                          //     // await requestStoragePermission();
+                          //     //  var status = await Permission.storage.status;
+                          //     //  print(status);
+                          //     //    print(cachedAudios[widget.post.body]);
+                          //     // if (status.isGranted) {
+                          //     if (cachedAudios.containsKey(widget.post.body)) {
+                          //       print(cachedAudios[widget.post.body]);
+                          //       downloadAudioFile(
+                          //           cachedAudios[widget.post.body]!,
+                          //           'poem_audio');
+                          //     }
+                          //   },
                             
-                          ),
+                          // ),
 
                           const SizedBox(height: 24),
                         ],

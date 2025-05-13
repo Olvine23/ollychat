@@ -26,6 +26,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
     return BlocBuilder<MyUserBloc, MyUserState>(builder: (context, state) {
       if (state.status == MyUserStatus.success) {
         return Container(
+          height: 240,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.only(
@@ -72,8 +73,8 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[300], // Background color
                       ),
-                      onPressed: () async{
-                          var newPost = await Navigator.push(context,
+                      onPressed: () async {
+                        var newPost = await Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
                           return BlocProvider<CreatePostBloc>(
                             create: (context) => CreatePostBloc(
@@ -90,6 +91,9 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                                 .posts!
                                 .insert(0, newPost);
                           });
+
+                          widget.onModalClosed(); // Notify parent
+                          Navigator.of(context).pop(); // Close modal sheet
                         }
                       },
                       child: Text(
@@ -121,6 +125,8 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                                 .posts!
                                 .insert(0, newPost);
                           });
+                          widget.onModalClosed(); // Notify parent
+                          Navigator.of(context).pop(); // Close modal sheet
                         }
                       },
                       child: Text(

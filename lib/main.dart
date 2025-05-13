@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:olly_chat/app.dart';
 import 'package:olly_chat/firebase_options.dart';
 import 'package:olly_chat/screens/notifications/audio_handler.dart';
@@ -12,12 +13,27 @@ import 'package:olly_chat/simple_bloc_observer.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:post_repository/post_repository.dart';
 import 'package:user_repository/user_repository.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tzData;
 
 var apiKey = dotenv.env['GEMINI-API-KEY'];
 late final MyAudioHandler audioHandler;
 var eleApiKey = dotenv.env['EL_API_KEY'] as String;
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 void main() async {
+   
   WidgetsFlutterBinding.ensureInitialized();
+  tzData.initializeTimeZones(); // only once in the app
+   const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  const InitializationSettings initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  
    audioHandler = await AudioService.init(
     builder: () => MyAudioHandler(),
     config: const AudioServiceConfig(

@@ -53,6 +53,7 @@ class _MainHomeState extends State<MainHome> {
         ),
         leading: Image.asset('assets/images/nobg.png', height: 100),
         actions: [
+          Icon(Icons.record_voice_over),
           //  Switch(
           //   value: isDarkMode,
           //   onChanged: (bool value) {

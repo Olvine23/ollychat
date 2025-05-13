@@ -6,6 +6,7 @@ class Post {
   String id;
   String title;
   String? thumbnail;
+  bool? isPrivate; // Add this field to indicate if the post is private
   String? body;
   DateTime createdAt;
   String? genre;
@@ -14,6 +15,7 @@ class Post {
   Post(
       {required this.id,
       required this.title,
+      this.isPrivate,
       this.body,
       this.thumbnail,
       this.genre,
@@ -23,11 +25,12 @@ class Post {
   //for modification of empty posts
 
   static final empty =
-      Post(id: '', title: '', createdAt: DateTime.now(), myUser: MyUser.empty, thumbnail: '' , body: '', genre: '');
+      Post(id: '', title: '', createdAt: DateTime.now(), myUser: MyUser.empty, thumbnail: '' , body: '', genre: '',isPrivate: false);
 
   //for modificartion of  post params
   Post copyWith(
       {String? id,
+      bool? isPrivate,
       String? title,
       String? thumbnail,
       String? body,
@@ -35,13 +38,15 @@ class Post {
       DateTime? createdAt,
       MyUser? myUser}) {
     return Post(
+
         createdAt: createdAt ?? this.createdAt,
         id: id ?? this.id,
         body: body ?? this.body,
         title: title ?? this.title,
         myUser: myUser ?? this.myUser,
         thumbnail: thumbnail ?? this.thumbnail,
-        genre: genre ?? this.genre
+        genre: genre ?? this.genre,
+        isPrivate: isPrivate ?? this.isPrivate
         
         );
   }
@@ -60,7 +65,8 @@ class Post {
       createdAt:createdAt,
       myUser:myUser,
       body: body,
-      genre:genre
+      genre:genre,
+      isPrivate: isPrivate,
     );
 
   }
@@ -74,6 +80,7 @@ class Post {
       myUser:entity.myUser,
       body: entity.body,
       genre: entity.genre,
+      isPrivate: entity.isPrivate,
     );
 
   }
@@ -88,6 +95,7 @@ class Post {
       myUser:$myUser
       body:$body
       genre:$genre
+      isPrivate:$isPrivate
     }
 
 

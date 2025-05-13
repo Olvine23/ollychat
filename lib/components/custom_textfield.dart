@@ -37,7 +37,7 @@ class CustomTextField extends StatelessWidget {
         
       ),
       child: TextFormField(
-        style: TextStyle(color: isDark ? Colors.white : Colors.black), // 👈 typed text will be white
+        style: TextStyle(color: isDark ? Colors.white54 : Colors.black), // 👈 typed text will be white
           validator: validator,
           controller: controller,
           obscureText: obscureText,
@@ -59,7 +59,7 @@ class CustomTextField extends StatelessWidget {
           fillColor: Colors.white.withOpacity(0.2),
 
             hintText: hintText,
-            hintStyle: TextStyle(color: isDark ? Colors.white : Colors.black54, fontWeight: FontWeight.bold),
+            hintStyle: TextStyle(color: isDark ? Colors.white54 : Colors.black54, fontWeight: FontWeight.bold),
             errorText: errorMsg,
           )),
     );

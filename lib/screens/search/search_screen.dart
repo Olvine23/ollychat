@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:intl/intl.dart';
 import 'dart:convert';
@@ -9,6 +10,8 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 class PoetryVideoList extends StatefulWidget {
   @override
   _PoetryVideoListState createState() => _PoetryVideoListState();
+   // Static variable for cache (temporarily in memory)
+  static List cachedVideos = [];
 }
 
 class _PoetryVideoListState extends State<PoetryVideoList> {
@@ -20,10 +23,28 @@ class _PoetryVideoListState extends State<PoetryVideoList> {
   @override
   void initState() {
     super.initState();
-    fetchVideos();
+     loadCachedVideos();
   }
 
-  Future<void> fetchVideos() async {
+   // Load cached videos from shared preferences
+  Future<void> loadCachedVideos() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cachedData = prefs.getString('cachedVideos');
+
+    if (cachedData != null) {
+      // Decode the cached JSON string into a List
+      final List<dynamic> decodedData = json.decode(cachedData);
+      setState(() {
+        videos = decodedData;
+      });
+      print("Loaded videos from cache: ${videos.length}");
+    } else {
+      // If no cache exists, fetch the data from the API
+      fetchVideos();
+    }
+  }
+
+    Future<void> fetchVideos() async {
     final url =
         'https://www.googleapis.com/youtube/v3/search?key=$apiKey&channelId=$channelId&part=snippet,id&order=date&maxResults=50';
     final response = await http.get(Uri.parse(url));
@@ -33,22 +54,30 @@ class _PoetryVideoListState extends State<PoetryVideoList> {
 
       final items = data['items'];
       if (items != null) {
-        setState(() {
-          videos = items
-              .where((item) =>
-                  item['id'] != null &&
-                  item['id']['kind'] == 'youtube#video' &&
-                  item['id']['videoId'] != null)
-              .toList();
-        });
-        print("Videos fetched successfully: ${videos.length} videos found.");
-      } else {
-        print("No videos found in the response.");
+        final filteredVideos = items
+            .where((item) =>
+                item['id'] != null &&
+                item['id']['kind'] == 'youtube#video' &&
+                item['id']['videoId'] != null)
+            .toList();
+
+        // Cache the fetched videos
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString('cachedVideos', json.encode(filteredVideos));
+
+        if (mounted) {
+          setState(() {
+            videos = filteredVideos;
+          });
+        }
+
+        print("Videos fetched and cached: ${filteredVideos.length}");
       }
     } else {
       print("Failed to fetch videos: ${response.statusCode}");
     }
   }
+
 
   void playVideo(
       String videoId, String title, String description, List relatedVideos) {
