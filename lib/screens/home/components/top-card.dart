@@ -32,21 +32,22 @@ class TopCard extends StatelessWidget {
       
               
               // Dark overlay
-              Container(
-                height: 200,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                  isDark ?  Colors.black.withOpacity(0.6) : Colors.black.withOpacity(0.8),
-                    Colors.transparent,
-                   isDark ?  Colors.white.withOpacity(0.6) : Colors.black.withOpacity(0.8),
-                  ],
-                ),
-              ),
-              ),
+            // Darker overlay only on the left side
+Container(
+  height: 200,
+  width: double.infinity,
+  decoration: BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment.centerLeft,
+      end: Alignment.centerRight,
+      colors: [
+        Colors.black.withOpacity(0.7), // Dark on left
+        Colors.transparent, // Fades out to right
+      ],
+    ),
+  ),
+),
+
       
       
                // Content
@@ -75,18 +76,18 @@ class TopCard extends StatelessWidget {
                         const SizedBox(width: 8),
                       Text(
                         post.myUser.name,
-                          style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w600),
+                          style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton.icon(
-                      label: const Text('Read More', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black87),),
+                      label: const Text('Read...', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),),
                       icon: Icon(Icons.auto_stories, color: AppColors.secondaryColor,) ,
                       onPressed:onTap,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white.withOpacity(0.8),
-                        foregroundColor: Colors.black,
+                        backgroundColor:AppColors.primaryColor,
+                        foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),

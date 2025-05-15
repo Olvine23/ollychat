@@ -26,7 +26,6 @@ class AddWithAI extends StatefulWidget {
 }
 
 class _AddWithAIState extends State<AddWithAI> {
-
   final GeminiService geminiService = GeminiService();
   File? imageFile;
   String? imageUrl;
@@ -35,7 +34,7 @@ class _AddWithAIState extends State<AddWithAI> {
   late Post post;
   late String imageString = '';
   String text = '';
-  bool _isPublic = true;
+  bool _isPrivate = false;
 
   @override
   void initState() {
@@ -43,28 +42,30 @@ class _AddWithAIState extends State<AddWithAI> {
     post.myUser = widget.myUser;
     super.initState();
   }
+
   final moodController = TextEditingController();
   final titleController = TextEditingController();
   final bodyController = TextEditingController();
   String description = 'Article goes here ';
   List<String> topics = [
-    "Love",
-    "Art",
-    "Sadness",
-    'Health',
-    'Emotional',
-    'Entertainment',
-    'Sports',
-    'Education',
-    'Travel',
-    'Food',
-    'Lifestyle',
+    "Healing",
+    "Heartbreak",
+    "Hope",
+    "Growth",
+    "Letting Go",
+    "Gratitude",
+    "Grief",
+    "Self-Discovery",
+    "Forgiveness",
+    "Joy",
+    "Loneliness",
+    "Fear",
     'Other (Add new)'
   ];
-  String selectedItem = "Love";
+  String selectedItem = "Joy";
   void _showAddGenreDialog(BuildContext context) {
     String newGenre = '';
-      
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     showDialog(
@@ -126,7 +127,7 @@ class _AddWithAIState extends State<AddWithAI> {
                       if (newGenre.trim().isNotEmpty) {
                         setState(() {
                           topics.insert(topics.length - 1, newGenre.trim());
-                          
+
                           selectedItem = newGenre.trim();
                         });
                       }
@@ -145,6 +146,7 @@ class _AddWithAIState extends State<AddWithAI> {
       ),
     );
   }
+
   final gemmy = GoogleGemini(apiKey: apiKey!);
 
   @override
@@ -170,25 +172,25 @@ class _AddWithAIState extends State<AddWithAI> {
       },
       child: Scaffold(
         appBar: AppBar(
-              title: const Text(
+          title: const Text(
             'Write Now',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-             actions: [
+          actions: [
             // IconButton(onPressed: () {}, icon:  Icon(Icons.save,color: AppColors.secondaryColor,)),
             TextButton(
               onPressed: () async {
                 setState(() {
-                 setState(() {
-                              loading = true;
-                              imageFile = File(imageString);
-                              post.body = text;
-                              post.title = titleController.text;
-                              post.genre = selectedItem;
-                            });
-                            context
-                                .read<CreatePostBloc>()
-                                .add(CreatePost(post, imageString));
+                  setState(() {
+                    loading = true;
+                    imageFile = File(imageString);
+                    post.body = text;
+                    post.title = titleController.text;
+                    post.genre = selectedItem;
+                  });
+                  context
+                      .read<CreatePostBloc>()
+                      .add(CreatePost(post, imageString));
                 });
                 context
                     .read<CreatePostBloc>()
@@ -215,8 +217,7 @@ class _AddWithAIState extends State<AddWithAI> {
                           imageFile = File(imageString);
                           post.title = titleController.text;
                           post.genre = selectedItem;
-                           post.body = text;
-                         
+                          post.body = text;
                         });
                         context
                             .read<CreatePostBloc>()
@@ -230,14 +231,22 @@ class _AddWithAIState extends State<AddWithAI> {
                       )),
             ),
           ],
-          
-        ),        body: loading
+        ),
+        body: loading
             ? Center(
                 child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                   Text("Working on it . \n Will  be done in a bit", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: AppColors.secondaryColor),),
-                  SizedBox(height: 10.h,),
+                  Text(
+                    "Working on it . \n Will  be done in a bit",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: AppColors.secondaryColor),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
                   SizedBox(
                     height: 2.h,
                   ),
@@ -252,7 +261,9 @@ class _AddWithAIState extends State<AddWithAI> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 2.0.h,),
+                        SizedBox(
+                          height: 2.0.h,
+                        ),
                         Text(
                           "Articles will be generated based on the inputs provided",
                           textAlign: TextAlign.center,
@@ -260,12 +271,13 @@ class _AddWithAIState extends State<AddWithAI> {
                               .textTheme
                               .headlineSmall!
                               .copyWith(
-                                  color: isDark ? Colors.white60 :    Colors.black54,
+                                  color:
+                                      isDark ? Colors.white60 : Colors.black54,
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 4.h),
-                       Text(
+                        Text(
                           "Select a cover image for your piece",
                           textAlign: TextAlign.start,
                           style: Theme.of(context)
@@ -274,19 +286,19 @@ class _AddWithAIState extends State<AddWithAI> {
                               .copyWith(
                                   fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                         const SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         GestureDetector(
                           onTap: () async {
                             final ImagePicker picker = ImagePicker();
                             final XFile? image = await picker.pickImage(
                                 source: ImageSource.gallery, imageQuality: 100);
                             if (image != null) {
-                              CroppedFile? croppedFile = await ImageCropper()
-                                  .cropImage(
+                              CroppedFile? croppedFile =
+                                  await ImageCropper().cropImage(
                                       sourcePath: image.path,
-                                  //     aspectRatioPresets: [
-                                  //   CropAspectRatioPreset.square
-                                  // ],
+                                      //     aspectRatioPresets: [
+                                      //   CropAspectRatioPreset.square
+                                      // ],
                                       uiSettings: [
                                     AndroidUiSettings(
                                         toolbarTitle: 'Cropper',
@@ -314,7 +326,9 @@ class _AddWithAIState extends State<AddWithAI> {
                             borderRadius: BorderRadius.circular(16),
                             child: Container(
                               height: 200,
-                              color:  isDark ? Colors.grey.shade500 :    Colors.grey[200],
+                              color: isDark
+                                  ? Colors.grey.shade500
+                                  : Colors.grey[200],
                               child: imageFile == null
                                   ? Center(
                                       child: Column(
@@ -326,11 +340,13 @@ class _AddWithAIState extends State<AddWithAI> {
                                             size: 60,
                                             color: AppColors.primaryColor,
                                           ),
-                                          SizedBox(height: 8),   
+                                          SizedBox(height: 8),
                                           Text(
                                             "Tap to add article image",
                                             style: TextStyle(
-                                                color: isDark ? Colors.white60 :   Colors.black87,
+                                                color: isDark
+                                                    ? Colors.white60
+                                                    : Colors.black87,
                                                 fontWeight: FontWeight.bold),
                                           ),
                                         ],
@@ -343,7 +359,7 @@ class _AddWithAIState extends State<AddWithAI> {
                         const SizedBox(
                           height: 20,
                         ),
-                         Align(
+                        Align(
                             alignment: Alignment.topLeft,
                             child: Text(
                               "Hey, what’s on your heart today?",
@@ -390,7 +406,7 @@ class _AddWithAIState extends State<AddWithAI> {
                           height: 20,
                         ),
 
-                         Text(
+                        Text(
                           "Which theme do you want it to fall under?",
                           style: Theme.of(context)
                               .textTheme
@@ -398,8 +414,8 @@ class _AddWithAIState extends State<AddWithAI> {
                               .copyWith(
                                   fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                          const SizedBox(height: 8),
-                           DropdownButtonFormField<String>(
+                        const SizedBox(height: 8),
+                        DropdownButtonFormField<String>(
                           value: selectedItem,
                           onChanged: (value) {
                             if (value != null) {
@@ -428,7 +444,7 @@ class _AddWithAIState extends State<AddWithAI> {
                           //       vertical: 12, horizontal: 16),
                           // ),
                         ),
-                              const SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
 
@@ -441,7 +457,11 @@ class _AddWithAIState extends State<AddWithAI> {
                                   setState(() {
                                     loading = true;
                                   });
-                                  await geminiService.generatePromptFromText( titleController.text, moodController.text,selectedItem)   
+                                  await geminiService
+                                      .generatePromptFromText(
+                                          titleController.text,
+                                          moodController.text,
+                                          selectedItem)
                                       .then((value) {
                                     if (value.isEmpty) {
                                       setState(() {
@@ -479,7 +499,9 @@ class _AddWithAIState extends State<AddWithAI> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(Icons.auto_awesome),
-                                    SizedBox(width: 8,),
+                                    SizedBox(
+                                      width: 8,
+                                    ),
                                     const Text(
                                       "Generate ",
                                       style: TextStyle(color: Colors.white),
@@ -498,79 +520,61 @@ class _AddWithAIState extends State<AddWithAI> {
                                   .textTheme
                                   .titleMedium!
                                   .copyWith(
-                                     color: isDark ? Colors.white60 :    Colors.black87,
+                                      color: isDark
+                                          ? Colors.white60
+                                          : Colors.black87,
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold),
                             )),
                         const SizedBox(
                           height: 10,
                         ),
-                        Text(text),
+                        Text(
+                          text,
+                          style: TextStyle(wordSpacing: 3),
+                        ),
                         // MarkdownTextInput(
                         //   controller: bodyController,
                         //   (String value) => setState(() => text = value),
                         //   text,
                         // ),
-                        SizedBox(
-                          height: 4.h
+                        SizedBox(height: 4.h),
+
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Do you want this to be seen by everyone?",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w900),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  _isPrivate
+                                      ? "Yes, make it public"
+                                      : "No, keep it private",
+                                  style: TextStyle(
+                                    color:
+                                        _isPrivate ? Colors.green : Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Switch(
+                                  value: _isPrivate,
+                                  onChanged: (val) {
+                                    setState(() {
+                                      _isPrivate = val;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
+
                         
-                      Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    const Text(
-      "Do you want this to be seen by everyone?",
-      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
-    ),
-    Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(_isPublic ? "Yes, make it public" : "No, keep it private",    style: TextStyle(
-    color: _isPublic ? Colors.green : Colors.red,
-    fontWeight: FontWeight.bold,
-  ),),
-        Switch(
-          value: _isPublic,
-          onChanged: (val) {
-            setState(() {
-              _isPublic = val;
-            });
-          },
-        ),
-      ],
-    ),
-  ],
-),
-                      
-                      
-                       
-                        // ElevatedButton(
-                        //   style: ElevatedButton.styleFrom(
-                        //       minimumSize: const Size.fromHeight(50),
-                        //       backgroundColor: AppColors.primaryColor,
-                        //       side: BorderSide(
-                        //         width: 1.0,
-                        //         color: AppColors.primaryColor,
-                        //       )),
-                        //   onPressed: () async {
-                        //     setState(() {
-                        //       loading = true;
-                        //       imageFile = File(imageString);
-                        //       post.body = text;
-                        //       post.title = titleController.text;
-                        //       post.genre = selectedItem;
-                        //     });
-                        //     context
-                        //         .read<CreatePostBloc>()
-                        //         .add(CreatePost(post, imageString));
-                        //   },
-                        //   child: loading
-                        //       ? const Center(child: CircularProgressIndicator())
-                        //       : const Text(
-                        //           "Publish",
-                        //           style: TextStyle(color: Colors.white),
-                        //         ),
-                        // ),
                       ],
                     ),
                   ),

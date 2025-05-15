@@ -21,9 +21,11 @@ class ArticleCard extends StatelessWidget {
   final DateTime daysago;
   final String title;
   final String genre;
+ bool? isPrivate;
 
-  const ArticleCard({
+   ArticleCard({
     super.key,
+    this.isPrivate,
     required this.articleimg,
     required this.author,
     required this.authorImg,

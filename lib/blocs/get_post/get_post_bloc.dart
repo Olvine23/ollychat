@@ -37,6 +37,11 @@ class GetPostBloc extends Bloc<GetPostEvent, GetPostState> {
     }
   }
 
+
+
+
+
+
   void _onLoadMorePosts(LoadMorePosts event, Emitter<GetPostState> emit) async {
     try {
       List<Post> morePosts =

@@ -22,14 +22,12 @@ class SectionTitle extends StatelessWidget {
           GestureDetector(
             onTap: (){
 
-         title == "Explore by topics" ? Navigator.push(context, MaterialPageRoute(builder: (context){
+         title == "What’s Your Mood Today?" ? Navigator.push(context, MaterialPageRoute(builder: (context){
           return CategoryListScreen();
-         }))  :  Navigator.push(context, MaterialPageRoute(builder: (context){
-                return AllItemsScreen(scrollController: scrollController,);
-              }));
+         }))  :  null;
 
             },
-            child: Icon(Icons.arrow_forward, color: AppColors.secondaryColor, size: 30),
+            child: title == "What’s Your Mood Today?" ?  Icon(Icons.arrow_forward, color: AppColors.secondaryColor, size: 30): Container(),
           ),
         ],
       ),

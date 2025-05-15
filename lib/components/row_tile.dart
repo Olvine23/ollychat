@@ -8,10 +8,12 @@ class RowTile extends StatelessWidget {
   final String imageUrl;
   final String title;
    final DateTime daysago;
+   bool? isPrivate;
   final String userAvatar;
   final String authorName;
-  const RowTile({
+   RowTile({
     super.key,
+    this.isPrivate,
     required this.imageUrl,
     required this.title,
     required this.userAvatar,
@@ -100,7 +102,7 @@ class RowTile extends StatelessWidget {
                     Row(
                       children: [
                         CircleAvatar(
-                          backgroundImage: NetworkImage(userAvatar),
+                          backgroundImage: NetworkImage(userAvatar == "" ? "https://img.freepik.com/free-psd/contact-icon-illustration-isolated_23-2151903337.jpg?semt=ais_hybrid&w=740" : userAvatar),
                           radius: 20,
                           backgroundColor: AppColors.primaryColor,
                         ),

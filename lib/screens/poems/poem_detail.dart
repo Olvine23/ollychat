@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-
+ 
 import 'dart:typed_data';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+
 // import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,9 +45,48 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _showScrollButton = false;
   IconData _scrollIcon = Icons.arrow_upward;
+  final PageController _pageController = PageController();
 
+  String selectedFont = 'Schoolbell'; // Default font
+  List<String> pages = [];
 
-   String selectedFont = 'Roboto'; // Default font
+    void splitPoemIntoPages() {
+    final mediaQuery = MediaQuery.of(context);
+    final textStyle = TextStyle(
+      fontSize: 18,
+      height: 1.5,
+      fontFamily: GoogleFonts.getFont(selectedFont).fontFamily,
+    );
+
+    final maxHeight = mediaQuery.size.height - 150; // Leave room for Listen button
+    final words = widget.post.body!.split(' ');
+    final buffer = StringBuffer();
+    final painter = TextPainter(
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.left,
+    );
+
+    pages.clear();
+    for (final word in words) {
+      final testText = '${buffer.toString()} $word';
+      painter.text = TextSpan(text: testText.trim(), style: textStyle);
+      painter.layout(maxWidth: mediaQuery.size.width - 40);
+
+      if (painter.size.height > maxHeight) {
+        pages.add(buffer.toString().trim());
+        buffer.clear();
+      }
+
+      buffer.write('$word ');
+    }
+
+    if (buffer.isNotEmpty) {
+      pages.add(buffer.toString().trim());
+    }
+
+    setState(() {});
+  }
+
 
   // Function to show the bottom sheet for font selection
   void openFontSelectionBottomSheet() {
@@ -58,18 +99,18 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
               selectedFont = font; // Update font when selected
             });
             Navigator.pop(context); // Close the bottom sheet
-             ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text('Switched to "$font" font'),
-      duration: Duration(seconds: 2),
-      
-    ),
-  );
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Switched to "$font" font'),
+                duration: Duration(seconds: 2),
+              ),
+            );
           },
         );
       },
     );
   }
+
   bool isBookmarked = false;
   final player = AudioPlayer(); //audio player obj that will play audio
   bool _isLoadingVoice = false; //for the progress indicator
@@ -254,14 +295,24 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
   }
 
   List<String> splitTextIntoPages(String text, {int maxCharsPerPage = 600}) {
+   List<String> words = text.split(' ');
   List<String> pages = [];
-  for (int i = 0; i < text.length; i += maxCharsPerPage) {
-    int end = (i + maxCharsPerPage < text.length) ? i + maxCharsPerPage : text.length;
-    pages.add(text.substring(i, end).trim());
-  }
-  return pages;
-}
+  String currentPage = '';
 
+  for (final word in words) {
+    if ((currentPage + word).length > maxCharsPerPage) {
+      pages.add(currentPage.trim());
+      currentPage = '';
+    }
+    currentPage += '$word ';
+  }
+
+  if (currentPage.trim().isNotEmpty) {
+    pages.add(currentPage.trim());
+  }
+
+  return pages;
+  }
 
   Future<void> playAudioFromBytes(File audioFile) async {
     final audioSource = MyCustomSource(await audioFile.readAsBytes());
@@ -411,48 +462,46 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final deltaJson = widget.post.body;
-String extractedText = '';
+    String extractedText = '';
 
-try {
-  final deltaOps = jsonDecode(deltaJson!);
-  for (var op in deltaOps) {
-    extractedText += op['insert'] ?? '';
-  }
-} catch (e) {
-  extractedText = 'Error loading post content';
-}
-
-String extractTextFromDelta(String? deltaJson) {
-  if (deltaJson == null || deltaJson.isEmpty) {
-    return '';
-  }
-
-  try {
-    final decoded = jsonDecode(deltaJson);
-
-    // If it's a list, assume it's a Quill Delta
-    if (decoded is List) {
-      String result = '';
-      for (var op in decoded) {
-        result += op['insert'] ?? '';
+    try {
+      final deltaOps = jsonDecode(deltaJson!);
+      for (var op in deltaOps) {
+        extractedText += op['insert'] ?? '';
       }
-      return result;
+    } catch (e) {
+      extractedText = 'Error loading post content';
     }
 
-    // If it's not a list, just return the original (maybe plain text)
-    return deltaJson;
-  } catch (e) {
-    // Fallback: Treat as plain text if not JSON
-    return deltaJson;
-  }
-}
+    String extractTextFromDelta(String? deltaJson) {
+      if (deltaJson == null || deltaJson.isEmpty) {
+        return '';
+      }
 
+      try {
+        final decoded = jsonDecode(deltaJson);
 
-final List<String> contentPages = splitTextIntoPages(
-  extractTextFromDelta(widget.post.body),
-  maxCharsPerPage: 600, // Tweak for UX
-);
+        // If it's a list, assume it's a Quill Delta
+        if (decoded is List) {
+          String result = '';
+          for (var op in decoded) {
+            result += op['insert'] ?? '';
+          }
+          return result;
+        }
 
+        // If it's not a list, just return the original (maybe plain text)
+        return deltaJson;
+      } catch (e) {
+        // Fallback: Treat as plain text if not JSON
+        return deltaJson;
+      }
+    }
+
+    final List<String> contentPages = splitTextIntoPages(
+      extractTextFromDelta(widget.post.body),
+      maxCharsPerPage: 600, // Tweak for UX
+    );
 
     Size size = MediaQuery.of(context).size;
     return Screenshot(
@@ -464,81 +513,91 @@ final List<String> contentPages = splitTextIntoPages(
             extendBodyBehindAppBar: true,
 
             appBar: AppBar(
-  centerTitle: true,
-  title: Text(
-    widget.post.title,
-    style: const TextStyle(
-      fontSize: 22,
-      color: Colors.white,
-      fontWeight: FontWeight.bold,
-    ),
-  ),
-  iconTheme: const IconThemeData(
-    color: Colors.white,
-    size: 30,
-  ),
-  backgroundColor: Colors.black.withOpacity(0.3),
-  elevation: 0,
-  actions: [
-    Row(
-      children: [
-        // Font Icon with Tooltip
-        IconButton(
-          icon: Icon(Icons.text_fields), // Font-related icon
-          onPressed: openFontSelectionBottomSheet, // Open font selection
-          tooltip: 'Switch Font', // Tooltip to explain action
-        ),
-        BlocListener<MyUserBloc, MyUserState>(
-          listener: (context, state) {
-            // TODO: implement listener
-            if (state.status == MyUserStatus.success) {
-              setState(() {
-                isBookmarked = state.user!.bookmarkedPosts!.contains(widget.post.id);
-              });
-            }
-          },
-          child: BlocBuilder<MyUserBloc, MyUserState>(
-            builder: (context, state) {
-              if (state.status == MyUserStatus.success) {
-                isBookmarked = state.user!.bookmarkedPosts!.contains(widget.post.id);
-              }
-              return IconButton(
-                onPressed: () {
-                  // Handle bookmark icon tap
-                  if (isBookmarked) {
-                    BlocProvider.of<MyUserBloc>(context).add(
-                        UnbookmarkPost(FirebaseAuth.instance.currentUser!.uid, widget.post.id));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Poem removed from bookmark'),
+              centerTitle: true,
+              title: Text(
+                widget.post.title,
+                style: const TextStyle(
+                  fontSize: 22,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              iconTheme: const IconThemeData(
+                color: Colors.white,
+                size: 30,
+              ),
+              backgroundColor: Colors.black.withOpacity(0.3),
+              elevation: 0,
+              actions: [
+                Row(
+                  children: [
+                    // Font Icon with Tooltip
+                    IconButton(
+                      icon: Icon(Icons.text_fields), // Font-related icon
+                      onPressed:
+                          openFontSelectionBottomSheet, // Open font selection
+                      tooltip: 'Switch Font', // Tooltip to explain action
+                    ),
+                    BlocListener<MyUserBloc, MyUserState>(
+                      listener: (context, state) {
+                        // TODO: implement listener
+                        if (state.status == MyUserStatus.success) {
+                          setState(() {
+                            isBookmarked = state.user!.bookmarkedPosts!
+                                .contains(widget.post.id);
+                          });
+                        }
+                      },
+                      child: BlocBuilder<MyUserBloc, MyUserState>(
+                        builder: (context, state) {
+                          if (state.status == MyUserStatus.success) {
+                            isBookmarked = state.user!.bookmarkedPosts!
+                                .contains(widget.post.id);
+                          }
+                          return IconButton(
+                            onPressed: () {
+                              // Handle bookmark icon tap
+                              if (isBookmarked) {
+                                BlocProvider.of<MyUserBloc>(context).add(
+                                    UnbookmarkPost(
+                                        FirebaseAuth.instance.currentUser!.uid,
+                                        widget.post.id));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Poem removed from bookmark'),
+                                  ),
+                                );
+                              } else {
+                                BlocProvider.of<MyUserBloc>(context).add(
+                                    BookmarkPost(
+                                        FirebaseAuth.instance.currentUser!.uid,
+                                        widget.post.id));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Poem added to bookmark'),
+                                  ),
+                                );
+                              }
+                              setState(() {
+                                isBookmarked = !isBookmarked;
+                              });
+                            },
+                            icon: Icon(isBookmarked
+                                ? Icons.bookmark
+                                : Icons.bookmark_border),
+                            iconSize: 30,
+                          );
+                        },
                       ),
-                    );
-                  } else {
-                    BlocProvider.of<MyUserBloc>(context).add(
-                        BookmarkPost(FirebaseAuth.instance.currentUser!.uid, widget.post.id));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Poem added to bookmark'),
-                      ),
-                    );
-                  }
-                  setState(() {
-                    isBookmarked = !isBookmarked;
-                  });
-                },
-                icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border),
-                iconSize: 30,
-              );
-            },
-          ),
-        ),
-      ],
-    ),
-  ],
-),
+                    ),
+                  ],
+                ),
+              ],
+            ),
 
             body: Stack(
               children: [
+              
                 // Background image
                 // Background image without opacity or blend mode
                 Positioned.fill(
@@ -572,148 +631,132 @@ final List<String> contentPages = splitTextIntoPages(
                 // Main content
                 SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: SingleChildScrollView(
-                      controller: _scrollController,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    padding: const EdgeInsets.all(8.0),
+                    child: Expanded(
+                      child: Stack(
                         children: [
-                          Hero(
-                            tag: widget.post.id,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: ListTile(
-                                    contentPadding: EdgeInsets.zero,
-                                    leading: CircleAvatar(
-                                      radius: 30,
-                                      backgroundImage: widget
-                                                      .post.myUser.image ==
-                                                  null ||
-                                              widget.post.myUser.image!.isEmpty
-                                          ? const NetworkImage(
-                                              'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png')
-                                          : NetworkImage(
-                                              widget.post.myUser.image!),
-                                      backgroundColor: AppColors.primaryColor,
+                          
+                          PageView.builder(
+                            controller: _pageController,
+                            itemCount: contentPages.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 0, vertical: 8),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (index == 0) ...[
+                                      Hero(
+                                        tag: widget.post.id,
+                                        child: ListTile(
+                                          trailing: ElevatedButton.icon(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  Colors.deepPurple,
+                                              shape: const StadiumBorder(),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 2),
+                                            ),
+                                            onPressed: () => playTextToSpeech(
+                                                widget.post.body ?? ''),
+                                            icon: const Icon(Icons.headphones,
+                                                color: Colors.white70),
+                                            label: const Text("Listen",
+                                                style: TextStyle(
+                                                    color: Colors.white70)),
+                                          ),
+                                          contentPadding: EdgeInsets.zero,
+                                          leading: CircleAvatar(
+                                            radius: 30,
+                                            backgroundImage: widget.post.myUser
+                                                            .image ==
+                                                        null ||
+                                                    widget.post.myUser.image!
+                                                        .isEmpty
+                                                ? const NetworkImage(
+                                                    'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png')
+                                                : NetworkImage(
+                                                    widget.post.myUser.image!),
+                                          ),
+                                          title: Text(widget.post.myUser.name,
+                                              style: const TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold)),
+                                          subtitle: Text(
+                                            formatTimeAgo(
+                                                widget.post.createdAt),
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.white70),
+                                          ),
+                                        ),
+                                      ),
+                                    
+                                    ],
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFFAF3E0),
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        child: SingleChildScrollView(
+                                          child: Text(
+                                            contentPages[index],
+                                            style: TextStyle(
+                                              wordSpacing: 5,
+                                              fontFamily: GoogleFonts.getFont(
+                                                      selectedFont)
+                                                  .fontFamily,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 16,
+                                              letterSpacing: 1,
+                                              height: 1.6,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                    title: Text(
-                                      widget.post.myUser.name,
-                                      style: const TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    subtitle: Text(
-                                      formatTimeAgo(widget.post.createdAt),
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.white70),
-                                    ),
-                                  ),
+                                    const SizedBox(height: 8),
+                                    if (index == 0 && contentPages.length > 1)
+                                      const Center(
+                                        child: Text(
+                                          'Swipe to continue →',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              fontStyle: FontStyle.italic,
+                                              color: Colors.white70),
+                                        ),
+                                      ),
+                                  ],
                                 ),
-                                // Text(
-                                //   widget.post.title,
-                                //   style: TextStyle(
-                                //     fontSize: 24,
-                                //     fontWeight: FontWeight.bold,
-                                //     color: Colors.white,
-                                //   ),
-                                // ),
-                                if (_isLoadingVoice)
-                                  const Center(
-                                      child: CircularProgressIndicator()),
-                                if (!_isLoadingVoice)
-                                  ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.deepPurple,
-                                      shape: const StadiumBorder(),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 2),
-                                    ),
-                                    onPressed: () => playTextToSpeech(
-                                        widget.post.body ?? ''),
-                                    icon: const Icon(
-                                      Icons.headphones,
-                                      color: Colors.white70,
-                                    ),
-                                    label: const Text(
-                                      "Listen",
-                                      style: TextStyle(color: Colors.white70),
-                                    ),
-                                  ),
-                              ],
-                            ),
+                              );
+                            },
                           ),
-
-                          const SizedBox(height: 16),
-
-                          widget.post.body == ''
-                              ? Container(
-                                  constraints:
-                                      const BoxConstraints(minHeight: 100),
-                                )
-                              : Container(
-                                  constraints: const BoxConstraints(
-                                      minHeight: 100, minWidth: 90),
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                      color: Color(0xFFFAF3E0), // a warm paper-like color
-                                    // gradient: const LinearGradient(
-                                    //   begin: Alignment.topLeft,
-                                    //   end: Alignment.bottomRight,
-                                    //   colors: [
-                                    //     Color.fromRGBO(0, 0, 0,
-                                    //         0.5), // Top-left: semi-transparent black
-                                    //     Color.fromRGBO(0, 0, 0,
-                                    //         0.6), // Mid: slight darkness
-                                    //     Color.fromRGBO(0, 0, 0,
-                                    //         0.6), // Bottom-right: lighter transparent black
-                                    //   ],
-                                    // ),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Text(
-                                 extractTextFromDelta(widget.post.body),
-                                    style: TextStyle(
-                                        wordSpacing: 5,
-                                        fontFamily:
-                                           GoogleFonts.getFont(selectedFont).fontFamily,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 16,
-                                        letterSpacing: 1,
-                                        height: 1.6),
+                          if (contentPages.length > 1)
+                            Positioned(
+                              bottom: 1,
+                              left: 0,
+                              right: 0,
+                              child: Center(
+                                child: SmoothPageIndicator(
+                                  controller: _pageController,
+                                  count: contentPages.length,
+                                  effect: WormEffect(
+                                    activeDotColor: Colors.white,
+                                    dotColor: Colors.white30,
+                                    dotHeight: 8,
+                                    dotWidth: 8,
                                   ),
                                 ),
-                          // ElevatedButton.icon(
-                          //   label: Text("Download Audio",
-                          //       style: TextStyle(color: Colors.white)),
-                          //   icon: Icon(Icons.download, color: Colors.white,),
-                          //   style: ElevatedButton.styleFrom(
-                          //     backgroundColor: Colors.deepPurple,
-                          //     shape: const StadiumBorder(),
-                          //     padding: const EdgeInsets.symmetric(
-                          //         horizontal: 12, vertical: 2),
-                          //   ),
-                          //   onPressed: () async {
-                          //     // await requestStoragePermission();
-                          //     //  var status = await Permission.storage.status;
-                          //     //  print(status);
-                          //     //    print(cachedAudios[widget.post.body]);
-                          //     // if (status.isGranted) {
-                          //     if (cachedAudios.containsKey(widget.post.body)) {
-                          //       print(cachedAudios[widget.post.body]);
-                          //       downloadAudioFile(
-                          //           cachedAudios[widget.post.body]!,
-                          //           'poem_audio');
-                          //     }
-                          //   },
-                            
-                          // ),
-
-                          const SizedBox(height: 24),
+                              ),
+                            ),
                         ],
                       ),
                     ),

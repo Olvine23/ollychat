@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,6 +36,21 @@ class MainHome extends StatefulWidget {
 class _MainHomeState extends State<MainHome> {
   final user = FirebaseAuth.instance.currentUser;
 
+  final List<String> quotes = [
+    "Your voice is a bridge — not a burden.",
+    "It’s okay to not have it all figured out.",
+    "Speak, even if it trembles. That’s still brave.",
+    "Your feelings are valid, even if they don’t have words yet.",
+    "Someone out there needs to hear your truth.",
+    "Expression is the first step to healing.",
+    "When you speak your truth, you give others permission to do the same."
+  ];
+
+  String getRandomQuote() {
+    final random = Random();
+    return quotes[random.nextInt(quotes.length)];
+  }
+
   bool isLoading = false;
 
   @override
@@ -49,9 +66,9 @@ class _MainHomeState extends State<MainHome> {
           style: Theme.of(context)
               .textTheme
               .titleLarge!
-              .copyWith(fontWeight: FontWeight.bold),
+              .copyWith(fontWeight: FontWeight.bold, fontSize: 25),
         ),
-        leading: Image.asset('assets/images/nobg.png', height: 100),
+        leading: Image.asset('assets/images/nobg.png', height: 150),
         actions: [
           Icon(Icons.record_voice_over),
           //  Switch(
@@ -113,51 +130,65 @@ class _MainHomeState extends State<MainHome> {
                     //   padding: const EdgeInsets.symmetric(horizontal: 16.0,),
                     //   child: HomeCarousel(posts: state.posts!),
                     // ),
-                    Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              BlocBuilder<MyUserBloc, MyUserState>(
-                                builder: (context, state) {
-                                  if (state.status == MyUserStatus.loading) {
-                                    return const CircularProgressIndicator();
-                                  } else if (state.status == MyUserStatus.failure) {
-                                    return const Text("Error loading user data");
-                                  } else if (state.status == MyUserStatus.success) {
-                                    return Text(
-                                      'Welcome back, ${state.user!.name} 👋',
-                                      style: TextStyle(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    );
-                                  }
-                                  return Text(
-                                    'Welcome back, Olvine 👋',
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  );
-                                },
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'Here’s what’s new for you',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.grey,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 12),
+                        BlocBuilder<MyUserBloc, MyUserState>(
+                          builder: (context, state) {
+                            if (state.status == MyUserStatus.loading) {
+                              return const CircularProgressIndicator();
+                            } else if (state.status == MyUserStatus.failure) {
+                              return const Text("Error loading user data");
+                            } else if (state.status == MyUserStatus.success) {
+                              return Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Text(
+                                  'Welcome back, ${state.user!.name} 👋',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              );
+                            }
+                            return const Text("No data available");
+                          },
+                        ),
+                        SizedBox(height: 4),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16,
                           ),
-                        ],
-                      ),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context)
+                                  .size
+                                  .width, // Prevents overflow
+                            ),
+                            child: Text(
+                              getRandomQuote(),
+                              softWrap: true,
+                              overflow: TextOverflow.visible,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 2.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text("Our pick for you",
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .copyWith(
+                                  fontWeight: FontWeight.bold, fontSize: 18)),
                     ),
                     const SizedBox(height: 10),
 
@@ -246,6 +277,25 @@ class _MainHomeState extends State<MainHome> {
                             },
                           ),
                         ),
+                      )
+                    else
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        child: Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "No posts available at the moment.",
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.grey),
+                            ),
+                          ),
+                        ),
                       ),
 
                     Padding(
@@ -265,15 +315,24 @@ class _MainHomeState extends State<MainHome> {
     if (state.status == GetPostStatus.success) {
       final List<Post> myArticles =
           state.posts!.where((post) => post.myUser.id == user!.uid).toList();
-      final List<Post> recentArticles =
-          state.posts!.where((post) => post.myUser.id != user!.uid).toList();
+      final List<Post> recentArticles = state.posts!
+          .where(
+              (post) => post.myUser.id != user!.uid && post.isPrivate != true)
+          .toList();
+
+      final List<Post> privateArticles = state.posts!
+          .where(
+              (post) => post.myUser.id == user!.uid && post.isPrivate == true)
+          .toList();
+
+      print(privateArticles.length);
 
       return Column(
         children: [
           _buildArticleSection(context, 'Recent Articles', recentArticles),
-          SizedBox(
-            height: 2.h,
-          ),
+          // SizedBox(
+          //   height: 0.5.h,
+          // ),
           _buildArticleSection(context, 'My Articles', myArticles),
         ],
       );

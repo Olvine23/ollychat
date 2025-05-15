@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,9 @@ import 'package:olly_chat/components/custom_textfield.dart';
 import 'package:olly_chat/main.dart';
 import 'package:olly_chat/screens/poems/snippies/screenshotsnip.dart';
 import 'package:olly_chat/screens/poems/snippies/snippy.dart';
+import 'package:olly_chat/screens/poems/widgets/unsplash_widget.dart';
 import 'package:olly_chat/theme/colors.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:post_repository/post_repository.dart';
 
 import 'package:user_repository/user_repository.dart';
@@ -37,7 +39,7 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
   File? imageFile;
   String? imageUrl;
   bool loading = false;
-  bool _isPublic = true;
+  bool _isPrivate = false;
 
   late Post post;
   late String imageString = '';
@@ -52,26 +54,126 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
     super.initState();
   }
 
+
+  void _showImagePickerOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text("Choose from Gallery"),
+              onTap: () async {
+                Navigator.pop(context);
+                final ImagePicker picker = ImagePicker();
+                final XFile? image = await picker.pickImage(
+                  source: ImageSource.gallery,
+                  imageQuality: 100,
+                );
+                if (image != null) {
+                  CroppedFile? croppedFile = await ImageCropper().cropImage(
+                    sourcePath: image.path,
+                    uiSettings: [
+                      AndroidUiSettings(
+                        toolbarTitle: 'Cropper',
+                        toolbarColor: Theme.of(context).colorScheme.primary,
+                        toolbarWidgetColor: Colors.white,
+                        initAspectRatio: CropAspectRatioPreset.original,
+                        lockAspectRatio: false,
+                      ),
+                     IOSUiSettings(title: 'Cropper'),
+                    ],
+                  );
+                  if (croppedFile != null) {
+                    setState(() {
+                      imageFile = File(croppedFile.path);
+                      imageString = croppedFile.path;
+                    });
+                  }
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.image_search),
+              title: const Text("Search from Unsplash"),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UnsplashImagePicker(
+                        onImageSelected: (url) async {
+                          final file = await _downloadImage(url);
+                          setState(() {
+                            imageFile = file;
+                            imageString = file.path;
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                  ),
+                );
+                
+                // showModalBottomSheet(
+                //   context: context,
+                //   isScrollControlled: true,
+                //   builder: (_) {
+                //     return SizedBox(
+                //       height: MediaQuery.of(context).size.height * 0.85,
+                //       child: UnsplashImagePicker(
+                //         onImageSelected: (url) async {
+                //           final file = await _downloadImage(url);
+                //           setState(() {
+                //             imageFile = file;
+                //             imageString = file.path;
+                //           });
+                //           Navigator.pop(context);
+                //         },
+                //       ),
+                //     );
+                //   },
+                // );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<File> _downloadImage(String url) async {
+    final response = await http.get(Uri.parse(url));
+    final bytes = response.bodyBytes;
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg');
+    return await file.writeAsBytes(bytes);
+  }
   final titleController = TextEditingController();
 
   final bodyController = TextEditingController();
   String description = 'Article goes here ';
   List<String> topics = [
-    "Love",
-    "Art",
-    "Sadness",
-    'Health',
-    'Emotional',
-    'Entertainment',
-    'Sports',
-    'Education',
-    'Travel',
-    'Food',
-    'Lifestyle',
-    'Other (Add new)'
+   "Healing",
+  "Heartbreak",
+  "Hope",
+  "Growth",
+  "Letting Go",
+  "Gratitude",
+  "Grief",
+  "Self-Discovery",
+  "Forgiveness",
+  "Joy",
+  "Loneliness",
+  "Fear",
+  'Other (Add new)'
   ];
 
-  String selectedGenre = "Love";
+  String selectedGenre = "Joy";
 
   void _showAddGenreDialog(BuildContext context) {
     String newGenre = '';
@@ -156,7 +258,7 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
     );
   }
 
-  String selectedItem = "Love";
+  String selectedItem = "Joy";
   final gemmy = GoogleGemini(apiKey: apiKey!);
   @override
   Widget build(BuildContext context) {
@@ -220,7 +322,7 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                           imageFile = File(imageString);
                           post.title = titleController.text;
                           post.genre = selectedItem;
-                          post.isPrivate = _isPublic;
+                          post.isPrivate = _isPrivate;
                           post.body = jsonEncode(
                               _controller.document.toDelta().toJson());
                         });
@@ -263,47 +365,48 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
                         ),
                         const SizedBox(height: 8),
                         GestureDetector(
-                          onTap: () async {
-                            final ImagePicker picker = ImagePicker();
-                            final XFile? image = await picker.pickImage(
-                                source: ImageSource.gallery, imageQuality: 100);
+                           onTap: () => _showImagePickerOptions(context),
+                          // onTap: () async {
+                          //   final ImagePicker picker = ImagePicker();
+                          //   final XFile? image = await picker.pickImage(
+                          //       source: ImageSource.gallery, imageQuality: 100);
 
-                            if (image != null) {
-                              CroppedFile? croppedFile =
-                                  await ImageCropper().cropImage(
-                                      sourcePath: image.path,
-                                      //     aspectRatioPresets: [
-                                      //   CropAspectRatioPreset.square
-                                      // ],
-                                      uiSettings: [
-                                    AndroidUiSettings(
-                                        toolbarTitle: 'Cropper',
-                                        toolbarColor: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        toolbarWidgetColor: Colors.white,
-                                        initAspectRatio:
-                                            CropAspectRatioPreset.original,
-                                        lockAspectRatio: false),
-                                    IOSUiSettings(
-                                      title: 'Cropper',
-                                    ),
-                                  ]);
+                          //   if (image != null) {
+                          //     CroppedFile? croppedFile =
+                          //         await ImageCropper().cropImage(
+                          //             sourcePath: image.path,
+                          //             //     aspectRatioPresets: [
+                          //             //   CropAspectRatioPreset.square
+                          //             // ],
+                          //             uiSettings: [
+                          //           AndroidUiSettings(
+                          //               toolbarTitle: 'Cropper',
+                          //               toolbarColor: Theme.of(context)
+                          //                   .colorScheme
+                          //                   .primary,
+                          //               toolbarWidgetColor: Colors.white,
+                          //               initAspectRatio:
+                          //                   CropAspectRatioPreset.original,
+                          //               lockAspectRatio: false),
+                          //           IOSUiSettings(
+                          //             title: 'Cropper',
+                          //           ),
+                          //         ]);
 
-                              if (croppedFile != null) {
-                                print(imageString);
-                                //            final ref = FirebaseStorage.instance.ref().child('thumbnail').child('${post.id}.jpg');
-                                //  await ref.putFile(imageFile!);
-                                //  imageUrl = await ref.getDownloadURL();
+                          //     if (croppedFile != null) {
+                          //       print(imageString);
+                          //       //            final ref = FirebaseStorage.instance.ref().child('thumbnail').child('${post.id}.jpg');
+                          //       //  await ref.putFile(imageFile!);
+                          //       //  imageUrl = await ref.getDownloadURL();
 
-                                setState(() {
-                                  imageString = croppedFile.path;
-                                  imageFile = File(croppedFile.path);
-                                  // context.read<CreatePostBloc>().add(CreatePost(post, imageString));
-                                });
-                              }
-                            }
-                          },
+                          //       setState(() {
+                          //         imageString = croppedFile.path;
+                          //         imageFile = File(croppedFile.path);
+                          //         // context.read<CreatePostBloc>().add(CreatePost(post, imageString));
+                          //       });
+                          //     }
+                          //   }
+                          // },
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(16),
                             child: Container(
@@ -498,15 +601,15 @@ class _AddPoemScreenState extends State<AddPoemScreen> {
     Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(_isPublic ? "Yes, make it public" : "No, keep it private",    style: TextStyle(
-    color: _isPublic ? Colors.green : Colors.red,
+        Text(_isPrivate ? "Yes, make it public" : "No, keep it private",    style: TextStyle(
+    color: _isPrivate ? Colors.green : Colors.red,
     fontWeight: FontWeight.bold,
   ),),
         Switch(
-          value: _isPublic,
+          value: _isPrivate,
           onChanged: (val) {
             setState(() {
-              _isPublic = val;
+              _isPrivate= val;
             });
           },
         ),
