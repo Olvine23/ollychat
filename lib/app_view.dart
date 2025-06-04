@@ -12,6 +12,9 @@ import 'package:olly_chat/screens/welcome_screen.dart';
 import 'package:olly_chat/theme/app_theme.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:post_repository/post_repository.dart';
+import 'package:user_repository/user_repository.dart'; // <-- Add this for FirebaseUserRepo
+import 'package:firebase_auth/firebase_auth.dart';     // <-- Add this for FirebaseAuth
+
 import 'blocs/updateuserinfo/update_user_info_bloc.dart';
 import 'screens/home_screen.dart';
 
@@ -29,15 +32,30 @@ class _MyAppViewState extends State<MyAppView> {
   void initState() {
     super.initState();
     _loadThemeMode();
+    _handleFCMToken(); // <-- Call the FCM logic on init
   }
+
+ Future<void> _handleFCMToken() async {
+  final currentUser = FirebaseAuth.instance.currentUser;
+  if (currentUser != null) {
+    final userRepo = FirebaseUserRepo();
+    final token = await userRepo.saveFcmToken(currentUser.uid);
+    print('FCM Token for ${currentUser.uid}: $token'); // Debug print
+    userRepo.startFCMTokenRefreshListener(currentUser.uid);
+  } else {
+    print('No user is currently logged in.');
+  }
+}
+
 
   Future<void> _loadThemeMode() async {
     final prefs = await SharedPreferences.getInstance();
     final themeModeString = prefs.getString('themeMode') ?? 'system';
     setState(() {
       _themeMode = ThemeMode.values.firstWhere(
-          (e) => e.toString() == 'ThemeMode.$themeModeString',
-          orElse: () => ThemeMode.system);
+        (e) => e.toString() == 'ThemeMode.$themeModeString',
+        orElse: () => ThemeMode.system,
+      );
     });
   }
 
@@ -67,39 +85,32 @@ class _MyAppViewState extends State<MyAppView> {
             if (state.status == AuthenticationStatus.authenticated) {
               return MultiBlocProvider(
                 providers: [
-                  // BlocProvider<ConnectivityBloc>(
-                  //   create: (BuildContext context) => ConnectivityBloc(),
-                  // ),
                   BlocProvider(
                     create: (context) => SignInBloc(
-                        userRepository:
-                            context.read<AuthenticationBloc>().userRepository),
+                      userRepository: context.read<AuthenticationBloc>().userRepository,
+                    ),
                   ),
                   BlocProvider(
-                      create: (context) => UpdateUserInfoBloc(
-                          userRepository: context
-                              .read<AuthenticationBloc>()
-                              .userRepository, postRepository: FirebasePostRepository())),
+                    create: (context) => UpdateUserInfoBloc(
+                      userRepository: context.read<AuthenticationBloc>().userRepository,
+                      postRepository: FirebasePostRepository(),
+                    ),
+                  ),
                   BlocProvider(
-                      create: (context) => MyUserBloc(
-                          myUserRepository:
-                              context.read<AuthenticationBloc>().userRepository)
-                        ..add(GetMyUser(
-                            myUserId: context
-                                .read<AuthenticationBloc>()
-                                .state
-                                .user!
-                                .uid))),
+                    create: (context) => MyUserBloc(
+                      myUserRepository: context.read<AuthenticationBloc>().userRepository,
+                    )..add(GetMyUser(
+                        myUserId: context.read<AuthenticationBloc>().state.user!.uid,
+                      )),
+                  ),
                   BlocProvider.value(
                     value: context.read<GetPostBloc>()..add(GetPosts()),
-                  )
+                  ),
                 ],
                 child: HomeScreen(toggleTheme: _toggleTheme),
               );
             } else {
               return SwipePage();
-              //initially
-              // return WelcomeScreen();
             }
           },
         ),

@@ -224,6 +224,30 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
     }
   }
 
+  
+Future<void> shareRemoteImage(String imageUrl) async {
+  try {
+    // 1. Download the image
+    final response = await http.get(Uri.parse(imageUrl));
+    if (response.statusCode != 200) {
+      throw Exception('Failed to download image');
+    }
+
+    // 2. Save to a temporary file
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/shared_image.jpg');
+    await file.writeAsBytes(response.bodyBytes);
+
+    // 3. Share using share_plus
+    await Share.shareXFiles(
+      [XFile(file.path)],
+      text: 'Shared from VoiceHub ✨',
+    );
+  } catch (e) {
+    print('Error sharing image: $e');
+  }
+}
+
   //For the Text To Speech
   Future<void> playTextToSpeech(String text) async {
     // var connectivityResult = await Connectivity().checkConnectivity();
@@ -248,7 +272,7 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
       _isLoadingVoice = true;
     });
 
-    String voiceRachel = 'aEO01A4wXwd1O8GPgGlF'; // Replace if needed
+    String voiceRachel = '6OzrBCQf8cjERkYgzSg8'; // Replace if needed
 
     String url = 'https://api.elevenlabs.io/v1/text-to-speech/$voiceRachel';
     final response = await http.post(
@@ -516,7 +540,8 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
               centerTitle: true,
               title: Text(
                 widget.post.title,
-                style: const TextStyle(
+                style: TextStyle(
+                  fontFamily: GoogleFonts.getFont(selectedFont).fontFamily,
                   fontSize: 22,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -533,7 +558,7 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                   children: [
                     // Font Icon with Tooltip
                     IconButton(
-                      icon: Icon(Icons.text_fields), // Font-related icon
+                      icon: Icon(Icons.text_fields, color: AppColors.secondaryColor,), // Font-related icon
                       onPressed:
                           openFontSelectionBottomSheet, // Open font selection
                       tooltip: 'Switch Font', // Tooltip to explain action
@@ -584,7 +609,7 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                             },
                             icon: Icon(isBookmarked
                                 ? Icons.bookmark
-                                : Icons.bookmark_border),
+                                : Icons.bookmark_border,  color: AppColors.secondaryColor,),
                             iconSize: 30,
                           );
                         },
@@ -594,7 +619,15 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                 ),
               ],
             ),
-
+         floatingActionButton: FloatingActionButton(
+          child:  Icon(Icons.share, color:Colors.white,),
+          onPressed: () async{
+          await  shareRemoteImage(widget.post.thumbnail!);
+            // Share.share(
+            //   'Check out this poem: ${widget.post.title} \n\n${widget.post.body}',
+            //   subject: '*Poem from VoiceHub*',
+            // );
+      }),
             body: Stack(
               children: [
               
@@ -632,133 +665,133 @@ class _PoemDetailScreenState extends State<PoemDetailScreen> {
                 SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Expanded(
-                      child: Stack(
-                        children: [
-                          
-                          PageView.builder(
-                            controller: _pageController,
-                            itemCount: contentPages.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 0, vertical: 8),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    if (index == 0) ...[
-                                      Hero(
-                                        tag: widget.post.id,
-                                        child: ListTile(
-                                          trailing: ElevatedButton.icon(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  Colors.deepPurple,
-                                              shape: const StadiumBorder(),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 2),
-                                            ),
-                                            onPressed: () => playTextToSpeech(
-                                                widget.post.body ?? ''),
-                                            icon: const Icon(Icons.headphones,
-                                                color: Colors.white70),
-                                            label: const Text("Listen",
-                                                style: TextStyle(
-                                                    color: Colors.white70)),
+                    child: Stack(
+                      children: [
+                        
+                        PageView.builder(
+                          controller: _pageController,
+                          itemCount: contentPages.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 0, vertical: 8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (index == 0) ...[
+                                    Hero(
+                                      tag: widget.post.id,
+                                      child: ListTile(
+                                        trailing: ElevatedButton.icon(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                Colors.deepPurple,
+                                            shape: const StadiumBorder(),
+                                            padding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 12,
+                                                    vertical: 2),
                                           ),
-                                          contentPadding: EdgeInsets.zero,
-                                          leading: CircleAvatar(
-                                            radius: 30,
-                                            backgroundImage: widget.post.myUser
-                                                            .image ==
-                                                        null ||
-                                                    widget.post.myUser.image!
-                                                        .isEmpty
-                                                ? const NetworkImage(
-                                                    'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png')
-                                                : NetworkImage(
-                                                    widget.post.myUser.image!),
-                                          ),
-                                          title: Text(widget.post.myUser.name,
-                                              style: const TextStyle(
-                                                  fontSize: 20,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold)),
-                                          subtitle: Text(
-                                            formatTimeAgo(
-                                                widget.post.createdAt),
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.w700,
-                                                color: Colors.white70),
-                                          ),
+                                          onPressed: () => playTextToSpeech(
+                                              widget.post.body ?? ''),
+                                          icon: const Icon(Icons.headphones,
+                                              color: Colors.white70),
+                                          label:  Text("Listen",
+                                              style: TextStyle(
+                                                 fontFamily: GoogleFonts.getFont(selectedFont).fontFamily,
+                                                  color: Colors.white)),
+                                        ),
+                                        contentPadding: EdgeInsets.zero,
+                                        leading: CircleAvatar(
+                                          radius: 30,
+                                          backgroundImage: widget.post.myUser
+                                                          .image ==
+                                                      null ||
+                                                  widget.post.myUser.image!
+                                                      .isEmpty
+                                              ? const NetworkImage(
+                                                  'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png')
+                                              : NetworkImage(
+                                                  widget.post.myUser.image!),
+                                        ),
+                                        title: Text(widget.post.myUser.name,
+                                            style: TextStyle(
+                                               fontFamily: GoogleFonts.getFont(selectedFont).fontFamily,
+                                                fontSize: 20,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold)),
+                                        subtitle: Text(
+                                          formatTimeAgo(
+                                              widget.post.createdAt),
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white70),
                                         ),
                                       ),
-                                    
-                                    ],
-                                    Expanded(
-                                      child: Container(
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFFFAF3E0),
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                        child: SingleChildScrollView(
-                                          child: Text(
-                                            contentPages[index],
-                                            style: TextStyle(
-                                              wordSpacing: 5,
-                                              fontFamily: GoogleFonts.getFont(
-                                                      selectedFont)
-                                                  .fontFamily,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 16,
-                                              letterSpacing: 1,
-                                              height: 1.6,
-                                            ),
+                                    ),
+                                  
+                                  ],
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFFAF3E0),
+                                        borderRadius:
+                                            BorderRadius.circular(20),
+                                      ),
+                                      child: SingleChildScrollView(
+                                        child: Text(
+                                          contentPages[index],
+                                          style: TextStyle(
+                                            wordSpacing: 5,
+                                            fontFamily: GoogleFonts.getFont(
+                                                    selectedFont)
+                                                .fontFamily,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 16,
+                                            letterSpacing: 1,
+                                            height: 1.6,
                                           ),
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
-                                    if (index == 0 && contentPages.length > 1)
-                                      const Center(
-                                        child: Text(
-                                          'Swipe to continue →',
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              fontStyle: FontStyle.italic,
-                                              color: Colors.white70),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                          if (contentPages.length > 1)
-                            Positioned(
-                              bottom: 1,
-                              left: 0,
-                              right: 0,
-                              child: Center(
-                                child: SmoothPageIndicator(
-                                  controller: _pageController,
-                                  count: contentPages.length,
-                                  effect: WormEffect(
-                                    activeDotColor: Colors.white,
-                                    dotColor: Colors.white30,
-                                    dotHeight: 8,
-                                    dotWidth: 8,
                                   ),
+                                  const SizedBox(height: 8),
+                                  if (index == 0 && contentPages.length > 1)
+                                    const Center(
+                                      child: Text(
+                                        'Swipe to continue →',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontStyle: FontStyle.italic,
+                                            color: Colors.white70),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                        if (contentPages.length > 1)
+                          Positioned(
+                            bottom: 1,
+                            left: 0,
+                            right: 0,
+                            child: Center(
+                              child: SmoothPageIndicator(
+                                controller: _pageController,
+                                count: contentPages.length,
+                                effect: WormEffect(
+                                  activeDotColor: Colors.white,
+                                  dotColor: Colors.white30,
+                                  dotHeight: 8,
+                                  dotWidth: 8,
                                 ),
                               ),
                             ),
-                        ],
-                      ),
+                          ),
+                      ],
                     ),
                   ),
                 ),

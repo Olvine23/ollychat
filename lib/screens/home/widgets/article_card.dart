@@ -21,9 +21,9 @@ class ArticleCard extends StatelessWidget {
   final DateTime daysago;
   final String title;
   final String genre;
- bool? isPrivate;
+  bool? isPrivate;
 
-   ArticleCard({
+  ArticleCard({
     super.key,
     this.isPrivate,
     required this.articleimg,
@@ -35,26 +35,25 @@ class ArticleCard extends StatelessWidget {
     required this.authorId,
   });
 
- String formatTimeAgo(DateTime timestamp) {
-  Duration difference = DateTime.now().difference(timestamp);
+  String formatTimeAgo(DateTime timestamp) {
+    Duration difference = DateTime.now().difference(timestamp);
 
-  if (difference.inDays >= 365) {
-    int years = difference.inDays ~/ 365;
-    return '$years ${years == 1 ? 'year ago' : 'years ago'}';
-  } else if (difference.inDays >= 30) {
-    int months = difference.inDays ~/ 30;
-    return '$months ${months == 1 ? 'month ago' : 'months ago'}';
-  } else if (difference.inDays > 0) {
-    return '${difference.inDays} ${difference.inDays == 1 ? 'day ago' : 'days ago'}';
-  } else if (difference.inHours > 0) {
-    return '${difference.inHours} ${difference.inHours == 1 ? 'hour ago' : 'hours ago'}';
-  } else if (difference.inMinutes > 0) {
-    return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute ago' : 'minutes ago'}';
-  } else {
-    return 'just now';
+    if (difference.inDays >= 365) {
+      int years = difference.inDays ~/ 365;
+      return '$years ${years == 1 ? 'year ago' : 'years ago'}';
+    } else if (difference.inDays >= 30) {
+      int months = difference.inDays ~/ 30;
+      return '$months ${months == 1 ? 'month ago' : 'months ago'}';
+    } else if (difference.inDays > 0) {
+      return '${difference.inDays} ${difference.inDays == 1 ? 'day ago' : 'days ago'}';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} ${difference.inHours == 1 ? 'hour ago' : 'hours ago'}';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute ago' : 'minutes ago'}';
+    } else {
+      return 'just now';
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +76,9 @@ class ArticleCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Stack(children: [
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(20),
                           child: CachedNetworkImage(
@@ -85,12 +86,13 @@ class ArticleCard extends StatelessWidget {
                             memCacheWidth: 500,
                             imageUrl: articleimg,
                             placeholder: (context, url) => Center(
-                                child: Lottie.asset('assets/lotti/imageload.json')),
+                                child: Lottie.asset(
+                                    'assets/lotti/imageload.json')),
                             errorWidget: (context, url, error) =>
                                 const Icon(Icons.error),
                             fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
+                            // width: double.infinity,
+                            // height: double.infinity,
                           ),
                         ),
                         Positioned.fill(
@@ -102,7 +104,9 @@ class ArticleCard extends StatelessWidget {
                                 end: Alignment.bottomCenter,
                                 colors: [
                                   Colors.transparent,
-                                   isDark ?  Colors.white.withOpacity(0.6) : Colors.black.withOpacity(0.8),
+                                  isDark
+                                      ? Colors.white.withOpacity(0.6)
+                                      : Colors.black.withOpacity(0.8),
                                 ],
                               ),
                             ),
@@ -155,11 +159,13 @@ class ArticleCard extends StatelessWidget {
                               postRepository: FirebasePostRepository()),
                         ),
                         BlocProvider<MyUserBloc>(
-                          create: (context) => MyUserBloc(myUserRepository: FirebaseUserRepo()),
+                          create: (context) =>
+                              MyUserBloc(myUserRepository: FirebaseUserRepo()),
                         ),
                       ],
                       child: ProfileScreen(
-                        userId: authorId, toggleTheme: (ThemeMode ) {  },
+                        userId: authorId,
+                        toggleTheme: (ThemeMode) {},
                       ),
                     );
                   }));
@@ -183,9 +189,10 @@ class ArticleCard extends StatelessWidget {
                         child: Text(
                           author,
                           textAlign: TextAlign.justify,
-                          style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                            
-                              fontWeight: FontWeight.bold),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall!
+                              .copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -197,12 +204,10 @@ class ArticleCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(
                         formatTimeAgo(daysago),
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall!
-                            .copyWith(
-                                color: isDark ? Colors.white54 :Colors.black54,
-                              fontWeight: FontWeight.bold, fontSize: 10.dp),
+                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                            color: isDark ? Colors.white54 : Colors.black54,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10.dp),
                       ),
                     ))
                   ],
@@ -211,9 +216,10 @@ class ArticleCard extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(width: 2.5.w,)
+        SizedBox(
+          width: 2.5.w,
+        )
       ],
     );
   }
 }
- 

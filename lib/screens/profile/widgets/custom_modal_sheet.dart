@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:lottie/lottie.dart';
+import 'package:olly_chat/app_view.dart';
 import 'package:olly_chat/blocs/create_post/create_post_bloc.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/blocs/myuserbloc/myuser_bloc.dart';
@@ -26,7 +28,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
     return BlocBuilder<MyUserBloc, MyUserState>(builder: (context, state) {
       if (state.status == MyUserStatus.success) {
         return Container(
-          height: 240,
+        
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.only(
@@ -65,78 +67,80 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[300], // Background color
+                SizedBox(height: 8),
+                Flexible (
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey[300], // Background color
+                        ),
+                        onPressed: () async {
+                          var newPost = await Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return BlocProvider<CreatePostBloc>(
+                              create: (context) => CreatePostBloc(
+                                  postRepositry: FirebasePostRepository()),
+                              child: AddWithAI(state.user!),
+                            );
+                          }));
+                  
+                          if (newPost != null) {
+                            setState(() {
+                              context
+                                  .read<GetPostBloc>()
+                                  .state
+                                  .posts!
+                                  .insert(0, newPost);
+                            });
+                  
+                            widget.onModalClosed(); // Notify parent
+                            Navigator.of(context).pop(); // Close modal sheet
+                          }
+                        },
+                        child: Text(
+                          'Write with AI? ',
+                          style: TextStyle(color: Colors.black),
+                        ),
                       ),
-                      onPressed: () async {
-                        var newPost = await Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return BlocProvider<CreatePostBloc>(
-                            create: (context) => CreatePostBloc(
-                                postRepositry: FirebasePostRepository()),
-                            child: AddWithAI(state.user!),
-                          );
-                        }));
-
-                        if (newPost != null) {
-                          setState(() {
-                            context
-                                .read<GetPostBloc>()
-                                .state
-                                .posts!
-                                .insert(0, newPost);
-                          });
-
-                          widget.onModalClosed(); // Notify parent
-                          Navigator.of(context).pop(); // Close modal sheet
-                        }
-                      },
-                      child: Text(
-                        'Write with AI? ',
-                        style: TextStyle(color: Colors.black),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context)
+                              .colorScheme
+                              .primary, // Background color
+                        ),
+                        onPressed: () async {
+                          var newPost = await Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return BlocProvider<CreatePostBloc>(
+                              create: (context) => CreatePostBloc(
+                                  postRepositry: FirebasePostRepository()),
+                              child: AddPoemScreen(state.user!),
+                            );
+                          }));
+                  
+                          if (newPost != null) {
+                            setState(() {
+                              context
+                                  .read<GetPostBloc>()
+                                  .state
+                                  .posts!
+                                  .insert(0, newPost);
+                            });
+                            widget.onModalClosed(); // Notify parent
+                            Navigator.of(context).pop(); // Close modal sheet
+                          }
+                        },
+                        child: Text(
+                          'Don\'t use AI',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context)
-                            .colorScheme
-                            .primary, // Background color
-                      ),
-                      onPressed: () async {
-                        var newPost = await Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return BlocProvider<CreatePostBloc>(
-                            create: (context) => CreatePostBloc(
-                                postRepositry: FirebasePostRepository()),
-                            child: AddPoemScreen(state.user!),
-                          );
-                        }));
-
-                        if (newPost != null) {
-                          setState(() {
-                            context
-                                .read<GetPostBloc>()
-                                .state
-                                .posts!
-                                .insert(0, newPost);
-                          });
-                          widget.onModalClosed(); // Notify parent
-                          Navigator.of(context).pop(); // Close modal sheet
-                        }
-                      },
-                      child: Text(
-                        'Don\'t use AI',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 5.h),
               ],
             ),
           ),

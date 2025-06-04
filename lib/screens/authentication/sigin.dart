@@ -233,6 +233,9 @@ class _SignInScreenState extends State<SignInScreen> {
                                         color: Colors.white70),
                                   ),
                                   controller: passwordController,
+                                  maxLines: 1,
+
+                                  
                                   hintText: 'Password',
                                   obscureText: obscureText,
                                   keyboardType: TextInputType.visiblePassword,

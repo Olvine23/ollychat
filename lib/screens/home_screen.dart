@@ -113,9 +113,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       });
                     }
                   });
-            } else if (state.status == MyUserStatus.loading) {
-              return CircularProgressIndicator();
-            }
+            } 
+            
+            // else if (state.status == MyUserStatus.loading) {
+            //   return CircularProgressIndicator();
+            // }
 
             return Container();
           }),

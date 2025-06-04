@@ -7,13 +7,16 @@ import 'package:google_gemini/google_gemini.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
+import 'package:http/http.dart' as http;
 // import 'package:markdown_editable_textinput/markdown_text_input.dart';
 import 'package:olly_chat/blocs/create_post/create_post_bloc.dart';
 import 'package:olly_chat/blocs/get_post/get_post_bloc.dart';
 import 'package:olly_chat/components/custom_textfield.dart';
 import 'package:olly_chat/main.dart';
+import 'package:olly_chat/screens/poems/widgets/unsplash_widget.dart';
 import 'package:olly_chat/services/gemini_service.dart';
 import 'package:olly_chat/theme/colors.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:post_repository/post_repository.dart';
 import 'package:user_repository/user_repository.dart';
 
@@ -35,6 +38,105 @@ class _AddWithAIState extends State<AddWithAI> {
   late String imageString = '';
   String text = '';
   bool _isPrivate = false;
+
+  void _showImagePickerOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text("Choose from Gallery"),
+              onTap: () async {
+                Navigator.pop(context);
+                final ImagePicker picker = ImagePicker();
+                final XFile? image = await picker.pickImage(
+                  source: ImageSource.gallery,
+                  imageQuality: 100,
+                );
+                if (image != null) {
+                  CroppedFile? croppedFile = await ImageCropper().cropImage(
+                    sourcePath: image.path,
+                    uiSettings: [
+                      AndroidUiSettings(
+                        toolbarTitle: 'Cropper',
+                        toolbarColor: Theme.of(context).colorScheme.primary,
+                        toolbarWidgetColor: Colors.white,
+                        initAspectRatio: CropAspectRatioPreset.original,
+                        lockAspectRatio: false,
+                      ),
+                     IOSUiSettings(title: 'Cropper'),
+                    ],
+                  );
+                  if (croppedFile != null) {
+                    setState(() {
+                      imageFile = File(croppedFile.path);
+                      imageString = croppedFile.path;
+                    });
+                  }
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.image_search),
+              title: const Text("Search from Unsplash"),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UnsplashImagePicker(
+                        onImageSelected: (url) async {
+                          final file = await _downloadImage(url);
+                          setState(() {
+                            imageFile = file;
+                            imageString = file.path;
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                  ),
+                );
+                
+                // showModalBottomSheet(
+                //   context: context,
+                //   isScrollControlled: true,
+                //   builder: (_) {
+                //     return SizedBox(
+                //       height: MediaQuery.of(context).size.height * 0.85,
+                //       child: UnsplashImagePicker(
+                //         onImageSelected: (url) async {
+                //           final file = await _downloadImage(url);
+                //           setState(() {
+                //             imageFile = file;
+                //             imageString = file.path;
+                //           });
+                //           Navigator.pop(context);
+                //         },
+                //       ),
+                //     );
+                //   },
+                // );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<File> _downloadImage(String url) async {
+    final response = await http.get(Uri.parse(url));
+    final bytes = response.bodyBytes;
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg');
+    return await file.writeAsBytes(bytes);
+  }
 
   @override
   void initState() {
@@ -288,40 +390,41 @@ class _AddWithAIState extends State<AddWithAI> {
                         ),
                         const SizedBox(height: 8),
                         GestureDetector(
-                          onTap: () async {
-                            final ImagePicker picker = ImagePicker();
-                            final XFile? image = await picker.pickImage(
-                                source: ImageSource.gallery, imageQuality: 100);
-                            if (image != null) {
-                              CroppedFile? croppedFile =
-                                  await ImageCropper().cropImage(
-                                      sourcePath: image.path,
-                                      //     aspectRatioPresets: [
-                                      //   CropAspectRatioPreset.square
-                                      // ],
-                                      uiSettings: [
-                                    AndroidUiSettings(
-                                        toolbarTitle: 'Cropper',
-                                        toolbarColor: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        toolbarWidgetColor: Colors.white,
-                                        initAspectRatio:
-                                            CropAspectRatioPreset.original,
-                                        lockAspectRatio: false),
-                                    IOSUiSettings(
-                                      title: 'Cropper',
-                                    ),
-                                  ]);
-                              if (croppedFile != null) {
-                                print(imageString);
-                                setState(() {
-                                  imageString = croppedFile.path;
-                                  imageFile = File(croppedFile.path);
-                                });
-                              }
-                            }
-                          },
+                          onTap: () => _showImagePickerOptions(context),
+                          // onTap: () async {
+                          //   final ImagePicker picker = ImagePicker();
+                          //   final XFile? image = await picker.pickImage(
+                          //       source: ImageSource.gallery, imageQuality: 100);
+                          //   if (image != null) {
+                          //     CroppedFile? croppedFile =
+                          //         await ImageCropper().cropImage(
+                          //             sourcePath: image.path,
+                          //             //     aspectRatioPresets: [
+                          //             //   CropAspectRatioPreset.square
+                          //             // ],
+                          //             uiSettings: [
+                          //           AndroidUiSettings(
+                          //               toolbarTitle: 'Cropper',
+                          //               toolbarColor: Theme.of(context)
+                          //                   .colorScheme
+                          //                   .primary,
+                          //               toolbarWidgetColor: Colors.white,
+                          //               initAspectRatio:
+                          //                   CropAspectRatioPreset.original,
+                          //               lockAspectRatio: false),
+                          //           IOSUiSettings(
+                          //             title: 'Cropper',
+                          //           ),
+                          //         ]);
+                          //     if (croppedFile != null) {
+                          //       print(imageString);
+                          //       setState(() {
+                          //         imageString = croppedFile.path;
+                          //         imageFile = File(croppedFile.path);
+                          //       });
+                          //     }
+                          //   }
+                          // },
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(16),
                             child: Container(
@@ -374,6 +477,7 @@ class _AddWithAIState extends State<AddWithAI> {
                           height: 10,
                         ),
                         CustomTextField(
+                          maxLines: null,
                           controller: moodController,
                           hintText: 'Write down what you feel ...',
                           obscureText: false,

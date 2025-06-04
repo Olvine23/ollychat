@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:post_repository/post_repository.dart';
 import 'package:user_repository/src/entities/entities.dart';
@@ -18,6 +19,29 @@ class FirebaseUserRepo implements UserRepository {
   final FirebaseAuth _firebaseAuth;
   final usersCollection = FirebaseFirestore.instance.collection('users');
 
+ 
+Future<String?> saveFcmToken(String userId) async {
+  final token = await FirebaseMessaging.instance.getToken();
+  if (token != null) {
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
+      'fcmToken': token,
+    });
+    return token;
+  }
+  return null;
+}
+
+void startFCMTokenRefreshListener(String userId) {
+  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+    if (newToken != null) {
+      await FirebaseFirestore.instance.collection('users').doc(userId).set({
+        'fcmToken': newToken,
+      }, SetOptions(merge: true));
+    }
+  });
+}
+
+
   // Sign up user
   @override
   Future<MyUser> signUp(MyUser myUser, String password) async {
@@ -28,6 +52,9 @@ class FirebaseUserRepo implements UserRepository {
       myUser = myUser.copyWith(id: user.user!.uid, followers: [], following: []);
 
       await setUserData(myUser);
+      await saveFcmToken(myUser.id);
+      startFCMTokenRefreshListener(myUser.id); // after signUp
+
       return myUser;
     } catch (e) {
       print(e);
@@ -88,6 +115,9 @@ class FirebaseUserRepo implements UserRepository {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
+          await saveFcmToken(_firebaseAuth.currentUser!.uid);
+          startFCMTokenRefreshListener(_firebaseAuth.currentUser!.uid); // after signIn
+
     } catch (e) {
       print(e);
     }

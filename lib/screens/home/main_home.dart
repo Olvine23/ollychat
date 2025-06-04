@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,6 +18,7 @@ import 'package:olly_chat/screens/home/widgets/article_card.dart';
 import 'package:olly_chat/screens/home/widgets/shimmer_widget.dart';
 import 'package:olly_chat/screens/poems/my_articles/my_articles.dart';
 import 'package:olly_chat/screens/poems/poem_detail.dart';
+import 'package:olly_chat/services/notification_reminder.dart';
 import 'package:olly_chat/theme/colors.dart';
 import 'package:post_repository/post_repository.dart';
 import 'package:shimmer/shimmer.dart';
@@ -36,6 +38,21 @@ class MainHome extends StatefulWidget {
 class _MainHomeState extends State<MainHome> {
   final user = FirebaseAuth.instance.currentUser;
 
+@override
+ void initState(){
+  super.initState();
+
+  // Schedule the daily quote notification at 8:00 AM
+  QuoteNotificationService.scheduleDailyQuote(hour: 16, minute: 20);
+
+  // Optionally, request permission if not granted
+  AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+    if (!isAllowed) {
+      AwesomeNotifications().requestPermissionToSendNotifications();
+    }
+  });
+
+}
   final List<String> quotes = [
     "Your voice is a bridge — not a burden.",
     "It’s okay to not have it all figured out.",

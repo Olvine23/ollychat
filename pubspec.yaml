@@ -52,7 +52,7 @@ dependencies:
   infinite_scroll_pagination: ^4.0.0
   awesome_snackbar_content: ^0.1.1
   cloud_firestore: ^4.15.8
-  firebase_messaging: ^14.7.19
+  firebase_messaging: ^14.9.4
   liquid_swipe: ^3.1.0
   audio_session: ^0.1.19
   shared_preferences: ^2.2.3
@@ -71,6 +71,8 @@ dependencies:
   timezone: ^0.10.1
   smooth_page_indicator: ^1.2.1
   unsplash_client: ^3.0.0
+  awesome_notifications: ^0.10.0
+  rename_app: ^1.6.3
  
 
 

@@ -7,6 +7,7 @@ class CustomTextField extends StatelessWidget {
   final String hintText;
   final bool obscureText;
   final TextInputType keyboardType;
+   int? maxLines;
   final VoidCallback? onTap;
   final Widget? prefixIcon;
   final String? Function(String?)? validator;
@@ -14,7 +15,7 @@ class CustomTextField extends StatelessWidget {
   final String? errorMsg;
   final String? Function(String?)? onChanged;
 
-  const CustomTextField(
+   CustomTextField(
       {super.key,
       required this.controller,
       this.suffixIcon,
@@ -26,7 +27,7 @@ class CustomTextField extends StatelessWidget {
       this.validator,
       this.focusNode,
       this.errorMsg,
-      this.onChanged});
+      this.onChanged, this.maxLines});
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +40,7 @@ class CustomTextField extends StatelessWidget {
       child: TextFormField(
         style: TextStyle(color: isDark ? Colors.white54 : Colors.black), // 👈 typed text will be white
           validator: validator,
+          maxLines: maxLines,
           controller: controller,
           obscureText: obscureText,
           keyboardType: keyboardType,

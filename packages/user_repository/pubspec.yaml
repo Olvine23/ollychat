@@ -17,6 +17,7 @@ dependencies:
   firebase_auth: ^4.17.8
   cloud_firestore:
   firebase_storage:
+  firebase_messaging:
   firebase_core:
   post_repository:
     path: ../post_repository 

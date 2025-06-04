@@ -52,7 +52,10 @@ class _UnsplashImagePickerState extends State<UnsplashImagePicker> {
       appBar: AppBar(
         title: TextField(
           autofocus: true,
-          decoration: const InputDecoration(hintText: 'Search Unsplash...'),
+          decoration: const InputDecoration(
+            suffixIcon: Icon(Icons.search),
+    
+            hintText: 'Search Image...'),
           onSubmitted: (value) {
             searchQuery = value;
             _search();
@@ -65,9 +68,9 @@ class _UnsplashImagePickerState extends State<UnsplashImagePicker> {
               padding: const EdgeInsets.all(8),
               itemCount: photos.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
+                crossAxisCount: 2,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
               ),
               itemBuilder: (context, index) {
                 final photo = photos[index];
@@ -80,7 +83,7 @@ class _UnsplashImagePickerState extends State<UnsplashImagePicker> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: CachedNetworkImage(
-                      imageUrl: thumbUrl,
+                      imageUrl: regularUrl,
                       fit: BoxFit.cover,
                       placeholder: (context, url) => Container(color: Colors.grey[300]),
                     ),
